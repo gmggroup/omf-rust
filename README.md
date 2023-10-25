@@ -1,6 +1,14 @@
+[![CI](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml)
+[![Audit](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml)
+
 # OMF
 
 A library for reading a writing files in Open Mining Format 2.0.
+
+OMF file version: 2.0-alpha.2
+Crate version: 0.1.0-alpha.2
+
+**Warning:** this is pre-release code.
 
 ## What is OMF
 
@@ -28,6 +36,7 @@ plus a wrapper to use that library from C.
     - Free-form sub-blocks that don't lie on any grid.
 - Composite elements made out of any of the above.
 
+
 ### Attributes
 
 - Floating-point or signed integer values.
@@ -44,3 +53,36 @@ Attributes values can be valid or null.
 They can be attached to different parts of each element type,
 such as the vertices vs. faces of a surface,
 or the parent blocks vs. sub-blocks of a block model.
+
+## Compiling
+
+First [install Rust](https://www.rust-lang.org/tools/install).
+Run `cargo build --all --release` in the root directory to build the release version of the Rust
+crate and C wrapper.
+The C wrapper build will place `omf.h` and the platform-specific shared library files
+(e.g.: `omfc.dll` and `omfc.dll.lib` for Windows) in `target/release`.
+
+You can the `--release` argument off to build a debug version.
+This may be useful for debugging C code that calls into OMF for example,
+but it will be slow.
+
+For the Rust tests, run `cargo test --all`.
+
+To build and run the C examples:
+
+1. Run `cargo build --all --release` first.
+2. Change directory into `omf-c/examples/`.
+3. Run `build.bat` on Windows or `build.sh` on Linux/MacOS.
+
+This will build all examples, run them, and compare the results to the benchmarks.
+
+## Documentation
+
+The documentation is built with [MkDocs](https://www.mkdocs.org/).
+To build locally:
+
+1. Create and activate a Python virtual environment.
+2. Change directory into `docs/`.
+3. Run `build.bat` on Windows or `build.sh` on Linux/MacOS.
+
+This will install the required dependencies, then build the file format, Rust, and C documentation into `site/`.

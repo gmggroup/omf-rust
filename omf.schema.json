@@ -1,0 +1,946 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/seequent/omf2",
+  "title": "Open Mining Format 2.0-alpha.2",
+  "type": "object",
+  "required": [
+    "date"
+  ],
+  "properties": {
+    "application": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "coordinate_reference_system": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "description": {
+      "type": "string"
+    },
+    "elements": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Element"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "format": "double"
+      },
+      "maxItems": 3,
+      "minItems": 3
+    },
+    "units": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "Array": {
+      "type": "object",
+      "required": [
+        "filename",
+        "item_count"
+      ],
+      "properties": {
+        "filename": {
+          "type": "string"
+        },
+        "item_count": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Attribute": {
+      "type": "object",
+      "required": [
+        "data",
+        "location",
+        "name"
+      ],
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/AttributeData"
+        },
+        "description": {
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/definitions/Location"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "units": {
+          "type": "string"
+        }
+      }
+    },
+    "AttributeData": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "values"
+          ],
+          "properties": {
+            "colormap": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/NumberColormap"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Number"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "values"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Vector"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "values"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Text"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "names",
+            "type",
+            "values"
+          ],
+          "properties": {
+            "attributes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Attribute"
+              }
+            },
+            "gradient": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "names": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Category"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "values"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Boolean"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "values"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Color"
+              ]
+            },
+            "values": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "image",
+            "texcoords",
+            "type"
+          ],
+          "properties": {
+            "image": {
+              "$ref": "#/definitions/Array"
+            },
+            "texcoords": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "MappedTexture"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "height",
+            "image",
+            "orient",
+            "type",
+            "width"
+          ],
+          "properties": {
+            "height": {
+              "type": "number",
+              "format": "double"
+            },
+            "image": {
+              "$ref": "#/definitions/Array"
+            },
+            "orient": {
+              "$ref": "#/definitions/Orient2"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "ProjectedTexture"
+              ]
+            },
+            "width": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        }
+      ]
+    },
+    "Element": {
+      "type": "object",
+      "required": [
+        "geometry",
+        "name"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attribute"
+          }
+        },
+        "color": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "integer",
+            "format": "uint8",
+            "maximum": 255.0,
+            "minimum": 0.0
+          },
+          "maxItems": 4,
+          "minItems": 4
+        },
+        "description": {
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/definitions/Geometry"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Geometry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "vertices"
+          ],
+          "properties": {
+            "origin": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "PointSet"
+              ]
+            },
+            "vertices": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "segments",
+            "type",
+            "vertices"
+          ],
+          "properties": {
+            "origin": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "segments": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "LineSet"
+              ]
+            },
+            "vertices": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "triangles",
+            "type",
+            "vertices"
+          ],
+          "properties": {
+            "origin": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "triangles": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Surface"
+              ]
+            },
+            "vertices": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "grid",
+            "orient",
+            "type"
+          ],
+          "properties": {
+            "grid": {
+              "$ref": "#/definitions/Grid2"
+            },
+            "heights": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "orient": {
+              "$ref": "#/definitions/Orient2"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "GridSurface"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "grid",
+            "orient",
+            "type"
+          ],
+          "properties": {
+            "grid": {
+              "$ref": "#/definitions/Grid3"
+            },
+            "orient": {
+              "$ref": "#/definitions/Orient3"
+            },
+            "subblocks": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Subblocks"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "BlockModel"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "elements": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Element"
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Composite"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Grid2": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "count",
+            "size",
+            "type"
+          ],
+          "properties": {
+            "count": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0.0
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "size": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Regular"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "u",
+            "v"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Tensor"
+              ]
+            },
+            "u": {
+              "$ref": "#/definitions/Array"
+            },
+            "v": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        }
+      ]
+    },
+    "Grid3": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "count",
+            "size",
+            "type"
+          ],
+          "properties": {
+            "count": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0.0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "size": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Regular"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "u",
+            "v",
+            "w"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Tensor"
+              ]
+            },
+            "u": {
+              "$ref": "#/definitions/Array"
+            },
+            "v": {
+              "$ref": "#/definitions/Array"
+            },
+            "w": {
+              "$ref": "#/definitions/Array"
+            }
+          }
+        }
+      ]
+    },
+    "Location": {
+      "type": "string",
+      "enum": [
+        "Vertices",
+        "Primitives",
+        "Subblocks",
+        "Elements",
+        "Projected",
+        "Categories"
+      ]
+    },
+    "NumberColormap": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "gradient",
+            "range",
+            "type"
+          ],
+          "properties": {
+            "gradient": {
+              "$ref": "#/definitions/Array"
+            },
+            "range": {
+              "$ref": "#/definitions/NumberRange"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Continuous"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "boundaries",
+            "gradient",
+            "type"
+          ],
+          "properties": {
+            "boundaries": {
+              "$ref": "#/definitions/Array"
+            },
+            "gradient": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Discrete"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "NumberRange": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "max",
+            "min"
+          ],
+          "properties": {
+            "max": {
+              "type": "number",
+              "format": "double"
+            },
+            "min": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "max",
+            "min"
+          ],
+          "properties": {
+            "max": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "min": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "max",
+            "min"
+          ],
+          "properties": {
+            "max": {
+              "type": "string",
+              "format": "date"
+            },
+            "min": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "max",
+            "min"
+          ],
+          "properties": {
+            "max": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "min": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      ]
+    },
+    "Orient2": {
+      "type": "object",
+      "required": [
+        "origin"
+      ],
+      "properties": {
+        "origin": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "u": {
+          "default": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "v": {
+          "default": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        }
+      }
+    },
+    "Orient3": {
+      "type": "object",
+      "required": [
+        "origin"
+      ],
+      "properties": {
+        "origin": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "u": {
+          "default": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "v": {
+          "default": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        },
+        "w": {
+          "default": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 3,
+          "minItems": 3
+        }
+      }
+    },
+    "SubblockMode": {
+      "type": "string",
+      "enum": [
+        "Octree",
+        "Full"
+      ]
+    },
+    "Subblocks": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "count",
+            "subblocks",
+            "type"
+          ],
+          "properties": {
+            "count": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0.0
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "mode": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/SubblockMode"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "subblocks": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Regular"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "subblocks",
+            "type"
+          ],
+          "properties": {
+            "subblocks": {
+              "$ref": "#/definitions/Array"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Freeform"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

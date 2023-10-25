@@ -1,0 +1,17 @@
+name: metadata.omf
+metadata: {
+    "importance": 2.6,
+    "is_draft": true,
+    "list": [
+        "first value",
+        "second value",
+        3,
+    ],
+    "my-company": {
+        "project-revision": "1.4.2",
+        "project-uri": "https://example.com/",
+        "project-uuid": "550e8400-e29b-41d4-a716-446655440000",
+    },
+    "source": "omf example code",
+    "version": null,
+}

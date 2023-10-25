@@ -1,0 +1,23 @@
+[package]
+name = "omfc"
+version = "0.1.0-alpha.2"
+description = "C bindings for `omf`."
+authors = ["Tim Evans <tim.evans@seequent.com>"]
+license = "MIT"
+edition = "2021"
+publish = false
+
+[lib]
+name = "omfc"
+crate-type = ["cdylib"]
+
+[dependencies]
+omf = { path = ".." }
+chrono.workspace = true
+image.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[build-dependencies]
+omf = { path = ".." }
+cbindgen.workspace = true
