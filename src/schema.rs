@@ -99,7 +99,8 @@ pub(crate) fn schema_for<T: JsonSchema>(remove_descr: bool) -> RootSchema {
 pub(crate) fn project_schema(remove_descr: bool) -> RootSchema {
     let mut root = schema_for::<Project>(remove_descr);
     root.schema.metadata().title = Some(format_full_name());
-    root.schema.metadata().id = Some("https://github.com/seequent/omf2".to_owned());
+    root.schema.metadata().id =
+        Some("https://github.com/gmggroup/omf-rust/blob/main/omf.schema.json".to_owned());
     let array_def = root.definitions.get("Array_for_Boolean").unwrap().clone();
     root.definitions
         .retain(|name, _| !name.starts_with("Array_for"));
