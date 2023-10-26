@@ -2,7 +2,7 @@ name: Docs
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "initial-implementation"]
 
 permissions:
   contents: read
@@ -39,13 +39,13 @@ jobs:
         with:
           path: site/
 
-  # deploy:
-  #   needs: docs
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@v2
+  deploy:
+    needs: docs
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to pages
+        id: deployment
+        uses: actions/deploy-pages@v2
