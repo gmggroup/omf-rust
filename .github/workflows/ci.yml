@@ -1,0 +1,72 @@
+name: CI
+
+on: [push]
+
+permissions:
+  contents: read
+
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+
+      - name: Check
+        run: cargo check --all
+
+      - name: Check featuresless
+        run: cargo check --all --no-default-features
+
+      - name: Clippy
+        run: cargo clippy --all
+
+      - name: Format
+        uses: actions-rust-lang/rustfmt@v1
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rust: stable, os: ubuntu-latest }
+          - { rust: stable, os: windows-latest }
+          - { rust: stable, os: macos-latest }
+          - { rust: beta, os: ubuntu-latest }
+          # Turn this on once we have a MSRV (minimum supported rust version)
+          # - { rust: 1.70.0, os: ubuntu-latest }
+    name: Test Rust ${{ matrix.rust }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+
+      - name: Test
+        run: cargo test --all
+
+      - name: Build
+        run: cargo build --all --release
+
+      - name: C Examples
+        if: runner.os != 'Windows'
+        working-directory: ./omf-c/examples
+        run: bash ./build.sh
+
+      - name: C Examples (Windows)
+        if: runner.os == 'Windows'
+        working-directory: ./omf-c/examples
+        run: ./build.bat

@@ -1,0 +1,49 @@
+name: attributes.omf
+Outward:
+    null
+    null
+    { 0, -1 }
+    { 0, -1 }
+    { 1, 0 }
+    { 1, 0 }
+    { 0, 1 }
+    { 0, 1 }
+    { -1, 0 }
+    { -1, 0 }
+    null
+    null
+Directions:
+    "down"
+    "down"
+    "south"
+    "south"
+    "east"
+    "east"
+    "north"
+    "north"
+    "west"
+    "west"
+    "up"
+    "up"
+Origin:
+    "origin"
+    null
+    null
+    null
+    null
+    null
+    null
+    null
+    null
+    null
+    null
+    null
+Continuous:
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    7

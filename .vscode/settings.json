@@ -1,0 +1,14 @@
+{
+    "cSpell.language": "en",
+    "cSpell.words": [
+        "colormap",
+        "colormaps",
+        "grayscale",
+        "octree",
+        "RGBA",
+        "struct",
+        "structs",
+        "subblock"
+    ],
+    "cmake.configureOnOpen": false
+}
