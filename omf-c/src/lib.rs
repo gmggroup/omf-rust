@@ -26,7 +26,7 @@ mod tests {
     use std::ffi::CStr;
     use std::ptr::{null, null_mut};
 
-    use crate::error::{omf_error, omf_error_free};
+    use crate::error::state::{omf_error, omf_error_free};
     use crate::init_functions::*;
     use crate::read_iterators::*;
     use crate::reader::*;
