@@ -3,7 +3,7 @@
 
 # OMF
 
-A library for reading a writing files in Open Mining Format 2.0.
+A library for reading and writing files in Open Mining Format 2.0.
 
 OMF file version: 2.0-alpha.2
 Crate version: 0.1.0-alpha.2
