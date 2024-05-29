@@ -1,0 +1,79 @@
+site_name: OMF
+
+use_directory_urls: false
+
+exclude_docs: |
+    /requirements.txt
+    /build.sh
+
+extra_javascript: 
+    - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+
+markdown_extensions:
+    - def_list
+    - mdx_math:
+        enable_dollar_delimiter: true
+    - callouts
+    - pymdownx.snippets
+
+extra_css:
+    - stylesheets/extra.css
+
+nav:
+    - 'index.md'
+    - 'start.md'
+    - 'changelog.md'
+    - 'Format': 'format.md'
+    - 'Parquet': 'parquet.md'
+    - 'JSON-Schema':
+        - 'schema_index.md'
+        - 'schema/Array.md'
+        - 'schema/Attribute.md'
+        - 'schema/AttributeData.md'
+        - 'schema/BlockModel.md'
+        - 'schema/Composite.md'
+        - 'schema/Element.md'
+        - 'schema/Geometry.md'
+        - 'schema/Grid2.md'
+        - 'schema/Grid3.md'
+        - 'schema/GridSurface.md'
+        - 'schema/LineSet.md'
+        - 'schema/Location.md'
+        - 'schema/NumberColormap.md'
+        - 'schema/Orient2.md'
+        - 'schema/Orient3.md'
+        - 'schema/PointSet.md'
+        - 'schema/Project.md'
+        - 'schema/SubblockMode.md'
+        - 'schema/Subblocks.md'
+        - 'schema/Surface.md'
+    - 'C':
+        - 'c/index.md'
+        - 'c/errors.md'
+        - 'c/metadata.md'
+        - 'c/arrays.md'
+        - 'c/images.md'
+        - 'c/project.md'
+        - 'c/element.md'
+        - 'Geometries':
+            - 'c/geometry/pointset.md'
+            - 'c/geometry/lineset.md'
+            - 'c/geometry/surface.md'
+            - 'c/geometry/gridsurface.md'
+            - 'c/geometry/composite.md'
+            - 'c/geometry/blockmodel.md'
+        - 'c/attribute.md'
+        - 'c/colormap.md'
+        - 'c/grids.md'
+        - 'c/reader.md'
+        - 'c/reader_iterators.md'
+        - 'c/writer.md'
+        - 'c/writer_iterators.md'
+        - 'c/omf1.md'
+        - 'Examples':
+            - 'c/examples/pyramid.md'
+            - 'c/examples/metadata.md'
+            - 'c/examples/geometries.md'
+            - 'c/examples/attributes.md'
+            - 'c/examples/textures.md'
+    - 'Rust': 'rust/omf/index.html'

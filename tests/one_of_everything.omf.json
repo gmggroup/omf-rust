@@ -1,0 +1,522 @@
+{
+  "name": "One of everything",
+  "description": "An OMF 2.0 project containing roughly one of every different type.",
+  "author": "Tim Evans",
+  "date": "1970-01-01T00:00:00Z",
+  "metadata": {
+    "array": [
+      1,
+      2,
+      3
+    ],
+    "bool": true,
+    "null": null,
+    "number": 42,
+    "object": {
+      "a": 1,
+      "b": 2
+    },
+    "string": "value"
+  },
+  "elements": [
+    {
+      "name": "Pyramid surface",
+      "description": "A surface forming a pyramid",
+      "color": [
+        255,
+        128,
+        0,
+        255
+      ],
+      "attributes": [
+        {
+          "name": "Numbers",
+          "location": "Vertices",
+          "data": {
+            "type": "Number",
+            "values": {
+              "filename": "3.parquet",
+              "item_count": 5
+            }
+          }
+        },
+        {
+          "name": "Colors",
+          "location": "Primitives",
+          "data": {
+            "type": "Color",
+            "values": {
+              "filename": "4.parquet",
+              "item_count": 6
+            }
+          }
+        },
+        {
+          "name": "Date-times",
+          "location": "Vertices",
+          "data": {
+            "type": "Number",
+            "values": {
+              "filename": "5.parquet",
+              "item_count": 5
+            },
+            "colormap": {
+              "type": "Discrete",
+              "boundaries": {
+                "filename": "6.parquet",
+                "item_count": 3
+              },
+              "gradient": {
+                "filename": "7.parquet",
+                "item_count": 4
+              }
+            }
+          }
+        }
+      ],
+      "geometry": {
+        "type": "Surface",
+        "vertices": {
+          "filename": "1.parquet",
+          "item_count": 5
+        },
+        "triangles": {
+          "filename": "2.parquet",
+          "item_count": 6
+        }
+      }
+    },
+    {
+      "name": "Pyramid points",
+      "attributes": [
+        {
+          "name": "Categories",
+          "description": "Divides the points into top and base.",
+          "units": "whatever",
+          "metadata": {
+            "key": "value"
+          },
+          "location": "Vertices",
+          "data": {
+            "type": "Category",
+            "values": {
+              "filename": "9.parquet",
+              "item_count": 5
+            },
+            "names": {
+              "filename": "10.parquet",
+              "item_count": 2
+            },
+            "gradient": {
+              "filename": "11.parquet",
+              "item_count": 2
+            },
+            "attributes": [
+              {
+                "name": "Layer",
+                "location": "Categories",
+                "data": {
+                  "type": "Number",
+                  "values": {
+                    "filename": "12.parquet",
+                    "item_count": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "2D Vectors",
+          "location": "Vertices",
+          "data": {
+            "type": "Vector",
+            "values": {
+              "filename": "13.parquet",
+              "item_count": 5
+            }
+          }
+        },
+        {
+          "name": "3D Vectors",
+          "location": "Vertices",
+          "data": {
+            "type": "Vector",
+            "values": {
+              "filename": "14.parquet",
+              "item_count": 5
+            }
+          }
+        }
+      ],
+      "geometry": {
+        "type": "PointSet",
+        "vertices": {
+          "filename": "8.parquet",
+          "item_count": 5
+        }
+      }
+    },
+    {
+      "name": "Pyramid lines",
+      "attributes": [
+        {
+          "name": "Strings",
+          "location": "Primitives",
+          "data": {
+            "type": "Text",
+            "values": {
+              "filename": "17.parquet",
+              "item_count": 8
+            }
+          }
+        }
+      ],
+      "geometry": {
+        "type": "LineSet",
+        "vertices": {
+          "filename": "15.parquet",
+          "item_count": 5
+        },
+        "segments": {
+          "filename": "16.parquet",
+          "item_count": 8
+        }
+      }
+    },
+    {
+      "name": "Pyramid grid surface",
+      "geometry": {
+        "type": "GridSurface",
+        "orient": {
+          "origin": [
+            -1.5,
+            -1.5,
+            0.0
+          ],
+          "u": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        "grid": {
+          "type": "Tensor",
+          "u": {
+            "filename": "18.parquet",
+            "item_count": 2
+          },
+          "v": {
+            "filename": "19.parquet",
+            "item_count": 2
+          }
+        },
+        "heights": {
+          "filename": "20.parquet",
+          "item_count": 9
+        }
+      }
+    },
+    {
+      "name": "Regular block model",
+      "attributes": [
+        {
+          "name": "Filter",
+          "location": "Primitives",
+          "data": {
+            "type": "Boolean",
+            "values": {
+              "filename": "21.parquet",
+              "item_count": 8
+            }
+          }
+        }
+      ],
+      "geometry": {
+        "type": "BlockModel",
+        "orient": {
+          "origin": [
+            -1.0,
+            -1.0,
+            -1.0
+          ],
+          "u": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "w": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "grid": {
+          "type": "Regular",
+          "size": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "count": [
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "name": "Tensor block model",
+      "geometry": {
+        "type": "BlockModel",
+        "orient": {
+          "origin": [
+            -1.0,
+            -1.0,
+            -1.0
+          ],
+          "u": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "w": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "grid": {
+          "type": "Tensor",
+          "u": {
+            "filename": "22.parquet",
+            "item_count": 2
+          },
+          "v": {
+            "filename": "23.parquet",
+            "item_count": 2
+          },
+          "w": {
+            "filename": "24.parquet",
+            "item_count": 2
+          }
+        }
+      }
+    },
+    {
+      "name": "Sub-blocked block model, regular",
+      "geometry": {
+        "type": "BlockModel",
+        "orient": {
+          "origin": [
+            -1.0,
+            -1.0,
+            -1.0
+          ],
+          "u": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "w": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "grid": {
+          "type": "Regular",
+          "size": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "count": [
+            2,
+            2,
+            2
+          ]
+        },
+        "subblocks": {
+          "type": "Regular",
+          "count": [
+            4,
+            4,
+            4
+          ],
+          "subblocks": {
+            "filename": "25.parquet",
+            "item_count": 11
+          },
+          "mode": "Octree"
+        }
+      }
+    },
+    {
+      "name": "Sub-blocked block model, free-form",
+      "geometry": {
+        "type": "BlockModel",
+        "orient": {
+          "origin": [
+            -1.0,
+            -1.0,
+            -1.0
+          ],
+          "u": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "w": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "grid": {
+          "type": "Regular",
+          "size": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "count": [
+            2,
+            2,
+            2
+          ]
+        },
+        "subblocks": {
+          "type": "Freeform",
+          "subblocks": {
+            "filename": "26.parquet",
+            "item_count": 10
+          }
+        }
+      }
+    },
+    {
+      "name": "Composite",
+      "geometry": {
+        "type": "Composite",
+        "elements": [
+          {
+            "name": "Cube faces",
+            "geometry": {
+              "type": "Surface",
+              "vertices": {
+                "filename": "27.parquet",
+                "item_count": 8
+              },
+              "triangles": {
+                "filename": "28.parquet",
+                "item_count": 12
+              }
+            }
+          },
+          {
+            "name": "Cube edges",
+            "geometry": {
+              "type": "LineSet",
+              "vertices": {
+                "filename": "29.parquet",
+                "item_count": 8
+              },
+              "segments": {
+                "filename": "30.parquet",
+                "item_count": 12
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Textured",
+      "attributes": [
+        {
+          "name": "Projected",
+          "location": "Projected",
+          "data": {
+            "type": "ProjectedTexture",
+            "image": {
+              "filename": "33.png",
+              "item_count": 0
+            },
+            "orient": {
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "u": [
+                1.0,
+                0.0,
+                0.0
+              ],
+              "v": [
+                0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "width": 1.0,
+            "height": 1.0
+          }
+        },
+        {
+          "name": "Mapped",
+          "location": "Vertices",
+          "data": {
+            "type": "MappedTexture",
+            "image": {
+              "filename": "34.png",
+              "item_count": 0
+            },
+            "texcoords": {
+              "filename": "35.parquet",
+              "item_count": 4
+            }
+          }
+        }
+      ],
+      "geometry": {
+        "type": "Surface",
+        "vertices": {
+          "filename": "31.parquet",
+          "item_count": 4
+        },
+        "triangles": {
+          "filename": "32.parquet",
+          "item_count": 2
+        }
+      }
+    }
+  ]
+}

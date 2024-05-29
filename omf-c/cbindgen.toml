@@ -1,0 +1,27 @@
+language = "C"
+pragma_once = true
+documentation = false
+usize_is_size_t = true
+cpp_compat = true
+line_length = 100
+style = "both"
+tab_width = 4
+
+[parse]
+parse_deps = true
+include = ["omf"]
+
+[export]
+prefix = "Omf"
+renaming_overrides_prefixing = true
+include = ["Status"]
+
+[enum]
+rename_variants = "ScreamingSnakeCase"
+prefix_with_name = true
+
+[export.rename]
+"CError" = "OmfError"
+"FORMAT_VERSION_MAJOR" = "OMF_FORMAT_VERSION_MAJOR"
+"FORMAT_VERSION_MINOR" = "OMF_FORMAT_VERSION_MINOR"
+"FORMAT_VERSION_PRERELEASE" = "OMF_FORMAT_VERSION_PRERELEASE"
