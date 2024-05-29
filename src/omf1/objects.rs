@@ -1,3 +1,4 @@
+#![allow(dead_code)] // Many attributes in here exist for the JSON loading, but aren't used.
 use std::marker::PhantomData;
 
 use chrono::{DateTime, Utc};
