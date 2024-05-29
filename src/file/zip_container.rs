@@ -6,7 +6,7 @@ use std::{
 
 use zip::{
     read::{ZipArchive, ZipFile},
-    write::{FileOptions, ZipWriter},
+    write::{FullFileOptions, ZipWriter},
 };
 
 use crate::{error::Error, FORMAT_NAME};
@@ -54,8 +54,8 @@ impl Builder {
             FileType::Jpeg => format!("{}{JPEG_EXT}", self.id()),
         };
         self.zip_writer.start_file(
-            &name,
-            FileOptions::default()
+            name.clone(),
+            FullFileOptions::default()
                 .large_file(true)
                 .compression_method(zip::CompressionMethod::Stored),
         )?;

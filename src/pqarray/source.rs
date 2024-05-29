@@ -27,8 +27,6 @@ pub trait Source {
     fn buffer(&mut self, size: usize) -> usize;
     /// Write data from the last `buffer()` call.
     fn write(&mut self, row_group: &mut dyn RowGrouper) -> Result<(), ParquetError>;
-    /// Size hint from the underlying iterator.
-    fn size_hint(&self) -> (usize, Option<usize>);
 }
 
 fn single_type<P: PqArrayType>(name: &str, nullable: bool) -> Type {
@@ -108,10 +106,6 @@ impl<R: PqArrayRow, I: Iterator<Item = R>> Source for RowSource<R, I> {
     fn write(&mut self, row_group: &mut dyn RowGrouper) -> Result<(), ParquetError> {
         R::write_buffer(&self.buffer, row_group, &self.def_levels[..self.count])
     }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.iter.size_hint()
-    }
 }
 
 pub struct NullableRowSource<R: PqArrayRow, I: Iterator<Item = Option<R>>> {
@@ -181,10 +175,6 @@ impl<R: PqArrayRow, I: Iterator<Item = Option<R>>> Source for NullableRowSource<
             row_group,
             &self.def_levels[..self.def_levels.len()],
         )
-    }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.iter.size_hint()
     }
 }
 

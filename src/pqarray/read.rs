@@ -96,12 +96,14 @@ impl Counter {
 /// Reads a block of data from a column reader.
 fn read_column_chunk<D: DataType>(
     column: &mut ColumnReaderImpl<D>,
-    values: &mut [D::T],
-    def_levels: Option<&mut [i16]>,
+    values: &mut Vec<D::T>,
+    mut def_levels: Option<&mut Vec<i16>>,
 ) -> Result<(usize, usize), Error> {
-    let mut max_records = values.len();
-    if let Some(d) = &def_levels {
-        max_records = max_records.max(d.len());
+    values.clear();
+    let mut max_records = values.capacity();
+    if let Some(d) = &mut def_levels {
+        d.clear();
+        max_records = max_records.max(d.capacity());
     }
     let (n_val, n_def, _n_rep) = column.read_records(max_records, def_levels, None, values)?;
     Ok((n_val, n_def))
@@ -193,8 +195,8 @@ impl<P: PqArrayType> GroupValues<P> for NullableGroupValues<P> {
             len: 0,
             index: Counter::new(),
             value_index: Counter::new(),
-            values: vec![Default::default(); CHUNK_SIZE],
-            def_levels: vec![0; CHUNK_SIZE],
+            values: Vec::with_capacity(CHUNK_SIZE),
+            def_levels: Vec::with_capacity(CHUNK_SIZE),
             logical_type,
         }
     }

@@ -81,7 +81,7 @@ impl Visitor for TweakSchema {
         // Change references to the generics Array_for_* to just Array.
         if let Some(r) = schema.reference.as_mut() {
             if r.starts_with("#/definitions/Array_for_") {
-                *r = "#/definitions/Array".to_owned();
+                "#/definitions/Array".clone_into(r);
             }
         }
         // Then delegate to default implementation to visit any subschemas.

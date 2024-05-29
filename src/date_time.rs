@@ -1,6 +1,6 @@
 //! Utility functions for date and date-time conversion.
 
-use chrono::{DateTime, Duration, NaiveDate, NaiveDateTime, TimeZone, Utc};
+use chrono::{DateTime, Duration, NaiveDate, TimeZone, Utc};
 
 /// Convert a date to the number of days since the epoch.
 pub fn date_to_f64(date: NaiveDate) -> f64 {
@@ -29,8 +29,8 @@ pub fn date_time_to_i64(date_time: DateTime<Utc>) -> i64 {
 
 /// Convert a number of days since the epoch back to a date.
 pub fn i64_to_date(value: i64) -> NaiveDate {
-    NaiveDate::default()
-        .checked_add_signed(Duration::days(value))
+    Duration::try_days(value)
+        .and_then(|d| NaiveDate::default().checked_add_signed(d))
         .unwrap_or(if value < 0 {
             NaiveDate::MIN
         } else {
@@ -51,8 +51,8 @@ pub fn i64_to_date_time(value: i64) -> DateTime<Utc> {
 
 /// Convert a number of milliseconds since the epoch back to a date.
 pub fn i64_milli_to_date_time(value: i64) -> DateTime<Utc> {
-    DateTime::<Utc>::default()
-        .checked_add_signed(Duration::milliseconds(value))
+    Duration::try_milliseconds(value)
+        .and_then(|d| DateTime::<Utc>::default().checked_add_signed(d))
         .unwrap_or(if value < 0 {
             DateTime::<Utc>::MIN_UTC
         } else {
@@ -76,7 +76,8 @@ pub fn utc_now() -> DateTime<Utc> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .expect("valid system time");
-    let naive = NaiveDateTime::from_timestamp_opt(now.as_secs() as i64, now.subsec_nanos())
-        .expect("valid timestamp");
+    let naive = DateTime::from_timestamp(now.as_secs() as i64, now.subsec_nanos())
+        .expect("valid timestamp")
+        .naive_utc();
     Utc.from_utc_datetime(&naive)
 }

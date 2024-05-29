@@ -1,6 +1,6 @@
 [package]
 name = "omf"
-version = "0.1.0-alpha.2"
+version = "0.1.0-beta.1"
 description = "File reader and writer for Open Mining Format."
 authors = ["Tim Evans <tim.evans@seequent.com>"]
 license = "MIT"
@@ -34,15 +34,18 @@ omf1 = ["parquet"]
 members = ["omf-c"]
 
 [workspace.dependencies]
-bytes = "1.4.0"
-cbindgen = { version = "0.24.5", default-features = false }
-chrono = { version = "0.4.30", default-features = false, features = ["serde"] }
-flate2 = "1.0.27"
-image = { version = "0.24.7", default-features = false, features = ["png", "jpeg"]  }
-parquet = { version = "46.0.0", default-features = false, features = ["flate2"] }
-regex = "1.9.3"
-schemars = { version = "0.8.12", features = ["chrono"] }
-serde = { version = "1.0.188", features = ["derive"] }
-serde_json = { version = "1.0.107", features = ["float_roundtrip"] }
-thiserror = "1.0.47"
-zip = { version = "0.6.6", default-features = false }
+bytes = "1"
+cbindgen = { version = "0.26", default-features = false }
+chrono = { version = "0.4", default-features = false, features = ["serde"] }
+flate2 = "1.0"
+image = { version = "0.25", default-features = false, features = [
+    "png",
+    "jpeg",
+] }
+parquet = { version = "51", default-features = false, features = ["flate2"] }
+regex = "1"
+schemars = { version = "0.8", features = ["chrono"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+thiserror = "1"
+zip = { version = "2", default-features = false }

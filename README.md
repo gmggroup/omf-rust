@@ -6,9 +6,9 @@
 A library for reading and writing files in Open Mining Format 2.0.
 Also supports translating OMF 1 files to OMF 2.
 
-OMF file version: 2.0-alpha.2
+OMF file version: 2.0-beta.1
 
-Crate version: 0.1.0-alpha.2
+Crate version: 0.1.0-beta.1
 
 **Warning:** this is pre-release code.
 

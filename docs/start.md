@@ -19,7 +19,7 @@ and contains details for linking them together into rich objects.
 Images may use PNG or JPEG encoding, while arrays use Apache Parquet encoding.
 
 > WARNING: 
-> When OMF files, beware of "zip bombs" where data is maliciously crafted to expand to an
+> When reading OMF files, beware of "zip bombs" where data is maliciously crafted to expand to an
 > excessive size when decompressed, leading to a potential denial of service attack.
 > Use the limits provided by the C and Rust APIs, and check sizes before allocating memory.
 

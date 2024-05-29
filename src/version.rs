@@ -20,7 +20,7 @@ pub const FORMAT_VERSION_MINOR: u32 = 0;
 ///
 /// This will always be `None` in release versions of the crate. Pre-release formats
 /// may contain experimental changes so can't be opened in by release versions.
-pub const FORMAT_VERSION_PRERELEASE: Option<&str> = Some("alpha.2");
+pub const FORMAT_VERSION_PRERELEASE: Option<&str> = Some("beta.1");
 
 /// Returns a string containing the file format version that this crate produces.
 pub fn format_version() -> String {

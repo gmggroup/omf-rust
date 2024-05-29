@@ -1,6 +1,6 @@
 # Home
 
-Version 0.1.0-alpha.1
+Version 0.1.0-beta.1
 
 Specification and library for Open Mining Format version 2,
 a standard for mining data interchange backed by the

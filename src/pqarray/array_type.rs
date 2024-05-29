@@ -249,9 +249,9 @@ mod tests {
     #[test]
     fn date_overflow() {
         let min = NaiveDate::from_parquet(i32::MIN, &None);
-        assert_eq!(min.to_string(), "-262144-01-01");
+        assert_eq!(min.to_string(), "-262143-01-01");
         let max = NaiveDate::from_parquet(i32::MAX, &None);
-        assert_eq!(max.to_string(), "+262143-12-31");
+        assert_eq!(max.to_string(), "+262142-12-31");
     }
 
     #[test]
@@ -281,8 +281,8 @@ mod tests {
     #[test]
     fn date_time_overflow() {
         let min = DateTime::<Utc>::from_parquet(i64::MIN, &DATE_TIME_MILLI);
-        assert_eq!(min.to_string(), "-262144-01-01 00:00:00 UTC");
+        assert_eq!(min.to_string(), "-262143-01-01 00:00:00 UTC");
         let max = DateTime::<Utc>::from_parquet(i64::MAX, &DATE_TIME_MILLI);
-        assert_eq!(max.to_string(), "+262143-12-31 23:59:59.999999999 UTC");
+        assert_eq!(max.to_string(), "+262142-12-31 23:59:59.999999999 UTC");
     }
 }

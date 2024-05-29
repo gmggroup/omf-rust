@@ -33,7 +33,7 @@ impl Writer {
         image: &image::DynamicImage,
     ) -> Result<Array<array_type::Image>, Error> {
         let mut bytes = Vec::new();
-        image.write_to(&mut Cursor::new(&mut bytes), image::ImageOutputFormat::Png)?;
+        image.write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)?;
         self.image_bytes(&bytes)
     }
 
@@ -53,10 +53,10 @@ impl Writer {
         quality: u8,
     ) -> Result<Array<array_type::Image>, Error> {
         let mut bytes = Vec::new();
-        image.write_to(
+        image.write_with_encoder(image::codecs::jpeg::JpegEncoder::new_with_quality(
             &mut Cursor::new(&mut bytes),
-            image::ImageOutputFormat::Jpeg(quality.clamp(1, 100)),
-        )?;
+            quality.clamp(1, 100),
+        ))?;
         self.image_bytes(&bytes)
     }
 }
