@@ -62,7 +62,7 @@ impl Geometry {
             Self::LineSet(_) => "LineSet",
             Self::Surface(_) => "Surface",
             Self::GridSurface(_) => "GridSurface",
-            Self::Composite(_) => "PoinCompositetSet",
+            Self::Composite(_) => "Composite",
             Self::BlockModel(b) if b.has_subblocks() => "BlockModel(sub-blocked)",
             Self::BlockModel(_) => "BlockModel",
         }
