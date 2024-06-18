@@ -131,7 +131,6 @@ pub(crate) struct Archive {
 
 impl Archive {
     pub fn new(file: File) -> Result<Self, Error> {
-        // TODO: get the version from the zip comment.
         let mut zip_archive = ZipArchive::new(file)?;
         let mut members = HashMap::new();
         let mut index_found = false;
