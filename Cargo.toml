@@ -23,6 +23,7 @@ zip.workspace = true
 [dev-dependencies]
 bytes.workspace = true
 regex.workspace = true
+glam = "0.28"
 
 [features]
 default = ["image", "parquet", "omf1"]
