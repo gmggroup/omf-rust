@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs::File};
+use std::collections::HashSet;
 
 use crate::{
     array::Constraint,
@@ -18,12 +18,12 @@ use super::{
 /// When used for tensor block model sizes this checks that all sizes are greater than zero.
 #[derive(Debug)]
 pub struct GenericScalars<T: FloatType> {
-    inner: SimpleIter<T, SubFile<File>>,
+    inner: SimpleIter<T, SubFile>,
     is_size: bool,
 }
 
 impl<T: FloatType> GenericScalars<T> {
-    pub(crate) fn new(inner: SimpleIter<T, SubFile<File>>, constraint: &Constraint) -> Self {
+    pub(crate) fn new(inner: SimpleIter<T, SubFile>, constraint: &Constraint) -> Self {
         Self {
             inner,
             is_size: matches!(constraint, Constraint::Size),
@@ -55,12 +55,12 @@ impl<T: FloatType> Iterator for GenericScalars<T> {
 /// Checks that all indices are within range.
 #[derive(Debug)]
 pub struct Indices {
-    inner: NullableIter<u32, SubFile<File>>,
+    inner: NullableIter<u32, SubFile>,
     category_count: u64,
 }
 
 impl Indices {
-    pub(crate) fn new(inner: NullableIter<u32, SubFile<File>>, constraint: &Constraint) -> Self {
+    pub(crate) fn new(inner: NullableIter<u32, SubFile>, constraint: &Constraint) -> Self {
         let &Constraint::Index(category_count) = constraint else {
             panic!("invalid constraint");
         };
@@ -95,12 +95,12 @@ impl Iterator for Indices {
 /// Checks that all vertex indices are within range.
 #[derive(Debug)]
 pub struct GenericPrimitives<const N: usize> {
-    inner: MultiIter<u32, SubFile<File>, N>,
+    inner: MultiIter<u32, SubFile, N>,
     vertex_count: u64,
 }
 
 impl<const N: usize> GenericPrimitives<N> {
-    pub(crate) fn new(inner: MultiIter<u32, SubFile<File>, N>, constraint: &Constraint) -> Self {
+    pub(crate) fn new(inner: MultiIter<u32, SubFile, N>, constraint: &Constraint) -> Self {
         let vertex_count = match constraint {
             Constraint::Segment(n) | Constraint::Triangle(n) => *n,
             _ => panic!("invalid constraint"),
@@ -138,12 +138,12 @@ impl<const N: usize> Iterator for GenericPrimitives<N> {
 /// Checks that the values are increasing.
 #[derive(Debug)]
 pub(super) struct BoundaryValues<T: NumberType> {
-    inner: SimpleIter<T, SubFile<File>>,
+    inner: SimpleIter<T, SubFile>,
     previous: Option<T>,
 }
 
 impl<T: NumberType> BoundaryValues<T> {
-    pub(crate) fn new(inner: SimpleIter<T, SubFile<File>>) -> Self {
+    pub(crate) fn new(inner: SimpleIter<T, SubFile>) -> Self {
         Self {
             inner,
             previous: None,
@@ -170,15 +170,15 @@ impl<T: NumberType> Iterator for BoundaryValues<T> {
 /// Checks that the parent index and corners are all valid.
 #[derive(Debug)]
 pub struct GenericFreeformSubblocks<T: FloatType> {
-    parents: MultiIter<u32, SubFile<File>, 3>,
-    corners: MultiIter<T, SubFile<File>, 6>,
+    parents: MultiIter<u32, SubFile, 3>,
+    corners: MultiIter<T, SubFile, 6>,
     block_count: [u32; 3],
 }
 
 impl<T: FloatType> GenericFreeformSubblocks<T> {
     pub(crate) fn new(
-        parents: MultiIter<u32, SubFile<File>, 3>,
-        corners: MultiIter<T, SubFile<File>, 6>,
+        parents: MultiIter<u32, SubFile, 3>,
+        corners: MultiIter<T, SubFile, 6>,
         constraint: &Constraint,
     ) -> Self {
         let block_count = match constraint {
@@ -219,8 +219,8 @@ impl<T: FloatType> Iterator for GenericFreeformSubblocks<T> {
 /// Checks that the parent index and corners are all valid.
 #[derive(Debug)]
 pub struct RegularSubblocks {
-    parents: MultiIter<u32, SubFile<File>, 3>,
-    corners: MultiIter<u32, SubFile<File>, 6>,
+    parents: MultiIter<u32, SubFile, 3>,
+    corners: MultiIter<u32, SubFile, 6>,
     block_count: [u32; 3],
     subblock_count: [u32; 3],
     mode: Option<(SubblockMode, HashSet<[u32; 3]>)>,
@@ -228,8 +228,8 @@ pub struct RegularSubblocks {
 
 impl RegularSubblocks {
     pub(crate) fn new(
-        parents: MultiIter<u32, SubFile<File>, 3>,
-        corners: MultiIter<u32, SubFile<File>, 6>,
+        parents: MultiIter<u32, SubFile, 3>,
+        corners: MultiIter<u32, SubFile, 6>,
         constraint: &Constraint,
     ) -> Self {
         let &Constraint::RegularSubblock {
@@ -350,7 +350,7 @@ fn check_freeform_corners<T: FloatType>(corners: [T; 6]) -> Result<(), Error> {
 
 /// Iterator for reading numbers, supporting `f32`, `f64`, `i64`, date, and date-time generically.
 #[derive(Debug)]
-pub struct GenericNumbers<T: NumberType>(pub(crate) NullableIter<T, SubFile<File>>);
+pub struct GenericNumbers<T: NumberType>(pub(crate) NullableIter<T, SubFile>);
 
 impl<T: NumberType> Iterator for GenericNumbers<T> {
     type Item = Result<Option<T>, Error>;
@@ -362,7 +362,7 @@ impl<T: NumberType> Iterator for GenericNumbers<T> {
 
 /// Iterator for reading small fixed-size arrays, like vertices and texture coordinates.
 #[derive(Debug)]
-pub struct GenericArrays<T: NumberType, const N: usize>(pub(crate) MultiIter<T, SubFile<File>, N>);
+pub struct GenericArrays<T: NumberType, const N: usize>(pub(crate) MultiIter<T, SubFile, N>);
 
 impl<T: NumberType, const N: usize> Iterator for GenericArrays<T, N> {
     type Item = Result<[T; N], Error>;
@@ -374,7 +374,7 @@ impl<T: NumberType, const N: usize> Iterator for GenericArrays<T, N> {
 
 /// Iterator for reading non-nullable colors, such as category legends.
 #[derive(Debug)]
-pub struct Gradient(pub(crate) MultiIter<u8, SubFile<File>, 4>);
+pub struct Gradient(pub(crate) MultiIter<u8, SubFile, 4>);
 
 impl Iterator for Gradient {
     type Item = Result<[u8; 4], Error>;
@@ -387,7 +387,7 @@ impl Iterator for Gradient {
 /// Iterator for reading small optional fixed-size arrays, like 2D and 3D vectors.
 #[derive(Debug)]
 pub struct GenericOptionalArrays<T: NumberType, const N: usize>(
-    pub(crate) NullableGroupIter<T, SubFile<File>, N>,
+    pub(crate) NullableGroupIter<T, SubFile, N>,
 );
 
 impl<T: NumberType, const N: usize> Iterator for GenericOptionalArrays<T, N> {
@@ -400,7 +400,7 @@ impl<T: NumberType, const N: usize> Iterator for GenericOptionalArrays<T, N> {
 
 /// Iterator for reading nullable colors.
 #[derive(Debug)]
-pub struct Colors(pub(crate) NullableGroupIter<u8, SubFile<File>, 4>);
+pub struct Colors(pub(crate) NullableGroupIter<u8, SubFile, 4>);
 
 impl Iterator for Colors {
     type Item = Result<Option<[u8; 4]>, Error>;
@@ -412,7 +412,7 @@ impl Iterator for Colors {
 
 /// Iterator for reading nullable booleans.
 #[derive(Debug)]
-pub struct Booleans(pub(crate) NullableIter<bool, SubFile<File>>);
+pub struct Booleans(pub(crate) NullableIter<bool, SubFile>);
 
 impl Iterator for Booleans {
     type Item = Result<Option<bool>, Error>;
@@ -424,7 +424,7 @@ impl Iterator for Booleans {
 
 /// Iterator for reading non-nullable strings, such as category names.
 #[derive(Debug)]
-pub struct Names(pub(crate) SimpleIter<String, SubFile<File>>);
+pub struct Names(pub(crate) SimpleIter<String, SubFile>);
 
 impl Iterator for Names {
     type Item = Result<String, Error>;
@@ -436,7 +436,7 @@ impl Iterator for Names {
 
 /// Iterator for reading nullable strings.
 #[derive(Debug)]
-pub struct Text(pub(crate) NullableIter<String, SubFile<File>>);
+pub struct Text(pub(crate) NullableIter<String, SubFile>);
 
 impl Iterator for Text {
     type Item = Result<Option<String>, Error>;

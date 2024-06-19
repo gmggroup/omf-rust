@@ -1,8 +1,4 @@
-use std::{
-    collections::HashMap,
-    fs::File,
-    io::{Seek, SeekFrom},
-};
+use std::{collections::HashMap, fs::File, sync::Arc};
 
 use zip::{
     read::{ZipArchive, ZipFile},
@@ -123,7 +119,7 @@ impl<'a> From<ZipFile<'a>> for FileSpan {
 }
 
 pub(crate) struct Archive {
-    file: File,
+    file: Arc<File>,
     members: HashMap<String, FileSpan>,
     version: [u32; 2],
     pre_release: Option<String>,
@@ -152,7 +148,7 @@ impl Archive {
             ));
         };
         Ok(Self {
-            file: zip_archive.into_inner(),
+            file: zip_archive.into_inner().into(),
             members,
             version,
             pre_release,
@@ -174,14 +170,12 @@ impl Archive {
             .copied()
     }
 
-    pub fn open(&self, name: &str) -> Result<SubFile<File>, Error> {
+    pub fn open(&self, name: &str) -> Result<SubFile, Error> {
         let span = self
             .members
             .get(name)
             .ok_or_else(|| Error::ZipMemberMissing(name.to_owned()))?;
-        let mut f = self.file.try_clone()?;
-        f.seek(SeekFrom::Start(span.offset))?;
-        Ok(SubFile::new(f, span.size)?)
+        Ok(SubFile::new(self.file.clone(), span.offset, span.size)?)
     }
 }
 

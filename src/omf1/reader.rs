@@ -2,6 +2,7 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
+    sync::Arc,
 };
 
 use flate2::bufread::ZlibDecoder;
@@ -20,7 +21,7 @@ use super::{
 /// The OMF1 file loader.
 #[derive(Debug)]
 pub struct Omf1Reader {
-    file: File,
+    file: Arc<File>,
     project: Key<Project>,
     models: HashMap<String, Model>,
     version: String,
@@ -40,7 +41,7 @@ impl Omf1Reader {
         let models: HashMap<String, Model> =
             serde_json::from_reader(&mut file).map_err(Omf1Error::DeserializationFailed)?;
         Ok(Self {
-            file,
+            file: file.into(),
             project,
             models,
             version,
@@ -69,10 +70,9 @@ impl Omf1Reader {
     }
 
     pub fn image(&self, array: &Image) -> Result<impl Read, Error> {
-        let mut f = self.file.try_clone()?;
-        f.seek(SeekFrom::Start(array.start))?;
         Ok(ZlibDecoder::new(BufReader::new(SubFile::new(
-            f,
+            self.file.clone(),
+            array.start,
             array.length,
         )?)))
     }
@@ -81,9 +81,12 @@ impl Omf1Reader {
         &self,
         array: &Array,
     ) -> Result<impl Iterator<Item = Result<u8, std::io::Error>>, Error> {
-        let mut f = self.file.try_clone()?;
-        f.seek(SeekFrom::Start(array.start))?;
-        Ok(ZlibDecoder::new(BufReader::new(SubFile::new(f, array.length)?)).bytes())
+        Ok(ZlibDecoder::new(BufReader::new(SubFile::new(
+            self.file.clone(),
+            array.start,
+            array.length,
+        )?))
+        .bytes())
     }
 }
 
