@@ -1,5 +1,3 @@
-use omf;
-
 pub fn main() {
     write().unwrap();
     read().unwrap();

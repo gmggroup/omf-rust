@@ -100,7 +100,7 @@ fn write() {
         [],
     ));
     project.elements.push(element);
-    project.description = "The Stanford bunny, as an octree block model.".to_owned();
+    "The Stanford bunny, as an octree block model.".clone_into(&mut project.description);
     writer.finish(project).unwrap();
 }
 

@@ -16,7 +16,7 @@ fn write() {
     let mut triangles: Vec<[u32; 3]> = Vec::new();
     for line in std::io::BufReader::new(File::open("./examples/bunny/bunny.obj").unwrap()).lines() {
         let line = line.unwrap();
-        if line.starts_with("v") {
+        if line.starts_with('v') {
             vertices.push(iter_to_array(
                 line.split_whitespace().skip(1).map(|s| s.parse().unwrap()),
             ));
@@ -39,8 +39,8 @@ fn write() {
             triangles: writer.array_triangles(triangles.iter().copied()).unwrap(),
         },
     ));
-    project.description =
-        "The Stanford bunny, with the holes patched, and rotated to make Z up.".to_owned();
+    "The Stanford bunny, with the holes patched, and rotated to make Z up."
+        .clone_into(&mut project.description);
     project.metadata.insert(
         "source".to_owned(),
         "Stanford University Computer Graphics Laboratory".into(),
