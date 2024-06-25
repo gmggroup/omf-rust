@@ -1,5 +1,3 @@
-use std::fs::File;
-
 use crate::{
     array_type,
     data::*,
@@ -12,10 +10,7 @@ use crate::{
 use super::{super::Reader, schemas};
 
 impl Reader {
-    fn array_reader(
-        &self,
-        array: &Array<impl ArrayType>,
-    ) -> Result<PqArrayReader<SubFile<File>>, Error> {
+    fn array_reader(&self, array: &Array<impl ArrayType>) -> Result<PqArrayReader<SubFile>, Error> {
         let f = self.array_bytes_reader(array)?;
         let reader = PqArrayReader::new(f)?;
         if array.item_count() != reader.len() {

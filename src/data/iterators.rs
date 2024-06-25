@@ -1,4 +1,4 @@
-use std::{fmt::Display, fs::File};
+use std::fmt::Display;
 
 use chrono::{DateTime, NaiveDate, Utc};
 
@@ -241,14 +241,11 @@ impl Iterator for Vectors {
 #[derive(Debug)]
 pub struct GenericBoundaries<T: NumberType> {
     value: BoundaryValues<T>,
-    inclusive: SimpleIter<bool, SubFile<File>>,
+    inclusive: SimpleIter<bool, SubFile>,
 }
 
 impl<T: NumberType> GenericBoundaries<T> {
-    pub fn new(
-        value: SimpleIter<T, SubFile<File>>,
-        inclusive: SimpleIter<bool, SubFile<File>>,
-    ) -> Self {
+    pub fn new(value: SimpleIter<T, SubFile>, inclusive: SimpleIter<bool, SubFile>) -> Self {
         Self {
             value: BoundaryValues::new(value),
             inclusive,

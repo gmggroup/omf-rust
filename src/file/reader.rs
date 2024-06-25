@@ -86,7 +86,6 @@ impl Default for Limits {
 /// > where data is maliciously crafted to expand to an excessive size when decompressed,
 /// > leading to a potential denial of service attack.
 /// > Use the limits provided check arrays sizes before allocating memory.
-
 pub struct Reader {
     archive: Archive,
     version: [u32; 2],
@@ -175,7 +174,7 @@ impl Reader {
     pub fn array_bytes_reader(
         &self,
         array: &array::Array<impl array::ArrayType>,
-    ) -> Result<SubFile<File>, Error> {
+    ) -> Result<SubFile, Error> {
         array.constraint(); // Check that validation has been done.
         self.archive.open(array.filename())
     }
