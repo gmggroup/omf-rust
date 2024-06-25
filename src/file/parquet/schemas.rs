@@ -1,4 +1,4 @@
-use std::{fs::File, sync::OnceLock};
+use std::sync::OnceLock;
 
 use crate::{
     file::SubFile,
@@ -23,7 +23,7 @@ macro_rules! declare_schema {
             }
 
             pub fn check(
-                reader: &PqArrayReader<SubFile<File>>,
+                reader: &PqArrayReader<SubFile>,
             ) -> Result<$name, crate::error::Error> {
                 reader.matches(Self::matcher())
             }
