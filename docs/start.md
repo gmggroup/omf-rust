@@ -39,16 +39,16 @@ See the [C API documentation](c/index.md).
 This is a work in progress. To contribute to building Python bindings, in the project root:
 
 ```sh
+cd omf-python
 python3 -m venv venv
 pip install -r requirements.txt
 source venv/bin/activate
 maturin develop
 ```
 
-You can then interact with the Python API (update these instructions for other platforms).
+You can then interact with the Python API locally like this:
 
 ```sh
-cp target/debug/libomf_python.so omf_python.so
 $ python
 
 Python 3.12.5 (main, Aug  6 2024, 19:08:49) [GCC 11.4.0] on linux
@@ -59,6 +59,14 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> file_info.project_description
 'The Stanford bunny, as an octree block model.'
 ```
+
+You can build a release version using:
+
+```sh
+maturin build --release
+```
+
+This will create a wheel in `./target/wheels`
 
 
 ## Write Your Own
