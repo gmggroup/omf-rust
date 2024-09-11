@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - master
+      - testing-pyo3-bindings
     tags:
       - '*'
   pull_request:
