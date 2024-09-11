@@ -18,7 +18,7 @@ The JSON data refers to each data file by name,
 and contains details for linking them together into rich objects.
 Images may use PNG or JPEG encoding, while arrays use Apache Parquet encoding.
 
-> WARNING: 
+> WARNING:
 > When reading OMF files, beware of "zip bombs" where data is maliciously crafted to expand to an
 > excessive size when decompressed, leading to a potential denial of service attack.
 > Use the limits provided by the C and Rust APIs, and check sizes before allocating memory.
@@ -36,7 +36,29 @@ See the [C API documentation](c/index.md).
 
 ## Python API
 
-Not yet written.
+This is a work in progress. To contribute to building Python bindings, in the project root:
+
+```sh
+python3 -m venv venv
+pip install -r requirements.txt
+source venv/bin/activate
+maturin develop
+```
+
+You can then interact with the Python API
+
+```sh
+cp target/debug/libomf_python.so omf_python.so
+$ python
+
+Python 3.12.5 (main, Aug  6 2024, 19:08:49) [GCC 11.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import omf_python
+>>> reader = omf_python.PyReader("examples/bunny_blocks/bunny_blocks.omf")
+>>> file_info = reader.get_file_info()
+>>> file_info.project_description
+'The Stanford bunny, as an octree block model.'
+```
 
 
 ## Write Your Own
@@ -55,6 +77,6 @@ You will probably want to start by finding good libraries for:
 - Apache Parquet compression and decompression.
 - Reading and writing PNG and JPEG images.
 
-> WARNING: 
+> WARNING:
 > Make sure that these libraries are secure against malicious data,
 > and keep track of any security updates for them.

@@ -14,6 +14,7 @@ chrono.workspace = true
 flate2.workspace = true
 image = { workspace = true, optional = true }
 parquet = { workspace = true, optional = true }
+pyo3 = "0.22.2"
 schemars.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -32,7 +33,7 @@ parquet = ["dep:parquet", "dep:bytes"]
 omf1 = ["parquet"]
 
 [workspace]
-members = ["omf-c"]
+members = ["omf-c", "omf-python"]
 
 [workspace.dependencies]
 bytes = "1"

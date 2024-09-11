@@ -1,0 +1,2 @@
+maturin>=1,<2
+patchelf>=0.17
