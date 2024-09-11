@@ -1,8 +1,7 @@
-use std::fs::File;
 use omf::file::Reader;
+use std::fs::File;
 
 use pyo3::prelude::*;
-
 
 #[pyclass]
 pub struct PyReader {
@@ -19,7 +18,10 @@ impl PyReader {
     }
 
     fn get_file_info(&self) -> PyResult<PyFileInfo> {
-        let (project, problems) = self.inner.project().map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
+        let (project, problems) = self
+            .inner
+            .project()
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
 
         if !problems.is_empty() {
             println!("Warnings while reading project: {:?}", problems);

@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 mod file;
 
-use file::reader::{PyReader, PyFileInfo};
+use file::reader::{PyFileInfo, PyReader};
 
 #[pymodule]
 fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
