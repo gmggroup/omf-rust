@@ -45,7 +45,7 @@ source venv/bin/activate
 maturin develop
 ```
 
-You can then interact with the Python API
+You can then interact with the Python API (update these instructions for other platforms).
 
 ```sh
 cp target/debug/libomf_python.so omf_python.so
