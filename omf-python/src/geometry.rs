@@ -14,7 +14,7 @@ pub struct PyGeometry {
 #[pymethods]
 impl PyGeometry {
 
-    fn get_type(&self) -> String {
+    fn type_name(&self) -> String {
         //self.inner.type_name().clone()
         match &self.inner {
             Geometry::PointSet(_) => "PointSet".to_string(),
