@@ -7,6 +7,6 @@ pub fn detect_omf1(path: String) -> PyResult<bool> {
     let path = Path::new(&path);
     match detect_open(path) {
         Ok(result) => Ok(result),
-        Err(e) => Err(PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))
+        Err(e) => Err(PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string())),
     }
 }

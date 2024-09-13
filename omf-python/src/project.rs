@@ -23,10 +23,11 @@ impl PyProject {
 
     #[getter]
     fn elements(&self) -> PyResult<Vec<PyElement>> {
-        Ok(self.inner.elements.iter()
-        .map(|e| PyElement { inner: e.clone() })
-        .collect())
+        Ok(self
+            .inner
+            .elements
+            .iter()
+            .map(|e| PyElement { inner: e.clone() })
+            .collect())
     }
-
 }
-
