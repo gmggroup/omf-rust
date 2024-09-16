@@ -19,10 +19,8 @@ impl PyElement {
     }
     #[getter]
     fn geometry(&self) -> PyResult<PyGeometry> {
-        Ok(
-            PyGeometry {
-                inner: self.inner.geometry.clone()
-            }
-        )
+        Ok(PyGeometry {
+            inner: self.inner.geometry.clone(),
+        })
     }
 }

@@ -5,7 +5,6 @@ use omf::{Geometry, PointSet};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
-
 #[pyclass(name = "Geometry")]
 pub struct PyGeometry {
     pub inner: Geometry,
@@ -13,8 +12,7 @@ pub struct PyGeometry {
 
 #[pymethods]
 impl PyGeometry {
-
-    fn get_type(&self) -> String {
+    fn type_name(&self) -> String {
         //self.inner.type_name().clone()
         match &self.inner {
             Geometry::PointSet(_) => "PointSet".to_string(),
@@ -29,7 +27,9 @@ impl PyGeometry {
 
     fn get_object(&self) -> PyResult<PyPointSet> {
         match &self.inner {
-            Geometry::PointSet(point_set) => Ok(PyPointSet { inner: point_set.clone() }),
+            Geometry::PointSet(point_set) => Ok(PyPointSet {
+                inner: point_set.clone(),
+            }),
             _ => Err(PyValueError::new_err("Geometry is not a PointSet")),
         }
     }
@@ -42,7 +42,6 @@ pub struct PyPointSet {
 
 #[pymethods]
 impl PyPointSet {
-
     fn get_origin(&self) -> [f64; 3] {
         //  basic types don't need .clone()
         self.inner.origin

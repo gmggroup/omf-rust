@@ -70,6 +70,6 @@ impl PyFileInfo {
     }
     #[getter]
     fn version(&self) -> PyResult<(u32, u32)> {
-        Ok(self.version.clone().into())
+        Ok(self.version.into())
     }
 }
