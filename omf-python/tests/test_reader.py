@@ -1,5 +1,4 @@
 import omf_python
-import pytest
 from os import path
 from unittest import TestCase
 
@@ -23,9 +22,9 @@ class TestReader(TestCase):
         incorrect_location = path.join(self.examples_dir, "testfilenotfound.omf")
 
         # When
-        with pytest.raises(OSError) as exception:
-            reader = omf_python.Reader(incorrect_location)
+        with self.assertRaises(OSError) as context:
+            omf_python.Reader(incorrect_location)
 
         # Then
-        self.assertEqual(str(exception.value), "No such file or directory (os error 2)")
+        self.assertEqual(str(context.exception), "No such file or directory (os error 2)")
 
