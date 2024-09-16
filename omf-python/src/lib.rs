@@ -2,6 +2,7 @@
 use pyo3::prelude::*;
 
 mod attribute;
+mod array;
 mod element;
 mod file;
 mod geometry;
@@ -9,6 +10,7 @@ mod omf1;
 mod project;
 
 use attribute::PyAttribute;
+use array::PyArrayVertex;
 use element::PyElement;
 use file::reader::{PyFileInfo, PyReader};
 use geometry::{PyGeometry, PyPointSet};
@@ -18,6 +20,7 @@ use project::PyProject;
 #[pymodule]
 fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttribute>()?;
+    m.add_class::<PyArrayVertex>()?;
     m.add_class::<PyElement>()?;
     m.add_class::<PyGeometry>()?;
     m.add_class::<PyPointSet>()?;

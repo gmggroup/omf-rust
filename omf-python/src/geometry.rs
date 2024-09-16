@@ -1,5 +1,6 @@
 //use omf::data::Vertices;
 
+use crate::array::PyArrayVertex;
 use crate::file::reader::PyReader;
 use omf::{array_type, Geometry, PointSet};
 // use omf::{Geometry, PointSet};
@@ -44,12 +45,18 @@ pub struct PyPointSet {
 
 #[pymethods]
 impl PyPointSet {
+
     #[getter]
     fn origin(&self) -> [f64; 3] {
         self.inner.origin
     }
 
-    fn get_vertices(&self, reader: &PyReader) -> PyResult<Vec<[f64; 3]>> {
+    #[getter]
+    fn vertices(&self) -> PyResult<PyArrayVertex> {
+        Ok(PyArrayVertex{ inner: self.inner.vertices.clone() })
+    }
+
+    fn read_vertices(&self, reader: &PyReader) -> PyResult<Vec<[f64; 3]>> {
         let vertices = reader
             .inner
             .array_vertices(&self.inner.vertices)
