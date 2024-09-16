@@ -32,6 +32,4 @@ impl PyReader {
 
         Ok(PyProject { inner: project })
     }
-
 }
-
