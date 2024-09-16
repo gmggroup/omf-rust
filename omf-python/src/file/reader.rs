@@ -14,11 +14,11 @@ pub struct PyReader {
 impl PyReader {
     #[new]
     pub fn new(filepath: &str) -> PyResult<Self> {
-        let reader = Reader::new(File::open(filepath).unwrap())
+        let file = File::open(filepath)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
-        Ok(PyReader {
-            inner: reader,
-        })
+        let reader = Reader::new(file)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+        Ok(PyReader { inner: reader })
     }
 
     #[getter]
