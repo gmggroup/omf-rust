@@ -1,11 +1,9 @@
 //use omf::data::Vertices;
 
 use crate::array::PyArrayVertex;
-use crate::file::reader::PyReader;
-use omf::{array_type, Geometry, PointSet};
-// use omf::{Geometry, PointSet};
+use omf::{Geometry, PointSet};
 
-use pyo3::exceptions::{PyIOError, PyValueError};
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 #[pyclass(name = "Geometry")]
@@ -55,27 +53,5 @@ impl PyPointSet {
         Ok(PyArrayVertex {
             inner: self.inner.vertices.clone(),
         })
-    }
-
-    fn read_vertices(&self, reader: &PyReader) -> PyResult<Vec<[f64; 3]>> {
-        let vertices = reader
-            .inner
-            .array_vertices(&self.inner.vertices)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
-        vertices
-            .map(|result| result.map(|[x, y, z]| [x, y, z]))
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
-    }
-
-    fn vertices_info(&self) -> PyResult<String> {
-        let vertices = &self.inner.vertices;
-        let vertex_count = vertices.item_count();
-        let vertex_type = std::any::type_name::<array_type::Vertex>();
-
-        Ok(format!(
-            "Vertices count: {}, Vertex type: {}",
-            vertex_count, vertex_type,
-        ))
     }
 }
