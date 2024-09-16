@@ -12,7 +12,7 @@ mod project;
 use array::PyArrayVertex;
 use attribute::PyAttribute;
 use element::PyElement;
-use file::reader::{PyFileInfo, PyReader};
+use file::reader::PyReader;
 use geometry::{PyGeometry, PyPointSet};
 use omf1::converter::is_omf1;
 use project::PyProject;
@@ -26,7 +26,6 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyPointSet>()?;
     m.add_class::<PyProject>()?;
     m.add_class::<PyReader>()?;
-    m.add_class::<PyFileInfo>()?;
 
     m.add_function(wrap_pyfunction!(is_omf1, m)?)?;
     Ok(())
