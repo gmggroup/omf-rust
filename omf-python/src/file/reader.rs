@@ -7,16 +7,18 @@ use pyo3::prelude::*;
 
 #[pyclass(name = "Reader")]
 pub struct PyReader {
-    inner: Reader,
+    pub inner: Reader,
 }
 
 #[pymethods]
 impl PyReader {
     #[new]
     pub fn new(filepath: &str) -> PyResult<Self> {
-        let inner = Reader::new(File::open(filepath).unwrap())
+        let reader = Reader::new(File::open(filepath).unwrap())
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
-        Ok(PyReader { inner })
+        Ok(PyReader {
+            inner: reader,
+        })
     }
 
     #[getter]
