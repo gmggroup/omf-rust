@@ -14,7 +14,9 @@ pub struct PyReader {
 impl PyReader {
     #[new]
     pub fn new(filepath: &str) -> PyResult<Self> {
-        let inner = Reader::new(File::open(filepath).unwrap())
+        let file = File::open(filepath)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+        let inner = Reader::new(file)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
         Ok(PyReader { inner })
     }
