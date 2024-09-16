@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use std::path::Path;
 
 #[pyfunction]
-pub fn detect_omf1(path: String) -> PyResult<bool> {
+pub fn is_omf1(path: String) -> PyResult<bool> {
     let path = Path::new(&path);
     match detect_open(path) {
         Ok(result) => Ok(result),

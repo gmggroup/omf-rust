@@ -10,7 +10,7 @@ mod project;
 use element::PyElement;
 use file::reader::{PyFileInfo, PyReader};
 use geometry::{PyGeometry, PyPointSet};
-use omf1::converter::detect_omf1;
+use omf1::converter::is_omf1;
 use project::PyProject;
 
 #[pymodule]
@@ -22,6 +22,6 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyReader>()?;
     m.add_class::<PyFileInfo>()?;
 
-    m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
+    m.add_function(wrap_pyfunction!(is_omf1, m)?)?;
     Ok(())
 }
