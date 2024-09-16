@@ -9,7 +9,6 @@ pub struct PyProject {
 
 #[pymethods]
 impl PyProject {
-
     #[getter]
     fn name(&self) -> String {
         self.inner.name.clone()

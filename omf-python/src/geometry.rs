@@ -44,19 +44,18 @@ pub struct PyPointSet {
 
 #[pymethods]
 impl PyPointSet {
-
     #[getter]
     fn origin(&self) -> [f64; 3] {
         self.inner.origin
     }
 
     fn get_vertices(&self, reader: &PyReader) -> PyResult<Vec<[f64; 3]>> {
-        let vertices = reader.inner.array_vertices(&self.inner.vertices)
+        let vertices = reader
+            .inner
+            .array_vertices(&self.inner.vertices)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
         vertices
-            .map(|result| {
-                result.map(|[x, y, z]| [x, y, z])
-            })
+            .map(|result| result.map(|[x, y, z]| [x, y, z]))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
@@ -71,5 +70,4 @@ impl PyPointSet {
             vertex_count, vertex_type,
         ))
     }
-
 }
