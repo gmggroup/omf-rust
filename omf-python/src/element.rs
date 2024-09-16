@@ -10,7 +10,6 @@ pub struct PyElement {
 
 #[pymethods]
 impl PyElement {
-
     #[getter]
     fn name(&self) -> PyResult<String> {
         Ok(self.inner.name.clone())
@@ -37,5 +36,4 @@ impl PyElement {
             inner: self.inner.geometry.clone(),
         })
     }
-
 }

@@ -5,4 +5,3 @@ use pyo3::prelude::*;
 pub struct PyArrayVertex {
     pub inner: Array<array_type::Vertex>,
 }
-

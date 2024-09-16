@@ -45,7 +45,6 @@ pub struct PyPointSet {
 
 #[pymethods]
 impl PyPointSet {
-
     #[getter]
     fn origin(&self) -> [f64; 3] {
         self.inner.origin
@@ -53,7 +52,9 @@ impl PyPointSet {
 
     #[getter]
     fn vertices(&self) -> PyResult<PyArrayVertex> {
-        Ok(PyArrayVertex{ inner: self.inner.vertices.clone() })
+        Ok(PyArrayVertex {
+            inner: self.inner.vertices.clone(),
+        })
     }
 
     fn read_vertices(&self, reader: &PyReader) -> PyResult<Vec<[f64; 3]>> {

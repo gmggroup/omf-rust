@@ -1,16 +1,16 @@
 /// Python bindings.
 use pyo3::prelude::*;
 
-mod attribute;
 mod array;
+mod attribute;
 mod element;
 mod file;
 mod geometry;
 mod omf1;
 mod project;
 
-use attribute::PyAttribute;
 use array::PyArrayVertex;
+use attribute::PyAttribute;
 use element::PyElement;
 use file::reader::{PyFileInfo, PyReader};
 use geometry::{PyGeometry, PyPointSet};

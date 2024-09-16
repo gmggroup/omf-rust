@@ -8,7 +8,6 @@ pub struct PyAttribute {
 
 #[pymethods]
 impl PyAttribute {
-
     #[getter]
     fn name(&self) -> String {
         self.inner.name.clone()
@@ -38,12 +37,12 @@ impl PyAttribute {
             Location::Elements => "Elements",
             Location::Projected => "Projected",
             Location::Categories => "Categories",
-        }.to_string())
+        }
+        .to_string())
     }
 
     #[getter]
     fn data(&self) -> PyResult<String> {
         Ok("Hello world".to_string())
     }
-
 }
