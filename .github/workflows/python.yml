@@ -40,6 +40,17 @@ jobs:
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: omf-python/dist
+      - name: pytest
+        working-directory: ./omf-python
+        if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
+        shell: bash
+        run: |
+          set -e
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install omf_python --find-links dist --force-reinstall
+          pip install pytest
+          pytest
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
