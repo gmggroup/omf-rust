@@ -9,16 +9,40 @@ pub struct PyProject {
 
 #[pymethods]
 impl PyProject {
-    #[new]
-    pub fn new(name: String) -> Self {
-        PyProject {
-            inner: Project::new(name),
-        }
+
+    #[getter]
+    fn name(&self) -> String {
+        self.inner.name.clone()
     }
 
     #[getter]
-    fn name(&self) -> PyResult<String> {
-        Ok(self.inner.name.clone())
+    fn description(&self) -> String {
+        self.inner.description.clone()
+    }
+
+    #[getter]
+    fn coordinate_reference_system(&self) -> String {
+        self.inner.coordinate_reference_system.clone()
+    }
+
+    #[getter]
+    fn units(&self) -> String {
+        self.inner.units.clone()
+    }
+
+    #[getter]
+    fn origin(&self) -> [f64; 3] {
+        self.inner.origin
+    }
+
+    #[getter]
+    fn author(&self) -> String {
+        self.inner.author.clone()
+    }
+
+    #[getter]
+    fn application(&self) -> String {
+        self.inner.application.clone()
     }
 
     #[getter]
