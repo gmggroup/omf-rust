@@ -11,6 +11,17 @@ impl PyVertexArray {
     }
 }
 
+#[pyclass(name = "SegmentArray")]
+pub struct PySegmentArray(pub Array<array_type::Segment>);
+
+#[pymethods]
+impl PySegmentArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
+
 #[pyclass(name = "IndexArray")]
 pub struct PyIndexArray(pub Array<array_type::Index>);
 #[pymethods]

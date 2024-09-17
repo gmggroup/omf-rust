@@ -1,7 +1,7 @@
 //use omf::data::Vertices;
 
-use crate::array::{PyTriangleArray, PyVertexArray};
-use omf::{Geometry, PointSet, Surface};
+use crate::array::{PySegmentArray, PyTriangleArray, PyVertexArray};
+use omf::{Geometry, LineSet, PointSet, Surface};
 
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -27,6 +27,7 @@ impl PyGeometry {
     fn get_object(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
             Geometry::PointSet(point_set) => Ok(PyPointSet(point_set.clone()).into_py(py)),
+            Geometry::LineSet(line_set) => Ok(PyLineSet(line_set.clone()).into_py(py)),
             Geometry::Surface(surface) => Ok(PySurface(surface.clone()).into_py(py)),
             _ => Err(PyValueError::new_err(format!(
                 "Geometry {} is not supported",
@@ -49,6 +50,27 @@ impl PyPointSet {
     #[getter]
     fn vertices(&self) -> PyResult<PyVertexArray> {
         Ok(PyVertexArray(self.0.vertices.clone()))
+    }
+}
+
+#[pyclass(name = "LineSet")]
+pub struct PyLineSet(LineSet);
+
+#[pymethods]
+impl PyLineSet {
+    #[getter]
+    fn origin(&self) -> [f64; 3] {
+        self.0.origin
+    }
+
+    #[getter]
+    fn vertices(&self) -> PyResult<PyVertexArray> {
+        Ok(PyVertexArray(self.0.vertices.clone()))
+    }
+
+    #[getter]
+    fn segments(&self) -> PyResult<PySegmentArray> {
+        Ok(PySegmentArray(self.0.segments.clone()))
     }
 }
 

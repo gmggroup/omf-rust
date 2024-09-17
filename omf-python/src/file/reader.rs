@@ -1,4 +1,4 @@
-use crate::array::{PyIndexArray, PyTriangleArray, PyVertexArray};
+use crate::array::{PyIndexArray, PySegmentArray, PyTriangleArray, PyVertexArray};
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;
@@ -35,6 +35,14 @@ impl PyReader {
     pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
         self.0
             .array_vertices(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    pub fn array_segments(&self, array: &PySegmentArray) -> PyResult<Vec<[u32; 2]>> {
+        self.0
+            .array_segments(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
