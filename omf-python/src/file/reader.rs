@@ -1,4 +1,4 @@
-use crate::array::PyArrayVertex;
+use crate::array::{PyArrayIndex, PyArrayVertex};
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;
@@ -39,6 +39,15 @@ impl PyReader {
             .array_vertices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    pub fn array_indices(&self, array: &PyArrayIndex) -> PyResult<Vec<Option<u32>>> {
+        self.inner
+            .array_indices(&array.inner)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .into_iter()
+            .collect::<Result<Vec<Option<u32>>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 }
