@@ -9,8 +9,8 @@ mod geometry;
 mod omf1;
 mod project;
 
-use array::PyArrayVertex;
-use attribute::PyAttribute;
+use array::{PyArrayIndex, PyArrayVertex};
+use attribute::{PyAttribute, PyAttributeDataCategory};
 use element::PyElement;
 use file::reader::PyReader;
 use geometry::{PyGeometry, PyPointSet};
@@ -20,6 +20,8 @@ use project::PyProject;
 #[pymodule]
 fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttribute>()?;
+    m.add_class::<PyAttributeDataCategory>()?;
+    m.add_class::<PyArrayIndex>()?;
     m.add_class::<PyArrayVertex>()?;
     m.add_class::<PyElement>()?;
     m.add_class::<PyGeometry>()?;
