@@ -1,4 +1,5 @@
 use omf::{Attribute, Location};
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 #[pyclass(name = "Attribute")]
@@ -24,8 +25,10 @@ impl PyAttribute {
     }
 
     #[getter]
-    fn metadata(&self) -> String {
-        "Hello world".to_string()
+    fn metadata(&self) -> PyResult<String> {
+        let metadata = serde_json::to_string(&self.inner.metadata)
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+        Ok(metadata)
     }
 
     #[getter]
@@ -43,6 +46,8 @@ impl PyAttribute {
 
     #[getter]
     fn data(&self) -> PyResult<String> {
-        Ok("Hello world".to_string())
+        let data = serde_json::to_string(&self.inner.data)
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+        Ok(data)
     }
 }
