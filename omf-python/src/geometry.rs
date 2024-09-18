@@ -1,7 +1,7 @@
 //use omf::data::Vertices;
 
-use crate::array::PyArrayVertex;
-use omf::{Geometry, PointSet};
+use crate::array::{PyArrayTriangle, PyArrayVertex};
+use omf::{Geometry, PointSet, Surface};
 
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -52,6 +52,33 @@ impl PyPointSet {
     fn vertices(&self) -> PyResult<PyArrayVertex> {
         Ok(PyArrayVertex {
             inner: self.inner.vertices.clone(),
+        })
+    }
+}
+
+#[pyclass(name = "Surface")]
+pub struct PySurface {
+    inner: Surface,
+}
+
+#[pymethods]
+impl PySurface {
+    #[getter]
+    fn origin(&self) -> [f64; 3] {
+        self.inner.origin
+    }
+
+    #[getter]
+    fn vertices(&self) -> PyResult<PyArrayVertex> {
+        Ok(PyArrayVertex {
+            inner: self.inner.vertices.clone(),
+        })
+    }
+
+    #[getter]
+    fn triangles(&self) -> PyResult<PyArrayTriangle> {
+        Ok(PyArrayTriangle {
+            inner: self.inner.triangles.clone(),
         })
     }
 }
