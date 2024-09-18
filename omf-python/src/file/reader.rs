@@ -1,4 +1,4 @@
-use crate::array::{PyArrayTriangle, PyArrayVertex, PyIndexArray};
+use crate::array::{PyArrayTriangle, PyIndexArray, PyVertexArray};
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;
@@ -34,7 +34,7 @@ impl PyReader {
         Ok(PyProject { inner: project })
     }
 
-    pub fn array_vertices(&self, array: &PyArrayVertex) -> PyResult<Vec<[f64; 3]>> {
+    pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
         self.inner
             .array_vertices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?

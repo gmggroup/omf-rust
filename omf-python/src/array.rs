@@ -1,12 +1,12 @@
 use omf::{array_type, Array};
 use pyo3::prelude::*;
 
-#[pyclass(name = "ArrayVertex")]
-pub struct PyArrayVertex {
+#[pyclass(name = "VertexArray")]
+pub struct PyVertexArray {
     pub inner: Array<array_type::Vertex>,
 }
 #[pymethods]
-impl PyArrayVertex {
+impl PyVertexArray {
     #[getter]
     fn item_count(&self) -> u64 {
         self.inner.item_count()
