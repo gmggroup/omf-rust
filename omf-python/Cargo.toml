@@ -1,0 +1,19 @@
+[package]
+name = "omf_python"
+version = "0.1.0"
+description = "Python bindings for the Rust OMF package."
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+omf = { path = ".." }
+pyo3 = { version = "0.22.2", features = ["extension-module"] }
+serde_json = "1.0"
+
+[build-dependencies]
+omf = { path = ".." }
+
+[lib]
+name = "omf_python"
+path = "src/lib.rs"
+crate-type = ["cdylib"]

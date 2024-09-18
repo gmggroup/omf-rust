@@ -22,3 +22,7 @@ Cargo.lock
 
 # Virtual environment for mkdocs
 /venv/
+
+# Virtual environment for python bindings
+/omf-python/venv
+/omf-python/tests/__pycache__/

@@ -4,7 +4,7 @@ use crate::{array_type, error::Error, Array};
 
 use super::{Limits, Reader, Writer};
 
-impl From<Limits> for image::io::Limits {
+impl From<Limits> for image::Limits {
     fn from(value: Limits) -> Self {
         let mut out = Self::no_limits();
         out.max_alloc = value.image_bytes;
@@ -18,7 +18,7 @@ impl Reader {
     /// Read and decode an image.
     pub fn image(&self, image: &Array<array_type::Image>) -> Result<image::DynamicImage, Error> {
         let f = BufReader::new(self.array_bytes_reader(image)?);
-        let mut reader = image::io::Reader::new(f).with_guessed_format()?;
+        let mut reader = image::ImageReader::new(f).with_guessed_format()?;
         reader.limits(self.limits().into());
         Ok(reader.decode()?)
     }

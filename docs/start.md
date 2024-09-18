@@ -18,7 +18,7 @@ The JSON data refers to each data file by name,
 and contains details for linking them together into rich objects.
 Images may use PNG or JPEG encoding, while arrays use Apache Parquet encoding.
 
-> WARNING: 
+> WARNING:
 > When reading OMF files, beware of "zip bombs" where data is maliciously crafted to expand to an
 > excessive size when decompressed, leading to a potential denial of service attack.
 > Use the limits provided by the C and Rust APIs, and check sizes before allocating memory.
@@ -36,7 +36,51 @@ See the [C API documentation](c/index.md).
 
 ## Python API
 
-Not yet written.
+This is a work in progress. To contribute to building Python bindings, in the project root:
+
+```sh
+cd omf-python
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+maturin develop
+```
+
+You can then interact with the Python API locally like this:
+
+```sh
+# Generate the one of everything omf:
+$ cargo test --all
+$ python
+
+Python 3.12.5 (main, Aug  6 2024, 19:08:49) [GCC 11.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import omf_python
+>>> reader = omf_python.Reader("../target/tmp/one_of_everything.omf")
+>>> for element in reader.project.elements:
+...     print(element.geometry.get_type())
+...
+Surface
+PointSet
+LineSet
+GridSurface
+BlockModel
+BlockModel
+BlockModel(sub-blocked)
+BlockModel(sub-blocked)
+Composite
+Surface
+>>> reader.project.elements[1].geometry.get_object().get_origin()
+[0.0, 0.0, 0.0]
+```
+
+You can build a release version using:
+
+```sh
+maturin build --release
+```
+
+This will create a wheel in `./target/wheels`
 
 
 ## Write Your Own
@@ -55,6 +99,6 @@ You will probably want to start by finding good libraries for:
 - Apache Parquet compression and decompression.
 - Reading and writing PNG and JPEG images.
 
-> WARNING: 
+> WARNING:
 > Make sure that these libraries are secure against malicious data,
 > and keep track of any security updates for them.
