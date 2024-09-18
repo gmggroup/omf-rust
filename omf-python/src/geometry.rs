@@ -1,5 +1,6 @@
-// pub use omf::array::Array;
-// use omf::array_type::Vertex;
+//use omf::data::Vertices;
+
+use crate::array::PyArrayVertex;
 use omf::{Geometry, PointSet};
 
 use pyo3::exceptions::PyValueError;
@@ -42,13 +43,15 @@ pub struct PyPointSet {
 
 #[pymethods]
 impl PyPointSet {
-    fn get_origin(&self) -> [f64; 3] {
-        //  basic types don't need .clone()
+    #[getter]
+    fn origin(&self) -> [f64; 3] {
         self.inner.origin
     }
 
-    // #[getter]
-    // fn get_vertices(&self) -> Vec<Array<Vertex>> {
-    //     self.inner.vertices
-    // }
+    #[getter]
+    fn vertices(&self) -> PyResult<PyArrayVertex> {
+        Ok(PyArrayVertex {
+            inner: self.inner.vertices.clone(),
+        })
+    }
 }
