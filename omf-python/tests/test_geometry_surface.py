@@ -3,7 +3,7 @@ from os import path
 from unittest import TestCase
 
 
-class TestReader(TestCase):
+class TestGeometrySurface(TestCase):
     def setUp(self) -> None:
         self.examples_dir = path.join(path.dirname(__file__), "../../examples")
 
