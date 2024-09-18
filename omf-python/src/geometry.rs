@@ -1,6 +1,6 @@
 //use omf::data::Vertices;
 
-use crate::array::{PyArrayTriangle, PyVertexArray};
+use crate::array::{PyTriangleArray, PyVertexArray};
 use omf::{Geometry, PointSet, Surface};
 
 use pyo3::exceptions::PyValueError;
@@ -84,8 +84,8 @@ impl PySurface {
     }
 
     #[getter]
-    fn triangles(&self) -> PyResult<PyArrayTriangle> {
-        Ok(PyArrayTriangle {
+    fn triangles(&self) -> PyResult<PyTriangleArray> {
+        Ok(PyTriangleArray {
             inner: self.inner.triangles.clone(),
         })
     }

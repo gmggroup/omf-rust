@@ -25,12 +25,12 @@ impl PyIndexArray {
     }
 }
 
-#[pyclass(name = "ArrayTriangle")]
-pub struct PyArrayTriangle {
+#[pyclass(name = "TriangleArray")]
+pub struct PyTriangleArray {
     pub inner: Array<array_type::Triangle>,
 }
 #[pymethods]
-impl PyArrayTriangle {
+impl PyTriangleArray {
     #[getter]
     fn item_count(&self) -> u64 {
         self.inner.item_count()
