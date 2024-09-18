@@ -10,3 +10,8 @@ pub struct PyArrayVertex {
 pub struct PyArrayIndex {
     pub inner: Array<array_type::Index>,
 }
+
+#[pyclass(name = "ArrayTriangle")]
+pub struct PyArrayTriangle {
+    pub inner: Array<array_type::Triangle>,
+}

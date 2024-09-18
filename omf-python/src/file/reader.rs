@@ -1,4 +1,4 @@
-use crate::array::{PyArrayIndex, PyArrayVertex};
+use crate::array::{PyArrayIndex, PyArrayTriangle, PyArrayVertex};
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;
@@ -47,6 +47,14 @@ impl PyReader {
             .array_indices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<Option<u32>>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    pub fn array_triangles(&self, array: &PyArrayTriangle) -> PyResult<Vec<[u32; 3]>> {
+        self.inner
+            .array_triangles(&array.inner)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 }
