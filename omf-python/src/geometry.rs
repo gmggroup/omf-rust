@@ -1,5 +1,3 @@
-//use omf::data::Vertices;
-
 use crate::array::{PySegmentArray, PyTriangleArray, PyVertexArray};
 use omf::{LineSet, PointSet, Surface};
 
