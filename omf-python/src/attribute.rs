@@ -31,8 +31,8 @@ impl PyAttribute {
     }
 
     #[getter]
-    fn location(&self) -> PyResult<String> {
-        Ok(match self.0.location {
+    fn location(&self) -> String {
+        match self.0.location {
             Location::Vertices => "Vertices",
             Location::Primitives => "Primitives",
             Location::Subblocks => "Subblocks",
@@ -40,7 +40,7 @@ impl PyAttribute {
             Location::Projected => "Projected",
             Location::Categories => "Categories",
         }
-        .to_string())
+        .to_string()
     }
 
     #[getter]

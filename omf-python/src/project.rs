@@ -43,12 +43,11 @@ impl PyProject {
     }
 
     #[getter]
-    fn elements(&self) -> PyResult<Vec<PyElement>> {
-        Ok(self
-            .0
+    fn elements(&self) -> Vec<PyElement> {
+        self.0
             .elements
             .iter()
             .map(|e| PyElement(e.clone()))
-            .collect())
+            .collect()
     }
 }

@@ -9,27 +9,26 @@ pub struct PyElement(pub Element);
 #[pymethods]
 impl PyElement {
     #[getter]
-    fn name(&self) -> PyResult<String> {
-        Ok(self.0.name.clone())
+    fn name(&self) -> String {
+        self.0.name.clone()
     }
 
     #[getter]
-    fn description(&self) -> PyResult<String> {
-        Ok(self.0.description.clone())
+    fn description(&self) -> String {
+        self.0.description.clone()
     }
 
     #[getter]
-    fn attributes(&self) -> PyResult<Vec<PyAttribute>> {
-        Ok(self
-            .0
+    fn attributes(&self) -> Vec<PyAttribute> {
+        self.0
             .attributes
             .iter()
             .map(|a| PyAttribute(a.clone()))
-            .collect())
+            .collect()
     }
 
     #[getter]
-    fn geometry(&self) -> PyResult<PyGeometry> {
-        Ok(PyGeometry(self.0.geometry.clone()))
+    fn geometry(&self) -> PyGeometry {
+        PyGeometry(self.0.geometry.clone())
     }
 }

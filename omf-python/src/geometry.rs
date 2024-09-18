@@ -48,8 +48,8 @@ impl PyPointSet {
     }
 
     #[getter]
-    fn vertices(&self) -> PyResult<PyVertexArray> {
-        Ok(PyVertexArray(self.0.vertices.clone()))
+    fn vertices(&self) -> PyVertexArray {
+        PyVertexArray(self.0.vertices.clone())
     }
 }
 
@@ -64,13 +64,13 @@ impl PyLineSet {
     }
 
     #[getter]
-    fn vertices(&self) -> PyResult<PyVertexArray> {
-        Ok(PyVertexArray(self.0.vertices.clone()))
+    fn vertices(&self) -> PyVertexArray {
+        PyVertexArray(self.0.vertices.clone())
     }
 
     #[getter]
-    fn segments(&self) -> PyResult<PySegmentArray> {
-        Ok(PySegmentArray(self.0.segments.clone()))
+    fn segments(&self) -> PySegmentArray {
+        PySegmentArray(self.0.segments.clone())
     }
 }
 
@@ -85,12 +85,12 @@ impl PySurface {
     }
 
     #[getter]
-    fn vertices(&self) -> PyResult<PyVertexArray> {
-        Ok(PyVertexArray(self.0.vertices.clone()))
+    fn vertices(&self) -> PyVertexArray {
+        PyVertexArray(self.0.vertices.clone())
     }
 
     #[getter]
-    fn triangles(&self) -> PyResult<PyTriangleArray> {
-        Ok(PyTriangleArray(self.0.triangles.clone()))
+    fn triangles(&self) -> PyTriangleArray {
+        PyTriangleArray(self.0.triangles.clone())
     }
 }
