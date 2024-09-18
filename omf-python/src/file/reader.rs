@@ -1,4 +1,5 @@
 use crate::array::{PyIndexArray, PySegmentArray, PyTriangleArray, PyVertexArray};
+use crate::element::PyColor;
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;

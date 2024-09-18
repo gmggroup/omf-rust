@@ -48,3 +48,27 @@ class TestGeometrySurface(TestCase):
             [0, 3, 2],
         ]
         self.assertEqual(TRIANGLES, triangles)
+
+    def test_should_contain_color(self) -> None:
+        # Given the pyramid sample omf file
+        omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
+
+        # When
+        reader = omf_python.Reader(omf_file)
+
+        # Then there is one surface element
+        surfaces = [
+            s for s in reader.project.elements if s.geometry.type_name() == "Surface"
+        ]
+        self.assertEqual(1, len(surfaces))
+
+        # And it has the correct type of omf_python.Surface
+        surface = surfaces[0].geometry.get_object()
+        self.assertIsInstance(surface, omf_python.Surface)
+
+        # And it has the correct color
+        color = surfaces[0].color
+        self.assertEqual(255, color.red)
+        self.assertEqual(255, color.green)
+        self.assertEqual(0, color.blue)
+        self.assertEqual(255, color.alpha)
