@@ -46,7 +46,6 @@ impl PyReader {
         self.inner
             .array_indices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
-            .into_iter()
             .collect::<Result<Vec<Option<u32>>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
