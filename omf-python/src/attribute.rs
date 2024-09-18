@@ -1,4 +1,4 @@
-use crate::array::PyArrayIndex;
+use crate::array::PyIndexArray;
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -73,9 +73,9 @@ pub struct PyAttributeDataCategory {
 #[pymethods]
 impl PyAttributeDataCategory {
     #[getter]
-    fn values(&self) -> PyResult<PyArrayIndex> {
+    fn values(&self) -> PyResult<PyIndexArray> {
         match &self.inner {
-            AttributeData::Category { values, .. } => Ok(PyArrayIndex {
+            AttributeData::Category { values, .. } => Ok(PyIndexArray {
                 inner: values.clone(),
             }),
             _ => Err(PyValueError::new_err(

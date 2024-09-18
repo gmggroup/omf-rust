@@ -13,12 +13,12 @@ impl PyArrayVertex {
     }
 }
 
-#[pyclass(name = "ArrayIndex")]
-pub struct PyArrayIndex {
+#[pyclass(name = "IndexArray")]
+pub struct PyIndexArray {
     pub inner: Array<array_type::Index>,
 }
 #[pymethods]
-impl PyArrayIndex {
+impl PyIndexArray {
     #[getter]
     fn item_count(&self) -> u64 {
         self.inner.item_count()
