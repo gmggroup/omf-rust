@@ -4,36 +4,32 @@ use omf::Element;
 use pyo3::prelude::*;
 
 #[pyclass(name = "Element")]
-pub struct PyElement {
-    pub inner: Element,
-}
+pub struct PyElement(pub Element);
 
 #[pymethods]
 impl PyElement {
     #[getter]
     fn name(&self) -> PyResult<String> {
-        Ok(self.inner.name.clone())
+        Ok(self.0.name.clone())
     }
 
     #[getter]
     fn description(&self) -> PyResult<String> {
-        Ok(self.inner.description.clone())
+        Ok(self.0.description.clone())
     }
 
     #[getter]
     fn attributes(&self) -> PyResult<Vec<PyAttribute>> {
         Ok(self
-            .inner
+            .0
             .attributes
             .iter()
-            .map(|a| PyAttribute { inner: a.clone() })
+            .map(|a| PyAttribute(a.clone()))
             .collect())
     }
 
     #[getter]
     fn geometry(&self) -> PyResult<PyGeometry> {
-        Ok(PyGeometry {
-            inner: self.inner.geometry.clone(),
-        })
+        Ok(PyGeometry(self.0.geometry.clone()))
     }
 }
