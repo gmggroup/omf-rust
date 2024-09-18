@@ -26,12 +26,20 @@ impl PyGeometry {
         }
     }
 
-    fn get_object(&self) -> PyResult<PyPointSet> {
+    fn get_object(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.inner {
             Geometry::PointSet(point_set) => Ok(PyPointSet {
                 inner: point_set.clone(),
-            }),
-            _ => Err(PyValueError::new_err("Geometry is not a PointSet")),
+            }
+            .into_py(py)),
+            Geometry::Surface(surface) => Ok(PySurface {
+                inner: surface.clone(),
+            }
+            .into_py(py)),
+            _ => Err(PyValueError::new_err(format!(
+                "Geometry {} is not supported",
+                self.type_name()
+            ))),
         }
     }
 }
