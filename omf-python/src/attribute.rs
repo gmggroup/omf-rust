@@ -79,7 +79,7 @@ impl PyAttributeDataCategory {
                 inner: values.clone(),
             }),
             _ => Err(PyValueError::new_err(
-                "Trying to access something that is not supported",
+                "AttributeData variant is not supported",
             )),
         }
     }
@@ -92,7 +92,7 @@ impl PyAttributeDataCategory {
                 .map(|a| PyAttribute { inner: a.clone() })
                 .collect()),
             _ => Err(PyValueError::new_err(
-                "Trying to access something that is not supported",
+                "AttributeData variant is not supported",
             )),
         }
     }
