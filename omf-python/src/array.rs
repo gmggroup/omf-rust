@@ -41,3 +41,13 @@ impl PyTriangleArray {
         self.0.item_count()
     }
 }
+
+#[pyclass(name = "ColorArray")]
+pub struct PyColorArray(pub Array<array_type::Color>);
+#[pymethods]
+impl PyColorArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
