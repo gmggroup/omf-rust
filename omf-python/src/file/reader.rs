@@ -1,4 +1,4 @@
-use crate::array::{PyArrayIndex, PyArrayTriangle, PyArrayVertex};
+use crate::array::{PyIndexArray, PyTriangleArray, PyVertexArray};
 use crate::PyProject;
 use omf::file::Reader;
 use std::fs::File;
@@ -34,7 +34,7 @@ impl PyReader {
         Ok(PyProject { inner: project })
     }
 
-    pub fn array_vertices(&self, array: &PyArrayVertex) -> PyResult<Vec<[f64; 3]>> {
+    pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
         self.inner
             .array_vertices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
@@ -42,7 +42,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
-    pub fn array_indices(&self, array: &PyArrayIndex) -> PyResult<Vec<Option<u32>>> {
+    pub fn array_indices(&self, array: &PyIndexArray) -> PyResult<Vec<Option<u32>>> {
         self.inner
             .array_indices(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
@@ -50,7 +50,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
-    pub fn array_triangles(&self, array: &PyArrayTriangle) -> PyResult<Vec<[u32; 3]>> {
+    pub fn array_triangles(&self, array: &PyTriangleArray) -> PyResult<Vec<[u32; 3]>> {
         self.inner
             .array_triangles(&array.inner)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
