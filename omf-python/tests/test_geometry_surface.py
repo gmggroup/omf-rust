@@ -7,7 +7,7 @@ class TestGeometrySurface(TestCase):
     def setUp(self) -> None:
         self.examples_dir = path.join(path.dirname(__file__), "../../examples")
 
-    def test_should_contain_surface_geometery(self) -> None:
+    def test_should_contain_surface_geometry(self) -> None:
         # Given the pyramid sample omf file
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
 
