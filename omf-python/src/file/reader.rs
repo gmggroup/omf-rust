@@ -3,11 +3,37 @@ use crate::array::{
 };
 use crate::element::PyColor;
 use crate::PyProject;
-use omf::file::Reader;
+use omf::file::{Limits, Reader};
 use std::fs::File;
 
 use pyo3::exceptions::{PyIOError, PyValueError};
 use pyo3::prelude::*;
+
+#[pyclass(name = "Limits")]
+pub struct PyLimits {
+    #[pyo3(get, set)]
+    pub json_bytes: Option<u64>,
+    #[pyo3(get, set)]
+    pub image_bytes: Option<u64>,
+    #[pyo3(get, set)]
+    pub image_dim: Option<u32>,
+    #[pyo3(get, set)]
+    pub validation: Option<u32>,
+}
+
+#[pymethods]
+impl PyLimits {
+    #[new]
+    pub fn new() -> PyResult<Self> {
+        let limits = Limits::default();
+        Ok(PyLimits {
+            json_bytes: limits.json_bytes,
+            image_bytes: limits.image_bytes,
+            image_dim: limits.image_dim,
+            validation: limits.validation,
+        })
+    }
+}
 
 #[pyclass(name = "Reader")]
 pub struct PyReader(Reader);
