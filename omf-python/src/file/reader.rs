@@ -1,4 +1,6 @@
-use crate::array::{PyColorArray, PyIndexArray, PySegmentArray, PyTriangleArray, PyVertexArray};
+use crate::array::{
+    PyColorArray, PyIndexArray, PyNameArray, PySegmentArray, PyTriangleArray, PyVertexArray,
+};
 use crate::element::PyColor;
 use crate::PyProject;
 use omf::file::Reader;
@@ -70,6 +72,14 @@ impl PyReader {
             .array_colors(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .map(|r| r.map(|c| c.map(PyColor)))
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
+        self.0
+            .array_names(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }

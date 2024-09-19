@@ -1,4 +1,4 @@
-use crate::array::{PyColorArray, PyIndexArray};
+use crate::array::{PyColorArray, PyIndexArray, PyNameArray};
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -74,6 +74,16 @@ impl PyAttributeDataCategory {
     fn values(&self) -> PyResult<PyIndexArray> {
         match &self.0 {
             AttributeData::Category { values, .. } => Ok(PyIndexArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    fn names(&self) -> PyResult<PyNameArray> {
+        match &self.0 {
+            AttributeData::Category { names, .. } => Ok(PyNameArray(names.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

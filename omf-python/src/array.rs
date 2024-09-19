@@ -51,3 +51,13 @@ impl PyColorArray {
         self.0.item_count()
     }
 }
+
+#[pyclass(name = "NameArray")]
+pub struct PyNameArray(pub Array<array_type::Name>);
+#[pymethods]
+impl PyNameArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
