@@ -82,6 +82,14 @@ maturin build --release
 
 This will create a wheel in `./target/wheels`
 
+To build the docs:
+
+```sh
+cd omf-python/docs
+make html
+```
+
+You can then view the python API documentation here: [here](../omf-python/docs/build/html/index.html).
 
 ## Write Your Own
 

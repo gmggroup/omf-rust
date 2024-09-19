@@ -25,4 +25,5 @@ Cargo.lock
 
 # Virtual environment for python bindings
 /omf-python/venv
+/omf-python/docs/build
 /omf-python/tests/__pycache__/
