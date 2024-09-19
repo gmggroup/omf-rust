@@ -6,6 +6,7 @@ mod array;
 mod attribute;
 mod colormap;
 mod element;
+mod errors;
 mod file;
 mod geometry;
 mod grid;
@@ -25,6 +26,7 @@ use attribute::{
 };
 use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
+use errors::OmfException;
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
@@ -39,7 +41,7 @@ fn version() -> String {
 
 /// This module provides python bindings for omf-rust.
 #[pymodule]
-fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttribute>()?;
     m.add_class::<PyAttributeDataBoolean>()?;
     m.add_class::<PyAttributeDataCategory>()?;
@@ -74,6 +76,8 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
+
+    m.add("OmfException", py.get_type_bound::<OmfException>())?;
 
     Ok(())
 }

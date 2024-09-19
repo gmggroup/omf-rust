@@ -4,6 +4,7 @@ use crate::array::{
     PyVectorArray, PyVertexArray,
 };
 use crate::validate::PyProblem;
+use crate::errors::OmfException;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
 use omf::Color;
@@ -72,7 +73,7 @@ impl PyReader {
     /// Fails with an error if an IO error occurs or the file isn’t in OMF 2 format.
     pub fn new(filepath: &str) -> PyResult<Self> {
         let file = File::open(filepath).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
-        let reader = Reader::new(file).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+        let reader = Reader::new(file).map_err(OmfException::py_err)?;
         Ok(PyReader(reader))
     }
 
@@ -112,10 +113,7 @@ impl PyReader {
     /// fails. Validation warnings are returned alongside the project if successful or included
     /// with the errors if not.
     fn project(&self) -> PyResult<(PyProject, Vec<PyProblem>)> {
-        let (project, problems) = self
-            .0
-            .project()
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+        let (project, problems) = self.0.project().map_err(OmfException::py_err)?;
 
         let problems_array: Vec<PyProblem> =
             problems.iter().map(|e| PyProblem(e.clone())).collect();
