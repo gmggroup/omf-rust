@@ -3,54 +3,51 @@ use omf::Project;
 use pyo3::prelude::*;
 
 #[pyclass(name = "Project")]
-pub struct PyProject {
-    pub inner: Project,
-}
+pub struct PyProject(pub Project);
 
 #[pymethods]
 impl PyProject {
     #[getter]
     fn name(&self) -> String {
-        self.inner.name.clone()
+        self.0.name.clone()
     }
 
     #[getter]
     fn description(&self) -> String {
-        self.inner.description.clone()
+        self.0.description.clone()
     }
 
     #[getter]
     fn coordinate_reference_system(&self) -> String {
-        self.inner.coordinate_reference_system.clone()
+        self.0.coordinate_reference_system.clone()
     }
 
     #[getter]
     fn units(&self) -> String {
-        self.inner.units.clone()
+        self.0.units.clone()
     }
 
     #[getter]
     fn origin(&self) -> [f64; 3] {
-        self.inner.origin
+        self.0.origin
     }
 
     #[getter]
     fn author(&self) -> String {
-        self.inner.author.clone()
+        self.0.author.clone()
     }
 
     #[getter]
     fn application(&self) -> String {
-        self.inner.application.clone()
+        self.0.application.clone()
     }
 
     #[getter]
-    fn elements(&self) -> PyResult<Vec<PyElement>> {
-        Ok(self
-            .inner
+    fn elements(&self) -> Vec<PyElement> {
+        self.0
             .elements
             .iter()
-            .map(|e| PyElement { inner: e.clone() })
-            .collect())
+            .map(|e| PyElement(e.clone()))
+            .collect()
     }
 }

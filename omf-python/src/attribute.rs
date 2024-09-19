@@ -4,37 +4,35 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 #[pyclass(name = "Attribute")]
-pub struct PyAttribute {
-    pub inner: Attribute,
-}
+pub struct PyAttribute(pub Attribute);
 
 #[pymethods]
 impl PyAttribute {
     #[getter]
     fn name(&self) -> String {
-        self.inner.name.clone()
+        self.0.name.clone()
     }
 
     #[getter]
     fn description(&self) -> String {
-        self.inner.description.clone()
+        self.0.description.clone()
     }
 
     #[getter]
     fn units(&self) -> String {
-        self.inner.units.clone()
+        self.0.units.clone()
     }
 
     #[getter]
     fn metadata(&self) -> PyResult<String> {
-        let metadata = serde_json::to_string(&self.inner.metadata)
+        let metadata = serde_json::to_string(&self.0.metadata)
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
         Ok(metadata)
     }
 
     #[getter]
-    fn location(&self) -> PyResult<String> {
-        Ok(match self.inner.location {
+    fn location(&self) -> String {
+        match self.0.location {
             Location::Vertices => "Vertices",
             Location::Primitives => "Primitives",
             Location::Subblocks => "Subblocks",
@@ -42,22 +40,21 @@ impl PyAttribute {
             Location::Projected => "Projected",
             Location::Categories => "Categories",
         }
-        .to_string())
+        .to_string()
     }
 
     #[getter]
     fn data_json(&self) -> PyResult<String> {
-        let data = serde_json::to_string(&self.inner.data)
+        let data = serde_json::to_string(&self.0.data)
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
         Ok(data)
     }
 
     fn get_data(&self, py: Python<'_>) -> PyResult<PyObject> {
-        match &self.inner.data {
-            AttributeData::Category { .. } => Ok(PyAttributeDataCategory {
-                inner: self.inner.data.clone(),
+        match &self.0.data {
+            AttributeData::Category { .. } => {
+                Ok(PyAttributeDataCategory(self.0.data.clone()).into_py(py))
             }
-            .into_py(py)),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
@@ -66,18 +63,14 @@ impl PyAttribute {
 }
 
 #[pyclass(name = "AttributeDataCategory")]
-pub struct PyAttributeDataCategory {
-    inner: AttributeData,
-}
+pub struct PyAttributeDataCategory(AttributeData);
 
 #[pymethods]
 impl PyAttributeDataCategory {
     #[getter]
     fn values(&self) -> PyResult<PyIndexArray> {
-        match &self.inner {
-            AttributeData::Category { values, .. } => Ok(PyIndexArray {
-                inner: values.clone(),
-            }),
+        match &self.0 {
+            AttributeData::Category { values, .. } => Ok(PyIndexArray(values.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
@@ -86,11 +79,10 @@ impl PyAttributeDataCategory {
 
     #[getter]
     fn attributes(&self) -> PyResult<Vec<PyAttribute>> {
-        match &self.inner {
-            AttributeData::Category { attributes, .. } => Ok(attributes
-                .iter()
-                .map(|a| PyAttribute { inner: a.clone() })
-                .collect()),
+        match &self.0 {
+            AttributeData::Category { attributes, .. } => {
+                Ok(attributes.iter().map(|a| PyAttribute(a.clone())).collect())
+            }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
