@@ -1,5 +1,6 @@
 /// Python bindings.
 use pyo3::prelude::*;
+use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
 
 mod array;
 mod attribute;
@@ -19,6 +20,7 @@ use omf1::converter::{detect_open, PyConverter};
 use project::PyProject;
 
 /// Returns the version of the library
+#[gen_stub_pyfunction]
 #[pyfunction]
 fn version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
@@ -54,3 +56,5 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     Ok(())
 }
+
+define_stub_info_gatherer!(stub_info);

@@ -1,10 +1,26 @@
-.. OMF Rust Python API documentation master file, created by
-   sphinx-quickstart on Wed Sep 18 14:35:27 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-OMF Rust Python API documentation
 =================================
+OMF Python API documentation
+=================================
+
+.. toctree::
+   :maxdepth: 2
+
+Description
+-----------
+
+A library for reading and writing files in Open Mining Format 2.0. Also supports translating OMF 1 files to OMF 2.
+
+Installation
+------------
+
+To install the repository, ensure that you have pip installed and run:
+
+.. code-block:: bash
+
+    $ pip install omf_python
+
+Module
+------
 
 .. automodule:: omf_python
    :members:

@@ -91,6 +91,16 @@ make html
 
 You can then view the python API documentation here: [here](../omf-python/docs/build/html/index.html).
 
+Comments and types in the python bindings code don't automatically get converted into python doc strings/typing information.
+To generate the python .pyi stub file:
+```sh
+cd omf-python
+cargo run --bin stub_gen
+```
+
+This will create a file `omf_python.pyi` which will get included automatically the next time you run `maturin develop`.
+Afterwards you should be able to see comments and typing information about omf_python in your editor.
+
 ## Write Your Own
 
 To create your own reading or writing code,

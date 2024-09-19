@@ -15,8 +15,27 @@ permissions:
   contents: read
 
 jobs:
+  python-stub-file:
+    name: Generate and upload omf_python.pyi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build omf_python for stub information
+        working-directory: ./omf-python
+        run: cargo build
+      - name: Generate omf_python.pyi
+        working-directory: ./omf-python
+        run: cargo run --bin stub_gen
+      - name: Upload omf_python.pyi
+        uses: actions/upload-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python/omf_python.pyi
+
   linux:
     runs-on: ${{ matrix.platform.runner }}
+    needs: [python-stub-file]
     strategy:
       matrix:
         platform:
@@ -27,6 +46,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -54,6 +77,7 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
+    needs: [python-stub-file]
     strategy:
       matrix:
         platform:
@@ -65,6 +89,10 @@ jobs:
         with:
           python-version: 3.x
           architecture: ${{ matrix.platform.target }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
