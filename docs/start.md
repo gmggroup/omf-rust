@@ -82,15 +82,6 @@ maturin build --release
 
 This will create a wheel in `./target/wheels`
 
-To build the docs:
-
-```sh
-cd omf-python/docs
-make html
-```
-
-You can then view the python API documentation here: [here](../omf-python/docs/build/html/index.html).
-
 Comments and types in the python bindings code don't automatically get converted into python doc strings/typing information.
 To generate the python .pyi stub file:
 ```sh
@@ -100,6 +91,16 @@ cargo run --bin stub_gen
 
 This will create a file `omf_python.pyi` which will get included automatically the next time you run `maturin develop`.
 Afterwards you should be able to see comments and typing information about omf_python in your editor.
+
+One you've generated `omf_python.pyi` you can build the html API docs:
+
+```sh
+cd omf-python/docs
+make html
+```
+
+You can then view the python API documentation here: [here](../omf-python/docs/build/html/index.html).
+
 
 ## Write Your Own
 

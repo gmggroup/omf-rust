@@ -2,9 +2,6 @@
 OMF Python API documentation
 =================================
 
-.. toctree::
-   :maxdepth: 2
-
 Description
 -----------
 
@@ -19,9 +16,8 @@ To install the repository, ensure that you have pip installed and run:
 
     $ pip install omf_python
 
-Module
+API
 ------
 
-.. automodule:: omf_python
-   :members:
-   :undoc-members:
+.. toctree::
+   :maxdepth: 2
