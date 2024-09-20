@@ -36,7 +36,14 @@ class TestOmf1Converter(TestCase):
 
         # Then
         self.assertEqual(len(problems), 1)
-        self.assertEqual(str(problems[0]), "Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''")
+
+        problem = problems[0]
+
+        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''")
+        self.assertEqual(problem.name, "")
+        self.assertEqual(problem.reason, "contains duplicate of \"\"")
+        self.assertEqual(problem.type_name, "Project")
+        self.assertEqual(problem.is_error(), False)
 
     def test_should_raise_expected_exception_if_file_not_found(self) -> None:
         # Given
