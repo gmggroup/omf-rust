@@ -9,10 +9,10 @@ use pyo3_stub_gen::derive::*;
 
 use std::path::Path;
 
-#[gen_stub_pyfunction(module = "omf_python.omf1")]
+#[gen_stub_pyfunction()]
 #[pyfunction]
 /// Returns true if the path looks more like OMF1 than OMF2.
-pub fn detect_open(path: String) -> PyResult<bool> {
+pub fn detect_omf1(path: String) -> PyResult<bool> {
     let path = Path::new(&path);
     match omf1_detect_open(path) {
         Ok(result) => Ok(result),
@@ -21,18 +21,18 @@ pub fn detect_open(path: String) -> PyResult<bool> {
 }
 
 #[gen_stub_pyclass]
-#[pyclass(name = "Converter", module = "omf_python.omf1")]
+#[pyclass(name = "Omf1Converter")]
 /// Converts a OMF1 files to OMF2.
 ///
 /// This object allows you to set up the desired parameters then convert one or more files.
-pub struct PyConverter(pub Converter);
+pub struct PyOmf1Converter(pub Converter);
 
 #[gen_stub_pymethods]
 #[pymethods]
-impl PyConverter {
+impl PyOmf1Converter {
     #[new]
     pub fn new() -> PyResult<Self> {
-        Ok(PyConverter(Converter::new()))
+        Ok(PyOmf1Converter(Converter::new()))
     }
 
     /// Returns the current limits.
@@ -71,7 +71,7 @@ impl PyConverter {
     /// The output file will be created if it does not exist, and truncated if it does. On success the validation warnings are returned.
     ///
     /// May be called more than once to convert multiple files with the same parameters.
-    fn convert_open(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
+    fn convert(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
         // TODO: handle other errors ?
         let problems = self
             .0
