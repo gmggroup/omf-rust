@@ -94,7 +94,7 @@ class TestReader(TestCase):
 
         # When
         reader.set_limits(limits)
-        with self.assertRaises(OSError) as context:
+        with self.assertRaises(omf_python.OmfException) as context:
             reader.project()
 
         # Then

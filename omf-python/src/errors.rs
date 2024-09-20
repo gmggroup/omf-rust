@@ -9,9 +9,22 @@ create_exception!(
     "Base class for all OMF exceptions."
 );
 
+create_exception!(omf_python, OmfIoError, OmfException, "An IO error.");
+create_exception!(
+    omf_python,
+    OmfValidationFailedError,
+    OmfException,
+    "An error indicating that OMF validation failed."
+);
+
 impl OmfException {
     pub(crate) fn py_err(e: Error) -> PyErr {
         let s = e.to_string();
-        OmfException::new_err(s)
+        match e {
+            Error::IoError(_) => OmfIoError::new_err(s),
+            Error::ValidationFailed(_) => OmfValidationFailedError::new_err(s),
+            // Remaining errors are converted to generic OMF exceptions.
+            _ => OmfException::new_err(s),
+        }
     }
 }

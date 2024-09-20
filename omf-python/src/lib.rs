@@ -26,7 +26,7 @@ use attribute::{
 };
 use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
-use errors::OmfException;
+use errors::{OmfException, OmfIoError, OmfValidationFailedError};
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
@@ -78,6 +78,11 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
 
     m.add("OmfException", py.get_type_bound::<OmfException>())?;
+    m.add("OmfIoError", py.get_type_bound::<OmfIoError>())?;
+    m.add(
+        "OmfValidationFailedError",
+        py.get_type_bound::<OmfValidationFailedError>(),
+    )?;
 
     Ok(())
 }
