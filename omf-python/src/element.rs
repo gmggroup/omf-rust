@@ -3,10 +3,13 @@ use crate::geometry::PyGeometry;
 use omf::Color;
 use omf::Element;
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Element")]
 pub struct PyElement(pub Element);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyElement {
     #[getter]
@@ -39,9 +42,11 @@ impl PyElement {
     }
 }
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Color")]
 pub struct PyColor(pub Color);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyColor {
     const RED: usize = 0;

@@ -5,10 +5,13 @@ use omf::{Geometry, LineSet, PointSet, Surface};
 
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Geometry")]
 pub struct PyGeometry(pub Geometry);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyGeometry {
     fn type_name(&self) -> String {

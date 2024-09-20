@@ -2,10 +2,13 @@ use crate::array::{PyColorArray, PyIndexArray, PyNameArray};
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Attribute")]
 pub struct PyAttribute(pub Attribute);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyAttribute {
     #[getter]

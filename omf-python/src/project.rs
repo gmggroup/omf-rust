@@ -1,10 +1,13 @@
 use crate::element::PyElement;
 use omf::Project;
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Project")]
 pub struct PyProject(pub Project);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyProject {
     #[getter]
