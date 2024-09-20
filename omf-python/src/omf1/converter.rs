@@ -17,20 +17,17 @@ pub fn detect_open(path: String) -> PyResult<bool> {
 }
 
 #[pyclass(name = "Converter")]
-pub struct PyConverter {
-    inner: Converter,
-}
+pub struct PyConverter(pub Converter);
 
 #[pymethods]
 impl PyConverter {
     #[new]
     pub fn new() -> PyResult<Self> {
-        let inner = Converter::new();
-        Ok(PyConverter { inner })
+        Ok(PyConverter(Converter::new()))
     }
 
     fn limits(&self) -> PyResult<PyLimits> {
-        let limits = self.inner.limits();
+        let limits = self.0.limits();
         Ok(PyLimits {
             json_bytes: limits.json_bytes,
             image_bytes: limits.image_bytes,
@@ -40,7 +37,7 @@ impl PyConverter {
     }
 
     fn set_limits(&mut self, limits: &PyLimits) {
-        self.inner.set_limits(Limits {
+        self.0.set_limits(Limits {
             json_bytes: limits.json_bytes,
             image_bytes: limits.image_bytes,
             image_dim: limits.image_dim,
@@ -49,23 +46,20 @@ impl PyConverter {
     }
 
     fn compression(&self) -> PyResult<u32> {
-        Ok(self.inner.compression().level())
+        Ok(self.0.compression().level())
     }
 
     fn set_compression(&mut self, compression: u32) {
-        self.inner.set_compression(Compression::new(compression));
+        self.0.set_compression(Compression::new(compression));
     }
 
     fn convert_open(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
         // TODO: handle other errors ?
         let problems = self
-            .inner
+            .0
             .convert_open(input_path, output_path)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
 
-        Ok(problems
-            .iter()
-            .map(|e| PyProblem { inner: e.clone() })
-            .collect())
+        Ok(problems.iter().map(|e| PyProblem(e.clone())).collect())
     }
 }
