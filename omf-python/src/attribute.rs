@@ -69,11 +69,19 @@ impl PyAttribute {
 }
 
 #[pyclass(name = "AttributeDataCategory")]
+/// Category data.
+///
+/// A name is required for each category, a color is optional, and other values can be attached
+/// as sub-attributes.
 pub struct PyAttributeDataCategory(AttributeData);
 
 #[pymethods]
 impl PyAttributeDataCategory {
     #[getter]
+    /// Array with `Index` type storing the category indices.
+    ///
+    /// Values are indices into the `names` array, `colors` array, and any sub-attributes,
+    /// and must be within range for them.
     fn values(&self) -> PyResult<PyIndexArray> {
         match &self.0 {
             AttributeData::Category { values, .. } => Ok(PyIndexArray(values.clone())),
@@ -84,6 +92,7 @@ impl PyAttributeDataCategory {
     }
 
     #[getter]
+    /// Array with `Name` type storing category names.
     fn names(&self) -> PyResult<PyNameArray> {
         match &self.0 {
             AttributeData::Category { names, .. } => Ok(PyNameArray(names.clone())),
@@ -94,6 +103,10 @@ impl PyAttributeDataCategory {
     }
 
     #[getter]
+    /// Optional array with `Gradient` type storing category colors.
+    ///
+    /// If present, must be the same length as `names`. If absent then the importing
+    /// application should invent colors.
     fn gradient(&self) -> PyResult<Option<PyGradientArray>> {
         match &self.0 {
             AttributeData::Category { gradient, .. } => {
@@ -106,6 +119,11 @@ impl PyAttributeDataCategory {
     }
 
     #[getter]
+    /// Additional attributes that use the same indices.
+    ///
+    /// This could be used to store the density of rock types in a lithology attribute for
+    /// example. The location field of these attributes must be `Categories`.
+    /// They must have the same length as `names`.
     fn attributes(&self) -> PyResult<Vec<PyAttribute>> {
         match &self.0 {
             AttributeData::Category { attributes, .. } => {
