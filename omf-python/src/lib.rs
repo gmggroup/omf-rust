@@ -1,5 +1,6 @@
 /// Python bindings.
 use pyo3::prelude::*;
+use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
 
 mod array;
 mod attribute;
@@ -15,10 +16,11 @@ use attribute::{PyAttribute, PyAttributeDataCategory, PyAttributeDataColor};
 use element::{PyColor, PyElement};
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyGeometry, PyLineSet, PyPointSet, PySurface};
-use omf1::converter::{detect_open, PyConverter};
+use omf1::converter::{detect_omf1, PyOmf1Converter};
 use project::PyProject;
 
 /// Returns the version of the library
+#[gen_stub_pyfunction]
 #[pyfunction]
 fn version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
@@ -44,13 +46,12 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyReader>()?;
     m.add_class::<PySurface>()?;
     m.add_class::<PyLimits>()?;
+    m.add_class::<PyOmf1Converter>()?;
 
     m.add_function(wrap_pyfunction!(version, m)?)?;
-
-    let omf1_submodule = PyModule::new_bound(m.py(), "omf1")?;
-    omf1_submodule.add_function(wrap_pyfunction!(detect_open, m)?)?;
-    omf1_submodule.add_class::<PyConverter>()?;
-    m.add_submodule(&omf1_submodule)?;
+    m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
 
     Ok(())
 }
+
+define_stub_info_gatherer!(stub_info);

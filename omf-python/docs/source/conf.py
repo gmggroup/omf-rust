@@ -13,12 +13,16 @@ release = omf_python.version()
 version = release
 
 extensions = [
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'autoapi.extension',
 ]
+
+autoapi_dirs = ['../../']
+autoapi_file_patterns = ['omf_python.pyi']
+
+html_theme = 'sphinx_rtd_theme'
 
 templates_path = ['_templates']
 exclude_patterns = []
-
-html_theme = 'sphinx_rtd_theme'
 
 html_static_path = ['_static']

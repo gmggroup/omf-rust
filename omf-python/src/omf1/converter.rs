@@ -5,10 +5,14 @@ use omf::omf1::detect_open as omf1_detect_open;
 use omf::omf1::Converter;
 use pyo3::exceptions::PyIOError;
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
+
 use std::path::Path;
 
+#[gen_stub_pyfunction()]
 #[pyfunction]
-pub fn detect_open(path: String) -> PyResult<bool> {
+/// Returns true if the path looks more like OMF1 than OMF2.
+pub fn detect_omf1(path: String) -> PyResult<bool> {
     let path = Path::new(&path);
     match omf1_detect_open(path) {
         Ok(result) => Ok(result),
@@ -16,16 +20,22 @@ pub fn detect_open(path: String) -> PyResult<bool> {
     }
 }
 
-#[pyclass(name = "Converter")]
-pub struct PyConverter(pub Converter);
+#[gen_stub_pyclass]
+#[pyclass(name = "Omf1Converter")]
+/// Converts a OMF1 files to OMF2.
+///
+/// This object allows you to set up the desired parameters then convert one or more files.
+pub struct PyOmf1Converter(pub Converter);
 
+#[gen_stub_pymethods]
 #[pymethods]
-impl PyConverter {
+impl PyOmf1Converter {
     #[new]
     pub fn new() -> PyResult<Self> {
-        Ok(PyConverter(Converter::new()))
+        Ok(PyOmf1Converter(Converter::new()))
     }
 
+    /// Returns the current limits.
     fn limits(&self) -> PyResult<PyLimits> {
         let limits = self.0.limits();
         Ok(PyLimits {
@@ -36,6 +46,7 @@ impl PyConverter {
         })
     }
 
+    /// Set the limits to use during conversion.
     fn set_limits(&mut self, limits: &PyLimits) {
         self.0.set_limits(Limits {
             json_bytes: limits.json_bytes,
@@ -45,15 +56,22 @@ impl PyConverter {
         });
     }
 
+    /// Returns the current compression level.
     fn compression(&self) -> PyResult<u32> {
         Ok(self.0.compression().level())
     }
 
+    /// Set the compression level to use when writing. Range 0-9.
     fn set_compression(&mut self, compression: u32) {
         self.0.set_compression(Compression::new(compression));
     }
 
-    fn convert_open(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
+    /// Runs a conversion from one filename to another.
+    ///
+    /// The output file will be created if it does not exist, and truncated if it does. On success the validation warnings are returned.
+    ///
+    /// May be called more than once to convert multiple files with the same parameters.
+    fn convert(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
         // TODO: handle other errors ?
         let problems = self
             .0

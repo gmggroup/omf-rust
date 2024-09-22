@@ -8,8 +8,11 @@ use std::fs::File;
 
 use pyo3::exceptions::{PyIOError, PyValueError};
 use pyo3::prelude::*;
+use pyo3_stub_gen::derive::*;
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Limits")]
+/// Memory limits for reading OMF files.
 pub struct PyLimits {
     #[pyo3(get, set)]
     pub json_bytes: Option<u64>,
@@ -21,6 +24,7 @@ pub struct PyLimits {
     pub validation: Option<u32>,
 }
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyLimits {
     #[new]
@@ -35,9 +39,11 @@ impl PyLimits {
     }
 }
 
+#[gen_stub_pyclass]
 #[pyclass(name = "Reader")]
 pub struct PyReader(Reader);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyReader {
     #[new]

@@ -11,13 +11,13 @@ class TestOmf1Converter(TestCase):
     def test_should_convert_omf1_to_omf2_file(self) -> None:
         # Given
         omf1_file = path.join(self.test_data_dir, "omf1/test_proj.omf")
-        self.assertTrue(omf_python.omf1.detect_open(omf1_file))
+        self.assertTrue(omf_python.detect_omf1(omf1_file))
 
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
             # When
-            converter.convert_open(omf1_file, omf2_file.name)
+            converter.convert(omf1_file, omf2_file.name)
 
             # Then
             reader = omf_python.Reader(omf2_file.name)
@@ -26,13 +26,13 @@ class TestOmf1Converter(TestCase):
     def test_should_return_expected_problems(self) -> None:
         # Given
         omf1_file = path.join(self.test_data_dir, "omf1/test_proj.omf")
-        self.assertTrue(omf_python.omf1.detect_open(omf1_file))
+        self.assertTrue(omf_python.detect_omf1(omf1_file))
 
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         # When
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
-            problems = converter.convert_open(omf1_file, omf2_file.name)
+            problems = converter.convert(omf1_file, omf2_file.name)
 
         # Then
         self.assertEqual(len(problems), 1)
@@ -41,6 +41,7 @@ class TestOmf1Converter(TestCase):
 
         self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''")
         self.assertEqual(problem.name, "")
+        self.assertEqual(problem.field, "elements[..]::name")
         self.assertEqual(problem.reason, "contains duplicate of \"\"")
         self.assertEqual(problem.type_name, "Project")
         self.assertEqual(problem.is_error(), False)
@@ -49,19 +50,19 @@ class TestOmf1Converter(TestCase):
         # Given
         omf1_file = path.join(self.test_data_dir, "omf1/testfilenotfound.omf")
 
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
             # When
             with self.assertRaises(OSError) as context:
-                converter.convert_open(omf1_file, omf2_file.name)
+                converter.convert(omf1_file, omf2_file.name)
 
             # Then
             self.assertEqual(str(context.exception), "File IO error: No such file or directory (os error 2)")
 
     def test_should_return_expected_default_limits(self) -> None:
         # Given
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         # When
         limits = converter.limits()
@@ -74,7 +75,7 @@ class TestOmf1Converter(TestCase):
 
     def test_should_set_limits(self) -> None:
         # Given
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         limits = omf_python.Limits()
         limits.json_bytes = 1
@@ -100,9 +101,9 @@ class TestOmf1Converter(TestCase):
     def test_should_raise_exception_if_json_bytes_limit_reached(self) -> None:
         # Given
         omf1_file = path.join(self.test_data_dir, "omf1/test_proj.omf")
-        self.assertTrue(omf_python.omf1.detect_open(omf1_file))
+        self.assertTrue(omf_python.detect_omf1(omf1_file))
 
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
         limits = converter.limits()
         limits.json_bytes = 0
 
@@ -110,14 +111,14 @@ class TestOmf1Converter(TestCase):
             # When
             converter.set_limits(limits)
             with self.assertRaises(OSError) as context:
-                converter.convert_open(omf1_file, omf2_file.name)
+                converter.convert(omf1_file, omf2_file.name)
 
             # Then
             self.assertEqual(str(context.exception), "Error: safety limit exceeded")
 
     def test_should_get_compression(self) -> None:
         # Given
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         # When
         compression = converter.compression()
@@ -127,7 +128,7 @@ class TestOmf1Converter(TestCase):
 
     def test_should_set_compression(self) -> None:
         # Given
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         # When
         converter.set_compression(9)
@@ -137,7 +138,7 @@ class TestOmf1Converter(TestCase):
 
     def test_should_limit_max_compression(self) -> None:
         # Given
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
 
         # When
         converter.set_compression(10)
@@ -148,19 +149,19 @@ class TestOmf1Converter(TestCase):
     def test_high_compression_reduces_file_size(self) -> None:
         # Given
         omf1_file = path.join(self.test_data_dir, "omf1/test_proj.omf")
-        converter = omf_python.omf1.Converter()
+        converter = omf_python.Omf1Converter()
         converter.set_compression(0)
 
         # When
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
-            converter.convert_open(omf1_file, omf2_file.name)
+            converter.convert(omf1_file, omf2_file.name)
             omf_python.Reader(omf2_file.name)
             low_compression_file_size = path.getsize(omf2_file.name)
 
         converter.set_compression(9)
 
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
-            converter.convert_open(omf1_file, omf2_file.name)
+            converter.convert(omf1_file, omf2_file.name)
             omf_python.Reader(omf2_file.name)
             high_compression_file_size = path.getsize(omf2_file.name)
 
