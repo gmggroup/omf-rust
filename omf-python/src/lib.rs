@@ -11,7 +11,9 @@ mod omf1;
 mod project;
 mod validate;
 
-use array::{PyColorArray, PyIndexArray, PyNameArray, PyTriangleArray, PyVertexArray};
+use array::{
+    PyColorArray, PyGradientArray, PyIndexArray, PyNameArray, PyTriangleArray, PyVertexArray,
+};
 use attribute::{PyAttribute, PyAttributeDataCategory, PyAttributeDataColor};
 use element::{PyColor, PyElement};
 use file::reader::{PyLimits, PyReader};
@@ -35,6 +37,7 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyColor>()?;
     m.add_class::<PyColorArray>()?;
     m.add_class::<PyIndexArray>()?;
+    m.add_class::<PyGradientArray>()?;
     m.add_class::<PyVertexArray>()?;
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;

@@ -79,3 +79,14 @@ impl PyNameArray {
         self.0.item_count()
     }
 }
+
+#[gen_stub_pyclass]
+#[pyclass(name = "GradientArray")]
+pub struct PyGradientArray(pub Array<array_type::Gradient>);
+#[pymethods]
+impl PyGradientArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
