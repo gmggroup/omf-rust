@@ -55,6 +55,11 @@ impl PyReader {
     }
 
     #[getter]
+    /// Reads, validates, and returns the root `Project` object from the file.
+    ///
+    /// Fails with an error if an IO error occurs, the `json_bytes` limit is exceeded, or validation
+    /// fails. Validation warnings are returned alongside the project if successful or included
+    /// with the errors if not.
     fn project(&self) -> PyResult<PyProject> {
         let (project, problems) = self
             .0
@@ -68,6 +73,7 @@ impl PyReader {
         Ok(PyProject(project))
     }
 
+    /// Read a Vertex array.
     pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
         self.0
             .array_vertices(&array.0)
@@ -76,6 +82,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Segment array.
     pub fn array_segments(&self, array: &PySegmentArray) -> PyResult<Vec<[u32; 2]>> {
         self.0
             .array_segments(&array.0)
@@ -84,6 +91,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read an Index array.
     pub fn array_indices(&self, array: &PyIndexArray) -> PyResult<Vec<Option<u32>>> {
         self.0
             .array_indices(&array.0)
@@ -92,6 +100,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Triangle array.
     pub fn array_triangles(&self, array: &PyTriangleArray) -> PyResult<Vec<[u32; 3]>> {
         self.0
             .array_triangles(&array.0)
@@ -100,6 +109,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Color array.
     pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<PyColor>>> {
         self.0
             .array_colors(&array.0)
@@ -109,6 +119,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Gradient array.
     pub fn array_gradient(&self, array: &PyGradientArray) -> PyResult<Vec<[u8; 4]>> {
         self.0
             .array_gradient(&array.0)
@@ -117,6 +128,7 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Name array.
     pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
         self.0
             .array_names(&array.0)
