@@ -1,6 +1,6 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PySegmentArray,
-    PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
+    PySegmentArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use crate::element::PyColor;
 use crate::PyProject;

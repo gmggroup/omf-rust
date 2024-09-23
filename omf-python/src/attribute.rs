@@ -1,6 +1,6 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTextureCoordinatesArray, PyVectorArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
+    PyTextureCoordinatesArray, PyVectorArray,
 };
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;

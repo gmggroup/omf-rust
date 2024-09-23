@@ -12,8 +12,8 @@ mod project;
 mod validate;
 
 use array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
+    PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataCategory, PyAttributeDataColor, PyAttributeDataMappedTexture,
