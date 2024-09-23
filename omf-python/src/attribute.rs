@@ -1,4 +1,7 @@
-use crate::array::{PyColorArray, PyGradientArray, PyIndexArray, PyNameArray};
+use crate::array::{
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
+    PyTextureCoordinatesArray,
+};
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -60,6 +63,9 @@ impl PyAttribute {
             }
             AttributeData::Color { .. } => {
                 Ok(PyAttributeDataColor(self.0.data.clone()).into_py(py))
+            }
+            AttributeData::MappedTexture { .. } => {
+                Ok(PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py))
             }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
@@ -144,6 +150,33 @@ impl PyAttributeDataColor {
     fn values(&self) -> PyResult<PyColorArray> {
         match &self.0 {
             AttributeData::Color { values, .. } => Ok(PyColorArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[pyclass(name = "AttributeDataMappedTexture")]
+pub struct PyAttributeDataMappedTexture(pub AttributeData);
+#[pymethods]
+impl PyAttributeDataMappedTexture {
+    #[getter]
+    fn image(&self) -> PyResult<PyImageArray> {
+        match &self.0 {
+            AttributeData::MappedTexture { image, .. } => Ok(PyImageArray(image.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    fn texcoords(&self) -> PyResult<PyTextureCoordinatesArray> {
+        match &self.0 {
+            AttributeData::MappedTexture { texcoords, .. } => {
+                Ok(PyTextureCoordinatesArray(texcoords.clone()))
+            }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

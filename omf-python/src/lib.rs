@@ -12,9 +12,12 @@ mod project;
 mod validate;
 
 use array::{
-    PyColorArray, PyGradientArray, PyIndexArray, PyNameArray, PyTriangleArray, PyVertexArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
+    PyTextureCoordinatesArray, PyTriangleArray, PyVertexArray,
 };
-use attribute::{PyAttribute, PyAttributeDataCategory, PyAttributeDataColor};
+use attribute::{
+    PyAttribute, PyAttributeDataCategory, PyAttributeDataColor, PyAttributeDataMappedTexture,
+};
 use element::{PyColor, PyElement};
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyGeometry, PyLineSet, PyPointSet, PySurface};
@@ -34,11 +37,14 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttribute>()?;
     m.add_class::<PyAttributeDataCategory>()?;
     m.add_class::<PyAttributeDataColor>()?;
+    m.add_class::<PyAttributeDataMappedTexture>()?;
     m.add_class::<PyColor>()?;
     m.add_class::<PyColorArray>()?;
+    m.add_class::<PyImageArray>()?;
     m.add_class::<PyIndexArray>()?;
     m.add_class::<PyGradientArray>()?;
     m.add_class::<PyVertexArray>()?;
+    m.add_class::<PyTextureCoordinatesArray>()?;
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;

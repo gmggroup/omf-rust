@@ -1,10 +1,11 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyIndexArray, PyNameArray, PySegmentArray, PyTriangleArray,
-    PyVertexArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PySegmentArray,
+    PyTextureCoordinatesArray, PyTriangleArray, PyVertexArray,
 };
 use crate::element::PyColor;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
+use pyo3::types::PyBytes;
 use std::fs::File;
 
 use pyo3::exceptions::{PyIOError, PyValueError};
@@ -132,6 +133,25 @@ impl PyReader {
     pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
         self.0
             .array_names(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    pub fn image_bytes<'p>(
+        &self,
+        py: Python<'p>,
+        array: &PyImageArray,
+    ) -> PyResult<Bound<'p, PyBytes>> {
+        self.0
+            .array_bytes(&array.0)
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map(|b| PyBytes::new_bound(py, &b))
+    }
+
+    pub fn array_texcoord(&self, array: &PyTextureCoordinatesArray) -> PyResult<Vec<[f64; 2]>> {
+        self.0
+            .array_texcoords(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
