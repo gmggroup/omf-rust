@@ -1,6 +1,6 @@
 use crate::array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyTextureCoordinatesArray,
+    PyNumberArray, PyTextureCoordinatesArray,
 };
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
@@ -93,6 +93,9 @@ impl PyAttribute {
             AttributeData::MappedTexture { .. } => {
                 Ok(PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py))
             }
+            AttributeData::Number { .. } => {
+                Ok(PyAttributeDataNumber(self.0.data.clone()).into_py(py))
+            }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
@@ -100,6 +103,7 @@ impl PyAttribute {
     }
 }
 
+#[gen_stub_pyclass]
 #[pyclass(name = "AttributeDataCategory")]
 /// Category data.
 ///
@@ -107,6 +111,7 @@ impl PyAttribute {
 /// as sub-attributes.
 pub struct PyAttributeDataCategory(AttributeData);
 
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyAttributeDataCategory {
     #[getter]
@@ -203,6 +208,31 @@ impl PyAttributeDataMappedTexture {
             AttributeData::MappedTexture { texcoords, .. } => {
                 Ok(PyTextureCoordinatesArray(texcoords.clone()))
             }
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(name = "AttributeDataNumber")]
+/// Number data with flexible type.
+///
+/// Values can be stored as 32 or 64-bit signed integers, 32 or 64-bit floating point,
+/// date, or date-time. Valid dates are approximately ±262,000 years
+/// from the common era. Date-time values are written with microsecond accuracy,
+/// and times are always in UTC.
+pub struct PyAttributeDataNumber(pub AttributeData);
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl PyAttributeDataNumber {
+    #[getter]
+    /// Array with `Number` type storing the attribute values.
+    fn values(&self) -> PyResult<PyNumberArray> {
+        match &self.0 {
+            AttributeData::Number { values, .. } => Ok(PyNumberArray(values.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

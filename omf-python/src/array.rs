@@ -117,3 +117,15 @@ impl PyTextureCoordinatesArray {
         self.0.item_count()
     }
 }
+
+#[gen_stub_pyclass]
+#[pyclass(name = "NumberArray")]
+/// Nullable number values, floating-point or signed integer.
+pub struct PyNumberArray(pub Array<array_type::Number>);
+#[pymethods]
+impl PyNumberArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
