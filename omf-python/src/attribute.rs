@@ -9,27 +9,48 @@ use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Attribute")]
+/// Describes data attached to an Element.
+///
+/// Each Element can have zero or more attributes,
+/// each attached to different parts of the element and each containing different types of data.
+/// On a set of points, one attribute might contain gold assay results and another rock-type classifications.
 pub struct PyAttribute(pub Attribute);
 
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyAttribute {
     #[getter]
+    /// Attribute name. Should be unique within the containing element.
     fn name(&self) -> String {
         self.0.name.clone()
     }
 
     #[getter]
+    /// Optional attribute description.
     fn description(&self) -> String {
         self.0.description.clone()
     }
 
     #[getter]
+    /// Optional unit of the attribute data, default empty.
+    ///
+    /// OMF does not currently attempt to standardize the strings you can use here, but our
+    /// recommendations are:
+    ///
+    /// - Use full names, so "kilometers" rather than "km". The abbreviations for non-metric units
+    ///   aren't consistent and complex units can be confusing.
+    ///
+    /// - Use plurals, so "feet" rather than "foot".
+    ///
+    /// - Avoid ambiguity, so "long tons" rather than just "tons".
+    ///
+    /// - Accept American and British spellings, so "meter" and "metre" are the same.
     fn units(&self) -> String {
         self.0.units.clone()
     }
 
     #[getter]
+    /// Attribute metadata.
     fn metadata(&self) -> PyResult<String> {
         let metadata = serde_json::to_string(&self.0.metadata)
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
@@ -37,6 +58,9 @@ impl PyAttribute {
     }
 
     #[getter]
+    /// Selects which part of the element the attribute is attached to.
+    ///
+    /// See the documentation for each Geometry variant for a list of what locations are valid.
     fn location(&self) -> String {
         match self.0.location {
             Location::Vertices => "Vertices",
@@ -50,12 +74,14 @@ impl PyAttribute {
     }
 
     #[getter]
+    /// The attribute data as a JSON string.
     fn data_json(&self) -> PyResult<String> {
         let data = serde_json::to_string(&self.0.data)
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
         Ok(data)
     }
 
+    /// The attribute data.
     fn get_data(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0.data {
             AttributeData::Category { .. } => {
