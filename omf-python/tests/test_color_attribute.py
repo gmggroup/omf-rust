@@ -3,7 +3,7 @@ from os import path
 from unittest import TestCase
 
 
-class TestPointSet(TestCase):
+class TestColorAttribute(TestCase):
     def setUp(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
