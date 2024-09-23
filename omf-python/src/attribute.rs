@@ -2,6 +2,7 @@ use crate::array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
     PyTextureCoordinatesArray, PyVectorArray,
 };
+use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -93,6 +94,9 @@ impl PyAttribute {
             AttributeData::MappedTexture { .. } => {
                 Ok(PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py))
             }
+            AttributeData::ProjectedTexture { .. } => {
+                Ok(PyAttributeDataProjectedTexture(self.0.data.clone()).into_py(py))
+            }
             AttributeData::Number { .. } => {
                 Ok(PyAttributeDataNumber(self.0.data.clone()).into_py(py))
             }
@@ -176,11 +180,18 @@ impl PyAttributeDataCategory {
     }
 }
 
+#[gen_stub_pyclass]
 #[pyclass(name = "AttributeDataColor")]
+/// Color data.
 pub struct PyAttributeDataColor(pub AttributeData);
+
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyAttributeDataColor {
     #[getter]
+    /// Array with Color type storing the attribute values.
+    ///
+    /// Null values may be replaced by the element color, or a default color as the application prefers.
     fn values(&self) -> PyResult<PyColorArray> {
         match &self.0 {
             AttributeData::Color { values, .. } => Ok(PyColorArray(values.clone())),
@@ -191,11 +202,18 @@ impl PyAttributeDataColor {
     }
 }
 
+#[gen_stub_pyclass]
 #[pyclass(name = "AttributeDataMappedTexture")]
+/// A texture applied with UV mapping.
+///
+/// Typically applied to surface vertices. Applications may ignore other locations.
 pub struct PyAttributeDataMappedTexture(pub AttributeData);
+
+#[gen_stub_pymethods]
 #[pymethods]
 impl PyAttributeDataMappedTexture {
     #[getter]
+    /// Array with Image type storing the texture image.
     fn image(&self) -> PyResult<PyImageArray> {
         match &self.0 {
             AttributeData::MappedTexture { image, .. } => Ok(PyImageArray(image.clone())),
@@ -206,11 +224,72 @@ impl PyAttributeDataMappedTexture {
     }
 
     #[getter]
+    /// Array with Texcoord type storing the UV texture coordinates.
+    ///
+    /// Each item is a normalized (U, V) pair. For values outside [0, 1] the texture wraps.
     fn texcoords(&self) -> PyResult<PyTextureCoordinatesArray> {
         match &self.0 {
             AttributeData::MappedTexture { texcoords, .. } => {
                 Ok(PyTextureCoordinatesArray(texcoords.clone()))
             }
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(name = "AttributeDataProjectedTexture")]
+/// A texture defined as a rectangle in space projected along its normal.
+///
+/// Behavior of the texture outside the projected rectangle is not defined.
+/// The texture might repeat, clip the element, or itself be clipped to reveal the flat color of the element.
+///
+/// The attribute location must be Projected.
+pub struct PyAttributeDataProjectedTexture(pub AttributeData);
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl PyAttributeDataProjectedTexture {
+    #[getter]
+    /// Array with Image type storing the texture image.
+    fn image(&self) -> PyResult<PyImageArray> {
+        match &self.0 {
+            AttributeData::ProjectedTexture { image, .. } => Ok(PyImageArray(image.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    /// Orientation of the image.
+    fn orient(&self) -> PyResult<PyOrient2> {
+        match self.0 {
+            AttributeData::ProjectedTexture { orient, .. } => Ok(PyOrient2(orient)),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    /// Width of the image projection in space.
+    fn width(&self) -> PyResult<f64> {
+        match self.0 {
+            AttributeData::ProjectedTexture { width, .. } => Ok(width),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    /// Height of the image projection in space.
+    fn height(&self) -> PyResult<f64> {
+        match self.0 {
+            AttributeData::ProjectedTexture { height, .. } => Ok(height),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

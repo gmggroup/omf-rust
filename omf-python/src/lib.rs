@@ -7,6 +7,7 @@ mod attribute;
 mod element;
 mod file;
 mod geometry;
+mod grid;
 mod omf1;
 mod project;
 mod validate;

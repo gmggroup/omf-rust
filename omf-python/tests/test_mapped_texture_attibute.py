@@ -38,5 +38,5 @@ class TestMappedTextureAttribute(TestCase):
         self.assertEqual(0, image.item_count)
 
         # And the image contents should match those expected
-        bytes = self.reader.image_bytes(image)
-        self.assertEqual(self.image, bytes)
+        image_bytes = self.reader.image_bytes(image)
+        self.assertEqual(self.image, image_bytes)
