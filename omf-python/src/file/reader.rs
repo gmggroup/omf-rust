@@ -1,6 +1,6 @@
 use crate::array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PySegmentArray,
-    PyTextureCoordinatesArray, PyTriangleArray, PyVertexArray,
+    PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use crate::element::PyColor;
 use crate::PyProject;
@@ -173,5 +173,14 @@ impl PyReader {
                 _ => None,
             })
             .collect())
+    }
+
+    /// Read a Vector array.
+    pub fn array_vectors(&self, array: &PyVectorArray) -> PyResult<Vec<Option<[f64; 3]>>> {
+        self.0
+            .array_vectors(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 }

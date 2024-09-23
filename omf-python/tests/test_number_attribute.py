@@ -1,4 +1,3 @@
-import json
 import omf_python
 from os import path
 from unittest import TestCase

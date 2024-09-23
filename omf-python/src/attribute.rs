@@ -1,6 +1,6 @@
 use crate::array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTextureCoordinatesArray,
+    PyNumberArray, PyTextureCoordinatesArray, PyVectorArray,
 };
 use omf::{Attribute, AttributeData, Location};
 use pyo3::exceptions::PyValueError;
@@ -95,6 +95,9 @@ impl PyAttribute {
             }
             AttributeData::Number { .. } => {
                 Ok(PyAttributeDataNumber(self.0.data.clone()).into_py(py))
+            }
+            AttributeData::Vector { .. } => {
+                Ok(PyAttributeDataVector(self.0.data.clone()).into_py(py))
             }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
@@ -233,6 +236,26 @@ impl PyAttributeDataNumber {
     fn values(&self) -> PyResult<PyNumberArray> {
         match &self.0 {
             AttributeData::Number { values, .. } => Ok(PyNumberArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(name = "AttributeDataVector")]
+/// 2D or 3D vector data.
+pub struct PyAttributeDataVector(pub AttributeData);
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl PyAttributeDataVector {
+    #[getter]
+    /// Array with `Vector` type storing the attribute values.
+    fn values(&self) -> PyResult<PyVectorArray> {
+        match &self.0 {
+            AttributeData::Vector { values, .. } => Ok(PyVectorArray(values.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

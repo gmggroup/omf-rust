@@ -129,3 +129,15 @@ impl PyNumberArray {
         self.0.item_count()
     }
 }
+
+#[gen_stub_pyclass]
+#[pyclass(name = "VectorArray")]
+/// Nullable 2D or 3D vectors.
+pub struct PyVectorArray(pub Array<array_type::Vector>);
+#[pymethods]
+impl PyVectorArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
