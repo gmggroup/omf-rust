@@ -1,7 +1,7 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
-    PySegmentArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray,
-    PyVertexArray,
+    PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
+    PyNumberArray, PySegmentArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray,
+    PyVectorArray, PyVertexArray,
 };
 use crate::element::PyColor;
 use crate::PyProject;
@@ -191,6 +191,15 @@ impl PyReader {
     pub fn array_text(&self, array: &PyTextArray) -> PyResult<Vec<Option<String>>> {
         self.0
             .array_text(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    /// Read a Boolean array.
+    pub fn array_booleans(&self, array: &PyBooleanArray) -> PyResult<Vec<Option<bool>>> {
+        self.0
+            .array_booleans(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))

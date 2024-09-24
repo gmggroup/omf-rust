@@ -1,6 +1,6 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
-    PyTextArray, PyTextureCoordinatesArray, PyVectorArray,
+    PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
+    PyNumberArray, PyTextArray, PyTextureCoordinatesArray, PyVectorArray,
 };
 use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location};
@@ -103,10 +103,10 @@ impl PyAttribute {
             AttributeData::Vector { .. } => {
                 Ok(PyAttributeDataVector(self.0.data.clone()).into_py(py))
             }
+            AttributeData::Boolean { .. } => {
+                Ok(PyAttributeDataBoolean(self.0.data.clone()).into_py(py))
+            }
             AttributeData::Text { .. } => Ok(PyAttributeDataText(self.0.data.clone()).into_py(py)),
-            _ => Err(PyValueError::new_err(
-                "AttributeData variant is not supported",
-            )),
         }
     }
 }
@@ -356,6 +356,30 @@ impl PyAttributeDataText {
     fn values(&self) -> PyResult<PyTextArray> {
         match &self.0 {
             AttributeData::Text { values, .. } => Ok(PyTextArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(name = "AttributeDataBoolean")]
+/// Boolean or filter data.
+pub struct PyAttributeDataBoolean(pub AttributeData);
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl PyAttributeDataBoolean {
+    #[getter]
+    /// Array with `Boolean` type storing the attribute values.
+    ///
+    /// These values may be true, false, or null. Applications that don't support
+    /// [three-valued logic](https://en.wikipedia.org/wiki/Three-valued_logic) may treat
+    /// null as false.
+    fn values(&self) -> PyResult<PyBooleanArray> {
+        match &self.0 {
+            AttributeData::Boolean { values, .. } => Ok(PyBooleanArray(values.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

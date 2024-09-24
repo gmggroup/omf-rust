@@ -153,3 +153,15 @@ impl PyTextArray {
         self.0.item_count()
     }
 }
+
+#[gen_stub_pyclass]
+#[pyclass(name = "BooleanArray")]
+/// Nullable booleans.
+pub struct PyBooleanArray(pub Array<array_type::Boolean>);
+#[pymethods]
+impl PyBooleanArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
