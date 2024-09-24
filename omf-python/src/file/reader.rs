@@ -1,6 +1,6 @@
 use crate::array::{
-    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PySegmentArray,
-    PyTextureCoordinatesArray, PyTriangleArray, PyVertexArray,
+    PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
+    PySegmentArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use crate::element::PyColor;
 use crate::PyProject;
@@ -152,6 +152,33 @@ impl PyReader {
     pub fn array_texcoord(&self, array: &PyTextureCoordinatesArray) -> PyResult<Vec<[f64; 2]>> {
         self.0
             .array_texcoords(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    /// Read a Number array.
+    pub fn array_numbers(&self, array: &PyNumberArray) -> PyResult<Vec<f64>> {
+        let numbers_f64 = self
+            .0
+            .array_numbers(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .try_into_f64()
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+
+        Ok(numbers_f64
+            .into_iter()
+            .filter_map(|item| match item {
+                Ok(Some(value)) => Some(value),
+                _ => None,
+            })
+            .collect())
+    }
+
+    /// Read a Vector array.
+    pub fn array_vectors(&self, array: &PyVectorArray) -> PyResult<Vec<Option<[f64; 3]>>> {
+        self.0
+            .array_vectors(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
