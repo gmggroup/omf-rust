@@ -11,7 +11,7 @@ class TestProject(TestCase):
 
     def test_should_return_expected_project_details(self) -> None:
         # Given I have loaded a project
-        project = self.reader.project
+        project, _ = self.reader.project()
 
         # Then details should match what is in the project
         self.assertEqual(project.name, "Pyramid")
@@ -24,7 +24,7 @@ class TestProject(TestCase):
 
     def test_should_return_elements(self) -> None:
         # Given I have loaded a project
-        project = self.reader.project
+        project, _ = self.reader.project()
 
         # When I get the elements
         elements = project.elements
@@ -35,4 +35,3 @@ class TestProject(TestCase):
         # And those elements should be of type omf_python.Element
         for element in elements:
             self.assertIsInstance(element, omf_python.Element)
-

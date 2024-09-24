@@ -4,6 +4,7 @@ use crate::array::{
     PyVectorArray, PyVertexArray,
 };
 use crate::element::PyColor;
+use crate::validate::PyProblem;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
 use pyo3::types::PyBytes;
@@ -56,23 +57,20 @@ impl PyReader {
         Ok(PyReader(reader))
     }
 
-    #[getter]
     /// Reads, validates, and returns the root `Project` object from the file.
     ///
     /// Fails with an error if an IO error occurs, the `json_bytes` limit is exceeded, or validation
     /// fails. Validation warnings are returned alongside the project if successful or included
     /// with the errors if not.
-    fn project(&self) -> PyResult<PyProject> {
+    fn project(&self) -> PyResult<(PyProject, Vec<PyProblem>)> {
         let (project, problems) = self
             .0
             .project()
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
 
-        if !problems.is_empty() {
-            println!("Warnings while reading project: {:?}", problems);
-        }
-
-        Ok(PyProject(project))
+        let problems_array: Vec<PyProblem> =
+            problems.iter().map(|e| PyProblem(e.clone())).collect();
+        Ok((PyProject(project), problems_array))
     }
 
     /// Read a Vertex array.
