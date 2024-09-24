@@ -14,11 +14,11 @@ mod validate;
 
 use array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
-    PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyTextArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataCategory, PyAttributeDataColor, PyAttributeDataMappedTexture,
-    PyAttributeDataNumber, PyAttributeDataVector,
+    PyAttributeDataNumber, PyAttributeDataText, PyAttributeDataVector,
 };
 use element::{PyColor, PyElement};
 use file::reader::{PyLimits, PyReader};
@@ -41,6 +41,7 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttributeDataColor>()?;
     m.add_class::<PyAttributeDataMappedTexture>()?;
     m.add_class::<PyAttributeDataNumber>()?;
+    m.add_class::<PyAttributeDataText>()?;
     m.add_class::<PyAttributeDataVector>()?;
     m.add_class::<PyColor>()?;
     m.add_class::<PyColorArray>()?;
@@ -48,6 +49,7 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyIndexArray>()?;
     m.add_class::<PyGradientArray>()?;
     m.add_class::<PyNumberArray>()?;
+    m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
     m.add_class::<PyVertexArray>()?;
     m.add_class::<PyTextureCoordinatesArray>()?;

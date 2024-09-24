@@ -1,6 +1,6 @@
 use crate::array::{
     PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray, PyNumberArray,
-    PyTextureCoordinatesArray, PyVectorArray,
+    PyTextArray, PyTextureCoordinatesArray, PyVectorArray,
 };
 use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location};
@@ -103,6 +103,7 @@ impl PyAttribute {
             AttributeData::Vector { .. } => {
                 Ok(PyAttributeDataVector(self.0.data.clone()).into_py(py))
             }
+            AttributeData::Text { .. } => Ok(PyAttributeDataText(self.0.data.clone()).into_py(py)),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
@@ -335,6 +336,26 @@ impl PyAttributeDataVector {
     fn values(&self) -> PyResult<PyVectorArray> {
         match &self.0 {
             AttributeData::Vector { values, .. } => Ok(PyVectorArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+}
+
+#[gen_stub_pyclass]
+#[pyclass(name = "AttributeDataText")]
+/// Text data.
+pub struct PyAttributeDataText(pub AttributeData);
+
+#[gen_stub_pymethods]
+#[pymethods]
+impl PyAttributeDataText {
+    #[getter]
+    /// Array with `Text` type storing the attribute values.
+    fn values(&self) -> PyResult<PyTextArray> {
+        match &self.0 {
+            AttributeData::Text { values, .. } => Ok(PyTextArray(values.clone())),
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),

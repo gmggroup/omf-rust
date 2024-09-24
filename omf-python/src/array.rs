@@ -141,3 +141,15 @@ impl PyVectorArray {
         self.0.item_count()
     }
 }
+
+#[gen_stub_pyclass]
+#[pyclass(name = "TextArray")]
+/// Nullable text.
+pub struct PyTextArray(pub Array<array_type::Text>);
+#[pymethods]
+impl PyTextArray {
+    #[getter]
+    fn item_count(&self) -> u64 {
+        self.0.item_count()
+    }
+}
