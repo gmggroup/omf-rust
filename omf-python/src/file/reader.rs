@@ -138,6 +138,16 @@ impl PyReader {
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
+    /// Read a Texcoord array.
+    pub fn array_texcoords(&self, array: &PyTextureCoordinatesArray) -> PyResult<Vec<[f64; 2]>> {
+        self.0
+            .array_texcoords(&array.0)
+            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+    }
+
+    /// Read bytes of an Image.
     pub fn image_bytes<'p>(
         &self,
         py: Python<'p>,
@@ -147,14 +157,6 @@ impl PyReader {
             .array_bytes(&array.0)
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
             .map(|b| PyBytes::new_bound(py, &b))
-    }
-
-    pub fn array_texcoord(&self, array: &PyTextureCoordinatesArray) -> PyResult<Vec<[f64; 2]>> {
-        self.0
-            .array_texcoords(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }
 
     /// Read a Number array.

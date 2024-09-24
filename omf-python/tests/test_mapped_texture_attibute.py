@@ -27,7 +27,7 @@ class TestMappedTextureAttribute(TestCase):
 
         # And those coordinates should match the expected value
         self.assertEqual(4, texcoords.item_count)
-        coordinates = self.reader.array_texcoord(texcoords)
+        coordinates = self.reader.array_texcoords(texcoords)
         self.assertEqual(4, len(coordinates))
         COORDINATES = [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
         self.assertEqual(COORDINATES, coordinates)
