@@ -22,7 +22,7 @@ use attribute::{
     PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataText,
     PyAttributeDataVector,
 };
-use element::{PyColor, PyElement};
+use element::PyElement;
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyGeometry, PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
@@ -46,7 +46,6 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttributeDataNumber>()?;
     m.add_class::<PyAttributeDataText>()?;
     m.add_class::<PyAttributeDataVector>()?;
-    m.add_class::<PyColor>()?;
     m.add_class::<PyBooleanArray>()?;
     m.add_class::<PyColorArray>()?;
     m.add_class::<PyImageArray>()?;

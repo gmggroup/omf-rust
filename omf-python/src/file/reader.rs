@@ -3,10 +3,10 @@ use crate::array::{
     PyNumberArray, PySegmentArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray,
     PyVectorArray, PyVertexArray,
 };
-use crate::element::PyColor;
 use crate::validate::PyProblem;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
+use omf::Color;
 use pyo3::types::PyBytes;
 use std::fs::File;
 
@@ -110,11 +110,10 @@ impl PyReader {
     }
 
     /// Read a Color array.
-    pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<PyColor>>> {
+    pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<Color>>> {
         self.0
             .array_colors(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
-            .map(|r| r.map(|c| c.map(PyColor)))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }

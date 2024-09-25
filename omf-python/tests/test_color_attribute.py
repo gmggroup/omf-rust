@@ -17,12 +17,12 @@ class TestColorAttribute(TestCase):
 
         color_array = self.reader.array_color(values)
         self.assertEqual(6, len(color_array))
-        COLORS = [
-            omf_python.Color(255, 0, 0, 255),
-            omf_python.Color(255, 255, 0, 255),
-            omf_python.Color(0, 255, 0, 255),
-            omf_python.Color(0, 0, 255, 255),
-            omf_python.Color(255, 255, 255, 255),
-            omf_python.Color(255, 255, 255, 255),
+        expected_colors = [
+            [255, 0, 0, 255],
+            [255, 255, 0, 255],
+            [0, 255, 0, 255],
+            [0, 0, 255, 255],
+            [255, 255, 255, 255],
+            [255, 255, 255, 255],
         ]
-        self.assertEqual(COLORS, color_array)
+        self.assertEqual(expected_colors, color_array)

@@ -69,8 +69,4 @@ class TestGeometrySurface(TestCase):
         self.assertIsInstance(surface, omf_python.Surface)
 
         # And it has the correct color
-        color = surfaces[0].color
-        self.assertEqual(255, color.red)
-        self.assertEqual(255, color.green)
-        self.assertEqual(0, color.blue)
-        self.assertEqual(255, color.alpha)
+        self.assertEqual([255,255,0,255], surfaces[0].color)
