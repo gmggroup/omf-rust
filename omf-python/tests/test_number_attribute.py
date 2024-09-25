@@ -20,3 +20,24 @@ class TestNumberAttribute(TestCase):
         actual_values = self.reader.array_numbers(attribute_data.values)
 
         self.assertEqual(expected_values, actual_values)
+
+    def test_should_return_discrete_colormap(self) -> None:
+        colormap = self.reader.project.elements[0].attributes[2].get_data().colormap
+
+        self.assertIsInstance(colormap, omf_python.NumberColormapDiscrete)
+        self.assertIsInstance(colormap.boundaries, omf_python.BoundaryArray)
+        self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
+
+    def test_should_return_discrete_colormap_boundaries(self) -> None:
+        boundary_array = self.reader.project.elements[0].attributes[2].get_data().colormap.boundaries
+        actual_boundaries = self.reader.array_boundaries(boundary_array)
+
+        expected_boundaries = [946688400.0, 946692000.0, 946695600.0]
+        self.assertEqual(actual_boundaries, expected_boundaries)
+
+    def test_should_return_discrete_colormap_gradient(self) -> None:
+        gradient_array = self.reader.project.elements[0].attributes[2].get_data().colormap.gradient
+        actual_gradient = self.reader.array_gradient(gradient_array)
+
+        expected_gradient = [[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255], [255, 255, 255, 255]]
+        self.assertEqual(actual_gradient, expected_gradient)

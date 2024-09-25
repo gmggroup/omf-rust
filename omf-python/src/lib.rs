@@ -4,6 +4,7 @@ use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
 
 mod array;
 mod attribute;
+mod colormap;
 mod element;
 mod file;
 mod geometry;
@@ -13,14 +14,16 @@ mod project;
 mod validate;
 
 use array::{
-    PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
+    PyNameArray, PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
+    PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
     PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataText,
     PyAttributeDataVector,
 };
+use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
@@ -46,11 +49,14 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttributeDataText>()?;
     m.add_class::<PyAttributeDataVector>()?;
     m.add_class::<PyBooleanArray>()?;
+    m.add_class::<PyBoundaryArray>()?;
     m.add_class::<PyColorArray>()?;
     m.add_class::<PyImageArray>()?;
     m.add_class::<PyIndexArray>()?;
     m.add_class::<PyGradientArray>()?;
     m.add_class::<PyNumberArray>()?;
+    m.add_class::<PyNumberColormapContinuous>()?;
+    m.add_class::<PyNumberColormapDiscrete>()?;
     m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
     m.add_class::<PyVertexArray>()?;

@@ -2,8 +2,9 @@ use crate::array::{
     PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
     PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
 };
+use crate::colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use crate::grid::PyOrient2;
-use omf::{Attribute, AttributeData, Location};
+use omf::{Attribute, AttributeData, Location, NumberColormap};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
@@ -316,6 +317,31 @@ impl PyAttributeDataNumber {
     fn values(&self) -> PyResult<PyNumberArray> {
         match &self.0 {
             AttributeData::Number { values, .. } => Ok(PyNumberArray(values.clone())),
+            _ => Err(PyValueError::new_err(
+                "AttributeData variant is not supported",
+            )),
+        }
+    }
+
+    #[getter]
+    /// Optional colormap. If absent then the importing application should invent one.
+    ///
+    /// Make sure the colormap uses the same number type as `values`.
+    fn colormap(&self, py: Python) -> PyResult<Option<PyObject>> {
+        match &self.0 {
+            AttributeData::Number { colormap, .. } => match colormap {
+                Some(colormap) => match colormap {
+                    NumberColormap::Continuous { .. } => {
+                        let cmap = PyNumberColormapContinuous(colormap.clone());
+                        Ok(Some(cmap.into_py(py)))
+                    }
+                    NumberColormap::Discrete { .. } => {
+                        let cmap = PyNumberColormapDiscrete(colormap.clone());
+                        Ok(Some(cmap.into_py(py)))
+                    }
+                },
+                None => Ok(None),
+            },
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",
             )),
