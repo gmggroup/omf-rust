@@ -45,7 +45,6 @@ impl PyProject {
         self.0.application.clone()
     }
 
-    #[getter]
     fn elements(&self) -> Vec<PyElement> {
         self.0
             .elements

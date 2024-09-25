@@ -10,7 +10,7 @@ class TestTextAttribute(TestCase):
         self.project, _ = self.reader.project()
 
         # Get the "Pyramid Lines" element, and its "Strings" attribute.
-        self.attribute = self.project.elements[2].attributes[0]
+        self.attribute = self.project.elements()[2].attributes()[0]
 
     def test_should_return_text_attribute_instance(self) -> None:
         self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataText)

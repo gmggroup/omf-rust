@@ -27,7 +27,7 @@ class TestProject(TestCase):
         project, _ = self.reader.project()
 
         # When I get the elements
-        elements = project.elements
+        elements = project.elements()
 
         # Then I should have two elements
         self.assertEqual(len(elements), 2)

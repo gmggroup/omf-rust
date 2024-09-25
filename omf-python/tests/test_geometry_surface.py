@@ -17,7 +17,7 @@ class TestGeometrySurface(TestCase):
 
         # Then there is one surface element
         surfaces = [
-            s for s in project.elements if s.geometry.type_name() == "Surface"
+            s for s in project.elements() if s.geometry.type_name() == "Surface"
         ]
         self.assertEqual(1, len(surfaces))
 
@@ -60,7 +60,7 @@ class TestGeometrySurface(TestCase):
 
         # Then there is one surface element
         surfaces = [
-            s for s in project.elements if s.geometry.type_name() == "Surface"
+            s for s in project.elements() if s.geometry.type_name() == "Surface"
         ]
         self.assertEqual(1, len(surfaces))
 

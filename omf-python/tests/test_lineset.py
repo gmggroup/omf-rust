@@ -9,20 +9,21 @@ class TestLineSet(TestCase):
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
         self.project, _ = self.reader.project()
+        self.lineset = self.project.elements()[2]
 
     def test_should_return_expected_geometry_type(self) -> None:
-        lineset_type = self.project.elements[2].geometry.type_name()
+        lineset_type = self.lineset.geometry.type_name()
 
         self.assertEqual(lineset_type, "LineSet")
 
     def test_should_return_expected_origin(self) -> None:
-        lineset_origin = self.project.elements[2].geometry.get_object().origin
+        lineset_origin = self.lineset.geometry.get_object().origin
 
         self.assertEqual(lineset_origin, [0.0, 0.0, 0.0])
 
     def test_should_return_expected_vertices(self) -> None:
         # Given
-        vertices_array = self.project.elements[2].geometry.get_object().vertices
+        vertices_array = self.lineset.geometry.get_object().vertices
 
         # When
         vertices = self.reader.array_vertices(vertices_array)
@@ -39,7 +40,7 @@ class TestLineSet(TestCase):
 
     def test_should_return_expected_segments(self) -> None:
         # Given
-        segments_array = self.project.elements[2].geometry.get_object().segments
+        segments_array = self.lineset.geometry.get_object().segments
 
         # When
         segments = self.reader.array_segments(segments_array)

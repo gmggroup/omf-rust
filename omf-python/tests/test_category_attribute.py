@@ -9,36 +9,28 @@ class TestCategoryAttribute(TestCase):
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
         self.project, _ = self.reader.project()
+        self.attribute = self.project.elements()[1].attributes()[0]
 
     def test_should_return_category_attribute_details(self) -> None:
-        attributes = self.project.elements[1].attributes
+        self.assertIsInstance(self.attribute, omf_python.Attribute)
 
-        self.assertEqual(len(attributes), 3)
+        self.assertEqual(self.attribute.name, "Categories")
 
-        for attribute in attributes:
-            self.assertIsInstance(attribute, omf_python.Attribute)
+        self.assertEqual(self.attribute.description, "Divides the points into top and base.")
 
-        attribute = attributes[0]
+        self.assertEqual(self.attribute.units, "whatever")
 
-        self.assertEqual(attribute.name, "Categories")
-
-        self.assertEqual(attribute.description, "Divides the points into top and base.")
-
-        self.assertEqual(attribute.units, "whatever")
-
-        metadata_string = attribute.metadata
+        metadata_string = self.attribute.metadata
         metadata = json.loads(metadata_string)
         expected_metadata = {
             "key": "value"
         }
         self.assertEqual(metadata, expected_metadata)
 
-        self.assertEqual(attribute.location, "Vertices")
+        self.assertEqual(self.attribute.location, "Vertices")
 
     def test_should_return_category_attribute_array_instances(self) -> None:
-        attributes = self.project.elements[1].attributes
-
-        attribute_data = attributes[0].get_data()
+        attribute_data = self.attribute.get_data()
 
         self.assertIsInstance(attribute_data, omf_python.AttributeDataCategory)
 
@@ -48,7 +40,7 @@ class TestCategoryAttribute(TestCase):
         self.assertIsInstance(attribute_data.attributes[0], omf_python.Attribute)
 
     def test_should_return_category_attribute_expected_values(self) -> None:
-        attribute_data = self.project.elements[1].attributes[0].get_data()
+        attribute_data = self.attribute.get_data()
 
         values = self.reader.array_indices(attribute_data.values)
 

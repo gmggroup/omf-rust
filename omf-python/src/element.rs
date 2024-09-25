@@ -22,7 +22,6 @@ impl PyElement {
         self.0.description.clone()
     }
 
-    #[getter]
     fn attributes(&self) -> Vec<PyAttribute> {
         self.0
             .attributes
