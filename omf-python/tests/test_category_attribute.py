@@ -8,9 +8,10 @@ class TestCategoryAttribute(TestCase):
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
+        self.project, _ = self.reader.project()
 
     def test_should_return_category_attribute_details(self) -> None:
-        attributes = self.reader.project.elements[1].attributes
+        attributes = self.project.elements[1].attributes
 
         self.assertEqual(len(attributes), 3)
 
@@ -35,7 +36,7 @@ class TestCategoryAttribute(TestCase):
         self.assertEqual(attribute.location, "Vertices")
 
     def test_should_return_category_attribute_array_instances(self) -> None:
-        attributes = self.reader.project.elements[1].attributes
+        attributes = self.project.elements[1].attributes
 
         attribute_data = attributes[0].get_data()
 
@@ -47,7 +48,7 @@ class TestCategoryAttribute(TestCase):
         self.assertIsInstance(attribute_data.attributes[0], omf_python.Attribute)
 
     def test_should_return_category_attribute_expected_values(self) -> None:
-        attribute_data = self.reader.project.elements[1].attributes[0].get_data()
+        attribute_data = self.project.elements[1].attributes[0].get_data()
 
         values = self.reader.array_indices(attribute_data.values)
 

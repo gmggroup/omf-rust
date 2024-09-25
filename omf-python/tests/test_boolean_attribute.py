@@ -7,9 +7,10 @@ class TestBooleanAttribute(TestCase):
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
+        self.project, _ = self.reader.project()
 
         # Get the "Regular block model" element, and its "Filter" attribute.
-        self.attribute = self.reader.project.elements[4].attributes[0]
+        self.attribute = self.project.elements[4].attributes[0]
 
     def test_should_return_boolean_attribute_instance(self) -> None:
         self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataBoolean)

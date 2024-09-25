@@ -15,7 +15,26 @@ class TestReader(TestCase):
         reader = omf_python.Reader(omf_file)
 
         # Then
-        self.assertEqual(reader.project.name, "Pyramid")
+        project, _ = reader.project()
+        self.assertEqual(project.name, "Pyramid")
+
+    def test_should_return_expected_problems(self) -> None:
+        # Given
+        onf_file_with_problem = path.join(path.dirname(__file__), "data/problem.omf")
+        reader = omf_python.Reader(onf_file_with_problem)
+        _, problems = reader.project()
+
+        # Then
+        self.assertEqual(len(problems), 1)
+
+        problem = problems[0]
+
+        self.assertEqual(str(problem), "Warning: \'Element::attributes[..]::name\' contains duplicate of \"Numbers\", inside 'Pyramid surface'")
+        self.assertEqual(problem.name, "Pyramid surface")
+        self.assertEqual(problem.field, "attributes[..]::name")
+        self.assertEqual(problem.reason, "contains duplicate of \"Numbers\"")
+        self.assertEqual(problem.type_name, "Element")
+        self.assertEqual(problem.is_error(), False)
 
     def test_should_raise_expected_file_not_found_exception(self) -> None:
         # Given
@@ -27,4 +46,3 @@ class TestReader(TestCase):
 
         # Then
         self.assertEqual(str(context.exception), "No such file or directory (os error 2)")
-

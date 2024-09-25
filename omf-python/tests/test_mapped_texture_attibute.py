@@ -8,14 +8,15 @@ class TestMappedTextureAttribute(TestCase):
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
-
+        self.project, _ = self.reader.project()
+        
         test_png = path.join(omf_dir, "test.png")
         with open(test_png, "rb") as file:
             self.image = file.read()
 
     def test_should_return_expected_texture_attributes(self) -> None:
         # Given an element with a MappedTexture attribute
-        attributes = self.reader.project.elements[9].attributes
+        attributes = self.project.elements[9].attributes
         self.assertEqual(2, len(attributes))
 
         # Then should be able to get the MappedTexture attribute

@@ -8,9 +8,10 @@ class TestColorAttribute(TestCase):
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         self.reader = omf_python.Reader(one_of_everything)
+        self.project, _ = self.reader.project()
 
     def test_should_return_expected_color_attributes(self) -> None:
-        attributes = self.reader.project.elements[0].attributes
+        attributes = self.project.elements[0].attributes
         self.assertEqual(3, len(attributes))
 
         color_attributes = [a for a in attributes if a.name == "Colors"]
