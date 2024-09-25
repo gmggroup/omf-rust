@@ -21,6 +21,11 @@ class TestNumberAttribute(TestCase):
 
         self.assertEqual(expected_values, actual_values)
 
+    def test_should_handle_empty_colormap(self) -> None:
+        number_attribute_data = self.reader.project.elements[0].attributes[0].get_data()
+
+        self.assertEqual(number_attribute_data.colormap, None)
+
     def test_should_return_discrete_colormap(self) -> None:
         colormap = self.reader.project.elements[0].attributes[2].get_data().colormap
 
