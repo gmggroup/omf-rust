@@ -14,8 +14,7 @@ mod validate;
 
 use array::{
     PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray, PyVectorArray,
-    PyVertexArray,
+    PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
@@ -55,7 +54,7 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
     m.add_class::<PyVertexArray>()?;
-    m.add_class::<PyTextureCoordinatesArray>()?;
+    m.add_class::<PyTexcoordArray>()?;
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;

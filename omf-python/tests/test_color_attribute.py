@@ -13,7 +13,7 @@ class TestColorAttribute(TestCase):
 
     def test_should_return_expected_color_attributes(self) -> None:
         values = self.attribute.get_data().values
-        self.assertEqual(6, values.item_count)
+        self.assertEqual(6, values.item_count())
 
         color_array = self.reader.array_color(values)
         self.assertEqual(6, len(color_array))

@@ -1,6 +1,6 @@
 use crate::array::{
     PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTextArray, PyTextureCoordinatesArray, PyVectorArray,
+    PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
 };
 use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location};
@@ -228,10 +228,10 @@ impl PyAttributeDataMappedTexture {
     /// Array with Texcoord type storing the UV texture coordinates.
     ///
     /// Each item is a normalized (U, V) pair. For values outside [0, 1] the texture wraps.
-    fn texcoords(&self) -> PyResult<PyTextureCoordinatesArray> {
+    fn texcoords(&self) -> PyResult<PyTexcoordArray> {
         match &self.0 {
             AttributeData::MappedTexture { texcoords, .. } => {
-                Ok(PyTextureCoordinatesArray(texcoords.clone()))
+                Ok(PyTexcoordArray(texcoords.clone()))
             }
             _ => Err(PyValueError::new_err(
                 "AttributeData variant is not supported",

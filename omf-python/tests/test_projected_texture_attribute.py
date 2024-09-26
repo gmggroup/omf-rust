@@ -32,7 +32,7 @@ class TestProjectedTextureAttribute(TestCase):
         image = attribute_data.image
 
         # Images always have an item count of zero
-        self.assertEqual(0, image.item_count)
+        self.assertEqual(0, image.item_count())
 
         image_bytes = self.reader.image_bytes(image)
         self.assertEqual(self.image, image_bytes)

@@ -16,7 +16,7 @@ class TestTextAttribute(TestCase):
         self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataText)
 
     def test_should_return_text_attribute_values_item_count(self) -> None:
-        actual_count = self.attribute.get_data().values.item_count
+        actual_count = self.attribute.get_data().values.item_count()
         self.assertEqual(actual_count, 8)
 
     def test_should_return_text_attribute_values(self) -> None:

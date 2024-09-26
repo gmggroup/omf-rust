@@ -1,7 +1,7 @@
 use crate::array::{
     PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PySegmentArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray,
-    PyVectorArray, PyVertexArray,
+    PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray,
+    PyVertexArray,
 };
 use crate::validate::PyProblem;
 use crate::PyProject;
@@ -186,7 +186,7 @@ impl PyReader {
     }
 
     /// Read a Texcoord array.
-    pub fn array_texcoords(&self, array: &PyTextureCoordinatesArray) -> PyResult<Vec<[f64; 2]>> {
+    pub fn array_texcoords(&self, array: &PyTexcoordArray) -> PyResult<Vec<[f64; 2]>> {
         self.0
             .array_texcoords(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?

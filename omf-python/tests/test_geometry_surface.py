@@ -21,11 +21,11 @@ class TestGeometrySurface(TestCase):
 
         # And it contains 6 triangles
         triangles_array = surface.triangles
-        self.assertEqual(6, triangles_array.item_count)
+        self.assertEqual(6, triangles_array.item_count())
 
         # And it contains 5 vertices
         vertices_array = surface.vertices
-        self.assertEqual(5, vertices_array.item_count)
+        self.assertEqual(5, vertices_array.item_count())
 
         # And the vertices are what we expect
         vertices = reader.array_vertices(vertices_array)
