@@ -17,8 +17,8 @@ pub struct PyNumberRangeFloat(pub NumberRange);
 impl PyNumberRangeFloat {
     #[getter]
     fn min(&self) -> PyResult<f64> {
-        match &self.0 {
-            NumberRange::Float { min, .. } => Ok(*min),
+        match self.0 {
+            NumberRange::Float { min, .. } => Ok(min),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -26,8 +26,8 @@ impl PyNumberRangeFloat {
     }
     #[getter]
     fn max(&self) -> PyResult<f64> {
-        match &self.0 {
-            NumberRange::Float { max, .. } => Ok(*max),
+        match self.0 {
+            NumberRange::Float { max, .. } => Ok(max),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -48,8 +48,8 @@ pub struct PyNumberRangeInteger(pub NumberRange);
 impl PyNumberRangeInteger {
     #[getter]
     fn min(&self) -> PyResult<i64> {
-        match &self.0 {
-            NumberRange::Integer { min, .. } => Ok(*min),
+        match self.0 {
+            NumberRange::Integer { min, .. } => Ok(min),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -57,8 +57,8 @@ impl PyNumberRangeInteger {
     }
     #[getter]
     fn max(&self) -> PyResult<i64> {
-        match &self.0 {
-            NumberRange::Integer { max, .. } => Ok(*max),
+        match self.0 {
+            NumberRange::Integer { max, .. } => Ok(max),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -79,8 +79,8 @@ pub struct PyNumberRangeDate(pub NumberRange);
 impl PyNumberRangeDate {
     #[getter]
     fn min(&self, py: Python<'_>) -> PyResult<PyObject> {
-        match &self.0 {
-            NumberRange::Date { min, .. } => Ok((*min).into_py(py)),
+        match self.0 {
+            NumberRange::Date { min, .. } => Ok(min.into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -88,8 +88,8 @@ impl PyNumberRangeDate {
     }
     #[getter]
     fn max(&self, py: Python<'_>) -> PyResult<PyObject> {
-        match &self.0 {
-            NumberRange::Date { max, .. } => Ok((*max).into_py(py)),
+        match self.0 {
+            NumberRange::Date { max, .. } => Ok(max.into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -110,8 +110,8 @@ pub struct PyNumberRangeDateTime(pub NumberRange);
 impl PyNumberRangeDateTime {
     #[getter]
     fn min(&self, py: Python<'_>) -> PyResult<PyObject> {
-        match &self.0 {
-            NumberRange::DateTime { min, .. } => Ok((*min).into_py(py)),
+        match self.0 {
+            NumberRange::DateTime { min, .. } => Ok(min.into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -119,8 +119,8 @@ impl PyNumberRangeDateTime {
     }
     #[getter]
     fn max(&self, py: Python<'_>) -> PyResult<PyObject> {
-        match &self.0 {
-            NumberRange::DateTime { max, .. } => Ok((*max).into_py(py)),
+        match self.0 {
+            NumberRange::DateTime { max, .. } => Ok(max.into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
