@@ -24,7 +24,7 @@ use attribute::{
 };
 use element::PyElement;
 use file::reader::{PyLimits, PyReader};
-use geometry::{PyGeometry, PyLineSet, PyPointSet, PySurface};
+use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
 use project::PyProject;
 
@@ -59,7 +59,6 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;
-    m.add_class::<PyGeometry>()?;
     m.add_class::<PyPointSet>()?;
     m.add_class::<PyLineSet>()?;
     m.add_class::<PyProject>()?;

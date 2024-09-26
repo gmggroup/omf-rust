@@ -11,17 +11,15 @@ class TestPointSet(TestCase):
         self.pointset = self.project.elements()[1]
 
     def test_should_return_expected_geometry_type(self) -> None:
-        pointset_type = self.pointset.geometry.type_name()
-        self.assertEqual(pointset_type, "PointSet")
+        self.assertIsInstance(self.pointset.geometry(), omf_python.PointSet)
 
     def test_should_return_expected_origin(self) -> None:
-        pointset_origin = self.pointset.geometry.get_object().origin
-
+        pointset_origin = self.pointset.geometry().origin
         self.assertEqual(pointset_origin, [0.0, 0.0, 0.0])
 
     def test_should_return_expected_vertices(self) -> None:
         # Given
-        vertices_array = self.pointset.geometry.get_object().vertices
+        vertices_array = self.pointset.geometry().vertices
 
         # When
         vertices = self.reader.array_vertices(vertices_array)

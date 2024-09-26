@@ -1,7 +1,9 @@
 use crate::attribute::PyAttribute;
-use crate::geometry::PyGeometry;
+use crate::geometry::{PyLineSet, PyPointSet, PySurface};
 use omf::Color;
 use omf::Element;
+use omf::Geometry;
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
@@ -37,10 +39,14 @@ impl PyElement {
             .collect()
     }
 
-    #[getter]
     /// The geometry of the element.
-    fn geometry(&self) -> PyGeometry {
-        PyGeometry(self.0.geometry.clone())
+    fn geometry(&self, py: Python<'_>) -> PyResult<PyObject> {
+        match &self.0.geometry {
+            Geometry::PointSet(point_set) => Ok(PyPointSet(point_set.clone()).into_py(py)),
+            Geometry::LineSet(line_set) => Ok(PyLineSet(line_set.clone()).into_py(py)),
+            Geometry::Surface(surface) => Ok(PySurface(surface.clone()).into_py(py)),
+            _ => Err(PyValueError::new_err("Geometry type not supported")),
+        }
     }
 
     #[getter]
