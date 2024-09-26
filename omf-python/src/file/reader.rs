@@ -1,7 +1,7 @@
 use crate::array::{
     PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray,
-    PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
+    PyVectorArray, PyVertexArray,
 };
 use crate::validate::PyProblem;
 use crate::PyProject;

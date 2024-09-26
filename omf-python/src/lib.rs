@@ -15,19 +15,19 @@ mod validate;
 
 use array::{
     PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
-    PyVectorArray, PyVertexArray,
+    PyNameArray, PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray,
+    PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
     PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataText,
     PyAttributeDataVector,
 };
-use element::PyElement;
 use colormap::{
     PyNumberColormapContinuous, PyNumberColormapDiscrete, PyNumberRangeDate, PyNumberRangeDateTime,
     PyNumberRangeFloat, PyNumberRangeInteger,
 };
+use element::PyElement;
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
