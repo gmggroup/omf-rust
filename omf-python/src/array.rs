@@ -67,6 +67,11 @@ pub struct PyTextArray(pub Array<array_type::Text>);
 /// Nullable booleans.
 pub struct PyBooleanArray(pub Array<array_type::Boolean>);
 
+#[gen_stub_pyclass]
+#[pyclass(name = "BoundaryArray")]
+/// Discrete color-map boundaries.
+pub struct PyBoundaryArray(pub Array<array_type::Boundary>);
+
 macro_rules! array_type_impl {
     ($($arrayType:ty)*) => ($(
         #[gen_stub_pymethods]
@@ -94,16 +99,5 @@ array_type_impl! {
     PyVectorArray
     PyTextArray
     PyBooleanArray
-}
-
-#[gen_stub_pyclass]
-#[pyclass(name = "BoundaryArray")]
-/// Discrete color-map boundaries.
-pub struct PyBoundaryArray(pub Array<array_type::Boundary>);
-#[pymethods]
-impl PyBoundaryArray {
-    #[getter]
-    fn item_count(&self) -> u64 {
-        self.0.item_count()
-    }
+    PyBoundaryArray
 }
