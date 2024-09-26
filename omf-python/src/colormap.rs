@@ -10,7 +10,6 @@ use pyo3_stub_gen::derive::*;
 ///
 /// Values outside this range will use the color at the ends of the gradient.
 /// The variant used should match the type of the number array.
-
 pub struct PyNumberRangeFloat(pub NumberRange);
 
 #[gen_stub_pymethods]
@@ -42,7 +41,6 @@ impl PyNumberRangeFloat {
 ///
 /// Values outside this range will use the color at the ends of the gradient.
 /// The variant used should match the type of the number array.
-
 pub struct PyNumberRangeInteger(pub NumberRange);
 
 #[gen_stub_pymethods]
@@ -74,7 +72,6 @@ impl PyNumberRangeInteger {
 ///
 /// Values outside this range will use the color at the ends of the gradient.
 /// The variant used should match the type of the number array.
-
 pub struct PyNumberRangeDate(pub NumberRange);
 
 #[gen_stub_pymethods]
@@ -106,7 +103,6 @@ impl PyNumberRangeDate {
 ///
 /// Values outside this range will use the color at the ends of the gradient.
 /// The variant used should match the type of the number array.
-
 pub struct PyNumberRangeDateTime(pub NumberRange);
 
 #[gen_stub_pymethods]
@@ -142,7 +138,6 @@ impl PyNumberRangeDateTime {
 ///
 /// Values below the minimum use the first color in the gradient array. Values above
 /// the maximum use the last.
-
 pub struct PyNumberColormapContinuous(pub NumberColormap);
 
 #[gen_stub_pymethods]
