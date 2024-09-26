@@ -23,8 +23,11 @@ use attribute::{
     PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataText,
     PyAttributeDataVector,
 };
-use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
+use colormap::{
+    PyNumberColormapContinuous, PyNumberColormapDiscrete, PyNumberRangeDate, PyNumberRangeDateTime,
+    PyNumberRangeFloat, PyNumberRangeInteger,
+};
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
@@ -57,6 +60,10 @@ fn omf_python(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyNumberArray>()?;
     m.add_class::<PyNumberColormapContinuous>()?;
     m.add_class::<PyNumberColormapDiscrete>()?;
+    m.add_class::<PyNumberRangeDate>()?;
+    m.add_class::<PyNumberRangeDateTime>()?;
+    m.add_class::<PyNumberRangeFloat>()?;
+    m.add_class::<PyNumberRangeInteger>()?;
     m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
     m.add_class::<PyVertexArray>()?;

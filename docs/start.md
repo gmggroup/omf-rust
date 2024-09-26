@@ -101,6 +101,13 @@ make html
 
 You can then view the python API documentation here: [here](../omf-python/docs/build/html/index.html).
 
+Some test OMF files need to be generated so that all features can be tested via `pytest`. If you need to make more test
+files, or modify existing ones:
+
+```sh
+cd omf-python
+cargo run --bin generate_test_data
+```
 
 ## Write Your Own
 
