@@ -8,7 +8,7 @@ use std::{
 use chrono::{DateTime, NaiveDate};
 use omf::{file::Writer, *};
 
-fn continuous_colormap() -> () {
+fn continuous_colormap() {
     let mut writer = Writer::new(temp_file("tests/data/continuous_colormap.omf", b"")).unwrap();
 
     let mut project = Project::new("Continuous Colormap Test");
@@ -114,6 +114,6 @@ fn temp_file(name: &str, contents: &[u8]) -> File {
     f
 }
 
-fn main() -> () {
+fn main() {
     continuous_colormap();
 }

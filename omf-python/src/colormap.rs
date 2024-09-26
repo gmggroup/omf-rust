@@ -83,7 +83,7 @@ impl PyNumberRangeDate {
     #[getter]
     fn min(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
-            NumberRange::Date { min, .. } => Ok(min.clone().into_py(py)),
+            NumberRange::Date { min, .. } => Ok((*min).into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -92,7 +92,7 @@ impl PyNumberRangeDate {
     #[getter]
     fn max(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
-            NumberRange::Date { max, .. } => Ok(max.clone().into_py(py)),
+            NumberRange::Date { max, .. } => Ok((*max).into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -115,7 +115,7 @@ impl PyNumberRangeDateTime {
     #[getter]
     fn min(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
-            NumberRange::DateTime { min, .. } => Ok(min.clone().into_py(py)),
+            NumberRange::DateTime { min, .. } => Ok((*min).into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -124,7 +124,7 @@ impl PyNumberRangeDateTime {
     #[getter]
     fn max(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
-            NumberRange::DateTime { max, .. } => Ok(max.clone().into_py(py)),
+            NumberRange::DateTime { max, .. } => Ok((*max).into_py(py)),
             _ => Err(PyValueError::new_err(
                 "NumberRange variant is not supported",
             )),
@@ -153,12 +153,10 @@ impl PyNumberColormapContinuous {
     fn range(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0 {
             NumberColormap::Continuous { range, .. } => match &range {
-                NumberRange::Float { .. } => Ok(PyNumberRangeFloat(range.clone()).into_py(py)),
-                NumberRange::Integer { .. } => Ok(PyNumberRangeInteger(range.clone()).into_py(py)),
-                NumberRange::Date { .. } => Ok(PyNumberRangeDate(range.clone()).into_py(py)),
-                NumberRange::DateTime { .. } => {
-                    Ok(PyNumberRangeDateTime(range.clone()).into_py(py))
-                }
+                NumberRange::Float { .. } => Ok(PyNumberRangeFloat(*range).into_py(py)),
+                NumberRange::Integer { .. } => Ok(PyNumberRangeInteger(*range).into_py(py)),
+                NumberRange::Date { .. } => Ok(PyNumberRangeDate(*range).into_py(py)),
+                NumberRange::DateTime { .. } => Ok(PyNumberRangeDateTime(*range).into_py(py)),
             },
             _ => Err(PyValueError::new_err(
                 "NumberColormap variant is not supported",
