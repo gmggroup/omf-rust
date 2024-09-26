@@ -12,7 +12,9 @@ class TestNumberAttribute(TestCase):
         self.reader = omf_python.Reader(one_of_everything)
         self.project, _ = self.reader.project()
         self.attribute = self.project.elements()[0].attributes()[2]
+
         self.ccmap_reader = omf_python.Reader(continuous_colormap)
+        self.ccmap_project, _ = self.ccmap_reader.project()
 
     def test_should_return_number_attribute_instance(self) -> None:
         self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataNumber)
@@ -26,46 +28,46 @@ class TestNumberAttribute(TestCase):
         self.assertEqual(expected_values, actual_values)
 
     def test_should_handle_empty_colormap(self) -> None:
-        number_attribute_data = self.reader.project.elements[0].attributes[0].get_data()
+        number_attribute_data = self.project.elements()[0].attributes()[0].get_data()
 
         self.assertEqual(number_attribute_data.colormap, None)
 
     def test_should_return_discrete_colormap(self) -> None:
-        colormap = self.reader.project.elements[0].attributes[2].get_data().colormap
+        colormap = self.project.elements()[0].attributes()[2].get_data().colormap
 
         self.assertIsInstance(colormap, omf_python.NumberColormapDiscrete)
         self.assertIsInstance(colormap.boundaries, omf_python.BoundaryArray)
         self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
 
     def test_should_return_discrete_colormap_boundaries(self) -> None:
-        boundary_array = self.reader.project.elements[0].attributes[2].get_data().colormap.boundaries
+        boundary_array = self.project.elements()[0].attributes()[2].get_data().colormap.boundaries
         actual_boundaries = self.reader.array_boundaries(boundary_array)
 
         expected_boundaries = [946688400.0, 946692000.0, 946695600.0]
         self.assertEqual(actual_boundaries, expected_boundaries)
 
     def test_should_return_discrete_colormap_gradient(self) -> None:
-        gradient_array = self.reader.project.elements[0].attributes[2].get_data().colormap.gradient
+        gradient_array = self.project.elements()[0].attributes()[2].get_data().colormap.gradient
         actual_gradient = self.reader.array_gradient(gradient_array)
 
         expected_gradient = [[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255], [255, 255, 255, 255]]
         self.assertEqual(actual_gradient, expected_gradient)
 
     def test_should_return_continuous_colormap(self) -> None:
-        colormap = self.ccmap_reader.project.elements[0].attributes[0].get_data().colormap
+        colormap = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap
 
         self.assertIsInstance(colormap, omf_python.NumberColormapContinuous)
         self.assertIsInstance(colormap.range, omf_python.NumberRangeFloat)
         self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
 
     def test_should_return_continuous_colormap_float_range(self) -> None:
-        range = self.ccmap_reader.project.elements[0].attributes[0].get_data().colormap.range
+        range = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap.range
 
         self.assertEqual(range.min, 0.0)
         self.assertEqual(range.max, 2.0)
 
     def test_should_return_continuous_colormap_date_range(self) -> None:
-        range = self.ccmap_reader.project.elements[0].attributes[1].get_data().colormap.range
+        range = self.ccmap_project.elements()[0].attributes()[1].get_data().colormap.range
 
         self.assertIsInstance(range, omf_python.NumberRangeDate)
 
@@ -76,7 +78,7 @@ class TestNumberAttribute(TestCase):
         self.assertEqual(range.max, expected_max)
 
     def test_should_return_continuous_colormap_datetime_range(self) -> None:
-        range = self.ccmap_reader.project.elements[0].attributes[2].get_data().colormap.range
+        range = self.ccmap_project.elements()[0].attributes()[2].get_data().colormap.range
 
         self.assertIsInstance(range, omf_python.NumberRangeDateTime)
 
