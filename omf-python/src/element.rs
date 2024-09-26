@@ -1,28 +1,36 @@
 use crate::attribute::PyAttribute;
-use crate::geometry::PyGeometry;
+use crate::geometry::{PyLineSet, PyPointSet, PySurface};
 use omf::Color;
 use omf::Element;
+use omf::Geometry;
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Element")]
+/// Defines a single “object” or “shape” within the OMF file.
+///
+/// Each shape has a name plus other optional metadata, a “geometry” that describes a point-set, surface, etc.,
+/// and a list of attributes that that exist on that geometry.
 pub struct PyElement(pub Element);
 
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyElement {
     #[getter]
+    /// The element name. Names should be non-empty and unique.
     fn name(&self) -> String {
         self.0.name.clone()
     }
 
     #[getter]
+    /// Optional element description.
     fn description(&self) -> String {
         self.0.description.clone()
     }
 
-    #[getter]
+    /// List of attributes, if any.
     fn attributes(&self) -> Vec<PyAttribute> {
         self.0
             .attributes
@@ -31,57 +39,19 @@ impl PyElement {
             .collect()
     }
 
-    #[getter]
-    fn geometry(&self) -> PyGeometry {
-        PyGeometry(self.0.geometry.clone())
+    /// The geometry of the element.
+    fn geometry(&self, py: Python<'_>) -> PyResult<PyObject> {
+        match &self.0.geometry {
+            Geometry::PointSet(point_set) => Ok(PyPointSet(point_set.clone()).into_py(py)),
+            Geometry::LineSet(line_set) => Ok(PyLineSet(line_set.clone()).into_py(py)),
+            Geometry::Surface(surface) => Ok(PySurface(surface.clone()).into_py(py)),
+            _ => Err(PyValueError::new_err("Geometry type not supported")),
+        }
     }
 
     #[getter]
-    fn color(&self) -> Option<PyColor> {
-        self.0.color.map(PyColor)
-    }
-}
-
-#[gen_stub_pyclass]
-#[pyclass(name = "Color")]
-pub struct PyColor(pub Color);
-
-#[gen_stub_pymethods]
-#[pymethods]
-impl PyColor {
-    const RED: usize = 0;
-    const GREEN: usize = 1;
-    const BLUE: usize = 2;
-    const ALPHA: usize = 3;
-
-    #[new]
-    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        PyColor([red, green, blue, alpha])
-    }
-
-    fn __eq__(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-
-    #[getter]
-    fn red(&self) -> u8 {
-        self.0[Self::RED]
-    }
-
-    #[getter]
-    fn green(&self) -> u8 {
-        self.0[Self::GREEN]
-    }
-    #[getter]
-    fn blue(&self) -> u8 {
-        self.0[Self::BLUE]
-    }
-    #[getter]
-    fn alpha(&self) -> u8 {
-        self.0[Self::ALPHA]
-    }
-
-    fn as_list(&self) -> [u8; 4] {
-        self.0
+    /// Optional solid color.
+    fn color(&self) -> Option<Color> {
+        self.0.color
     }
 }

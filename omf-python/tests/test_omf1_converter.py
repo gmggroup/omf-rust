@@ -22,7 +22,7 @@ class TestOmf1Converter(TestCase):
             # Then
             reader = omf_python.Reader(omf2_file.name)
             project, _ = reader.project()
-            self.assertEqual(len(project.elements), 2)
+            self.assertEqual(len(project.elements()), 2)
 
     def test_should_return_expected_problems(self) -> None:
         # Given

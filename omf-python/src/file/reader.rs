@@ -3,10 +3,10 @@ use crate::array::{
     PyNumberArray, PySegmentArray, PyTextArray, PyTextureCoordinatesArray, PyTriangleArray,
     PyVectorArray, PyVertexArray,
 };
-use crate::element::PyColor;
 use crate::validate::PyProblem;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
+use omf::Color;
 use pyo3::types::PyBytes;
 use std::fs::File;
 
@@ -45,16 +45,65 @@ impl PyLimits {
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Reader")]
+/// OMF reader object.
+///
+/// Typical usage pattern is:
+///
+/// - Create the reader object.
+/// - Optional: retrieve the file version with `reader.version()`.
+/// - Optional: adjust the limits with `reader.set_limits(...)`.
+/// - Read the project from the file with `reader.project()`.
+/// - Iterate through the project's contents to find the elements and attributes you want to load.
+/// - For each of those items load the array or image data.
+///
+/// **Warning:**
+///     When loading arrays and images from OMF files, beware of "zip bombs"
+///     where data is maliciously crafted to expand to an excessive size when decompressed,
+///     leading to a potential denial of service attack.
+///     Use the limits provided check arrays sizes before allocating memory.
 pub struct PyReader(Reader);
-
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyReader {
     #[new]
+    /// Creates a reader from an OMF file path.
+
+    /// Makes only the minimum number of reads to check the file header and footer.
+    /// Fails with an error if an IO error occurs or the file isn’t in OMF 2 format.
     pub fn new(filepath: &str) -> PyResult<Self> {
         let file = File::open(filepath).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
         let reader = Reader::new(file).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
         Ok(PyReader(reader))
+    }
+
+    /// Returns the current limits.
+    fn limits(&self) -> PyResult<PyLimits> {
+        let limits = self.0.limits();
+        Ok(PyLimits {
+            json_bytes: limits.json_bytes,
+            image_bytes: limits.image_bytes,
+            image_dim: limits.image_dim,
+            validation: limits.validation,
+        })
+    }
+
+    /// Sets the memory limits.
+    ///
+    /// These limits prevent the reader from consuming excessive system resources, which might
+    /// allow denial of service attacks with maliciously crafted files. Running without limits
+    /// is not recommended.
+    fn set_limits(&mut self, limits: &PyLimits) {
+        self.0.set_limits(Limits {
+            json_bytes: limits.json_bytes,
+            image_bytes: limits.image_bytes,
+            image_dim: limits.image_dim,
+            validation: limits.validation,
+        });
+    }
+
+    /// Return the version number of the file, which can only be [2, 0] right now.
+    pub fn version(&self) -> [u32; 2] {
+        self.0.version()
     }
 
     /// Reads, validates, and returns the root `Project` object from the file.
@@ -110,11 +159,10 @@ impl PyReader {
     }
 
     /// Read a Color array.
-    pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<PyColor>>> {
+    pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<Color>>> {
         self.0
             .array_colors(&array.0)
             .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
-            .map(|r| r.map(|c| c.map(PyColor)))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
     }

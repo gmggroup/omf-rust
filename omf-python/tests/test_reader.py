@@ -15,6 +15,8 @@ class TestReader(TestCase):
         reader = omf_python.Reader(omf_file)
 
         # Then
+        self.assertEqual(reader.version(), [2, 0])
+
         project, _ = reader.project()
         self.assertEqual(project.name, "Pyramid")
 
@@ -46,3 +48,54 @@ class TestReader(TestCase):
 
         # Then
         self.assertEqual(str(context.exception), "No such file or directory (os error 2)")
+
+    def test_should_return_expected_default_limits(self) -> None:
+        # Given
+        omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
+        reader = omf_python.Reader(omf_file)
+
+        # When
+        limits = reader.limits()
+
+        # Then
+        self.assertEqual(limits.json_bytes, 1024 * 1024)
+        self.assertEqual(limits.image_bytes, 16 * 1024 * 1024 * 1024)
+        self.assertEqual(limits.image_dim, None)
+        self.assertEqual(limits.validation, 100)
+
+    def test_should_set_limits(self) -> None:
+        # Given
+        omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
+        reader = omf_python.Reader(omf_file)
+
+        limits = omf_python.Limits()
+        limits.json_bytes = 1
+        limits.image_bytes = 2
+        limits.image_dim = 3
+        limits.validation = 4
+
+        # When
+        reader.set_limits(limits)
+
+        # Then
+        updated_limits = reader.limits()
+        self.assertEqual(updated_limits.json_bytes, limits.json_bytes)
+        self.assertEqual(updated_limits.image_bytes, limits.image_bytes)
+        self.assertEqual(updated_limits.image_dim, limits.image_dim)
+        self.assertEqual(updated_limits.validation, limits.validation)
+
+    def test_should_raise_exception_if_json_bytes_limit_reached(self) -> None:
+        # Given
+        omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
+        reader = omf_python.Reader(omf_file)
+
+        limits = reader.limits()
+        limits.json_bytes = 0
+
+        # When
+        reader.set_limits(limits)
+        with self.assertRaises(OSError) as context:
+            reader.project()
+
+        # Then
+        self.assertEqual(str(context.exception), "JSON deserialization error: Error: safety limit exceeded")
