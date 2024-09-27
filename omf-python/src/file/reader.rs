@@ -3,12 +3,12 @@ use crate::array::{
     PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
     PyVectorArray, PyVertexArray,
 };
-use crate::errors::{OmfException, OmfIoError};
+use crate::errors::OmfException;
 use crate::validate::PyProblem;
 use crate::PyProject;
+use omf::error::Error::IoError;
 use omf::file::{Limits, Reader};
 use omf::Color;
-use pyo3::exceptions::{PyIOError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3_stub_gen::derive::*;
@@ -71,7 +71,7 @@ impl PyReader {
     /// Makes only the minimum number of reads to check the file header and footer.
     /// Fails with an error if an IO error occurs or the file isn’t in OMF 2 format.
     pub fn new(filepath: &str) -> PyResult<Self> {
-        let file = File::open(filepath).map_err(|e| OmfIoError::new_err(e.to_string()))?;
+        let file = File::open(filepath).map_err(|e| OmfException::py_err(IoError(e)))?;
         let reader = Reader::new(file).map_err(OmfException::py_err)?;
         Ok(PyReader(reader))
     }
@@ -123,72 +123,72 @@ impl PyReader {
     pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
         self.0
             .array_vertices(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Segment array.
     pub fn array_segments(&self, array: &PySegmentArray) -> PyResult<Vec<[u32; 2]>> {
         self.0
             .array_segments(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read an Index array.
     pub fn array_indices(&self, array: &PyIndexArray) -> PyResult<Vec<Option<u32>>> {
         self.0
             .array_indices(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<Option<u32>>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Triangle array.
     pub fn array_triangles(&self, array: &PyTriangleArray) -> PyResult<Vec<[u32; 3]>> {
         self.0
             .array_triangles(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Color array.
     pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<Color>>> {
         self.0
             .array_colors(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Gradient array.
     pub fn array_gradient(&self, array: &PyGradientArray) -> PyResult<Vec<[u8; 4]>> {
         self.0
             .array_gradient(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Name array.
     pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
         self.0
             .array_names(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Texcoord array.
     pub fn array_texcoords(&self, array: &PyTexcoordArray) -> PyResult<Vec<[f64; 2]>> {
         self.0
             .array_texcoords(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read bytes of an Image.
@@ -199,7 +199,7 @@ impl PyReader {
     ) -> PyResult<Bound<'p, PyBytes>> {
         self.0
             .array_bytes(&array.0)
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
             .map(|b| PyBytes::new_bound(py, &b))
     }
 
@@ -208,9 +208,9 @@ impl PyReader {
         let numbers_f64 = self
             .0
             .array_numbers(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .try_into_f64()
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+            .map_err(OmfException::py_err)?;
 
         Ok(numbers_f64
             .into_iter()
@@ -225,27 +225,27 @@ impl PyReader {
     pub fn array_vectors(&self, array: &PyVectorArray) -> PyResult<Vec<Option<[f64; 3]>>> {
         self.0
             .array_vectors(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Text array.
     pub fn array_text(&self, array: &PyTextArray) -> PyResult<Vec<Option<String>>> {
         self.0
             .array_text(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Boolean array.
     pub fn array_booleans(&self, array: &PyBooleanArray) -> PyResult<Vec<Option<bool>>> {
         self.0
             .array_booleans(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Boundary array.
@@ -253,9 +253,9 @@ impl PyReader {
         let numbers_f64 = self
             .0
             .array_boundaries(&array.0)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?
+            .map_err(OmfException::py_err)?
             .try_into_f64()
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+            .map_err(OmfException::py_err)?;
 
         Ok(numbers_f64
             .into_iter()

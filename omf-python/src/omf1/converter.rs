@@ -1,9 +1,9 @@
+use crate::errors::OmfException;
 use crate::file::reader::PyLimits;
 use crate::validate::PyProblem;
 use omf::file::{Compression, Limits};
 use omf::omf1::detect_open as omf1_detect_open;
 use omf::omf1::Converter;
-use pyo3::exceptions::PyIOError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
@@ -16,7 +16,7 @@ pub fn detect_omf1(path: String) -> PyResult<bool> {
     let path = Path::new(&path);
     match omf1_detect_open(path) {
         Ok(result) => Ok(result),
-        Err(e) => Err(PyErr::new::<PyIOError, _>(e.to_string())),
+        Err(e) => Err(OmfException::py_err(e)),
     }
 }
 
@@ -72,11 +72,10 @@ impl PyOmf1Converter {
     ///
     /// May be called more than once to convert multiple files with the same parameters.
     fn convert(&self, input_path: String, output_path: String) -> PyResult<Vec<PyProblem>> {
-        // TODO: handle other errors ?
         let problems = self
             .0
             .convert_open(input_path, output_path)
-            .map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+            .map_err(OmfException::py_err)?;
 
         Ok(problems.iter().map(|e| PyProblem(e.clone())).collect())
     }

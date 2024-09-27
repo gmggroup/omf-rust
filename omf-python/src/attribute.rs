@@ -3,12 +3,13 @@ use crate::array::{
     PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
 };
 use crate::colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
+use crate::errors::{OmfException, OmfNotSupportedException};
 use crate::grid::PyOrient2;
+use omf::error::Error::DeserializationFailed;
 use omf::{Attribute, AttributeData, Location, NumberColormap};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
-
 #[gen_stub_pyclass]
 #[pyclass(name = "Attribute")]
 /// Describes data attached to an Element.
@@ -55,7 +56,7 @@ impl PyAttribute {
     /// Attribute metadata.
     fn metadata(&self) -> PyResult<String> {
         let metadata = serde_json::to_string(&self.0.metadata)
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+            .map_err(|e| OmfException::py_err(DeserializationFailed(e)))?;
         Ok(metadata)
     }
 
@@ -79,7 +80,7 @@ impl PyAttribute {
     /// The attribute data as a JSON string.
     fn data_json(&self) -> PyResult<String> {
         let data = serde_json::to_string(&self.0.data)
-            .map_err(|e| PyErr::new::<PyValueError, _>(e.to_string()))?;
+            .map_err(|e| OmfException::py_err(DeserializationFailed(e)))?;
         Ok(data)
     }
 
@@ -131,7 +132,7 @@ impl PyAttributeDataCategory {
     fn values(&self) -> PyResult<PyIndexArray> {
         match &self.0 {
             AttributeData::Category { values, .. } => Ok(PyIndexArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -142,7 +143,7 @@ impl PyAttributeDataCategory {
     fn names(&self) -> PyResult<PyNameArray> {
         match &self.0 {
             AttributeData::Category { names, .. } => Ok(PyNameArray(names.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -158,7 +159,7 @@ impl PyAttributeDataCategory {
             AttributeData::Category { gradient, .. } => {
                 Ok(gradient.as_ref().map(|g| PyGradientArray(g.clone())))
             }
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -175,7 +176,7 @@ impl PyAttributeDataCategory {
             AttributeData::Category { attributes, .. } => {
                 Ok(attributes.iter().map(|a| PyAttribute(a.clone())).collect())
             }
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -197,7 +198,7 @@ impl PyAttributeDataColor {
     fn values(&self) -> PyResult<PyColorArray> {
         match &self.0 {
             AttributeData::Color { values, .. } => Ok(PyColorArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -219,7 +220,7 @@ impl PyAttributeDataMappedTexture {
     fn image(&self) -> PyResult<PyImageArray> {
         match &self.0 {
             AttributeData::MappedTexture { image, .. } => Ok(PyImageArray(image.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -234,7 +235,7 @@ impl PyAttributeDataMappedTexture {
             AttributeData::MappedTexture { texcoords, .. } => {
                 Ok(PyTexcoordArray(texcoords.clone()))
             }
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -259,7 +260,7 @@ impl PyAttributeDataProjectedTexture {
     fn image(&self) -> PyResult<PyImageArray> {
         match &self.0 {
             AttributeData::ProjectedTexture { image, .. } => Ok(PyImageArray(image.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -270,7 +271,7 @@ impl PyAttributeDataProjectedTexture {
     fn orient(&self) -> PyResult<PyOrient2> {
         match self.0 {
             AttributeData::ProjectedTexture { orient, .. } => Ok(PyOrient2(orient)),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -281,7 +282,7 @@ impl PyAttributeDataProjectedTexture {
     fn width(&self) -> PyResult<f64> {
         match self.0 {
             AttributeData::ProjectedTexture { width, .. } => Ok(width),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -292,7 +293,7 @@ impl PyAttributeDataProjectedTexture {
     fn height(&self) -> PyResult<f64> {
         match self.0 {
             AttributeData::ProjectedTexture { height, .. } => Ok(height),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -317,7 +318,7 @@ impl PyAttributeDataNumber {
     fn values(&self) -> PyResult<PyNumberArray> {
         match &self.0 {
             AttributeData::Number { values, .. } => Ok(PyNumberArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -362,7 +363,7 @@ impl PyAttributeDataVector {
     fn values(&self) -> PyResult<PyVectorArray> {
         match &self.0 {
             AttributeData::Vector { values, .. } => Ok(PyVectorArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -382,7 +383,7 @@ impl PyAttributeDataText {
     fn values(&self) -> PyResult<PyTextArray> {
         match &self.0 {
             AttributeData::Text { values, .. } => Ok(PyTextArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }
@@ -406,7 +407,7 @@ impl PyAttributeDataBoolean {
     fn values(&self) -> PyResult<PyBooleanArray> {
         match &self.0 {
             AttributeData::Boolean { values, .. } => Ok(PyBooleanArray(values.clone())),
-            _ => Err(PyValueError::new_err(
+            _ => Err(OmfNotSupportedException::new_err(
                 "AttributeData variant is not supported",
             )),
         }

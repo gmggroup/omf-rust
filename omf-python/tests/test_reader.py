@@ -43,7 +43,7 @@ class TestReader(TestCase):
         incorrect_location = path.join(self.examples_dir, "testfilenotfound.omf")
 
         # When
-        with self.assertRaises(omf_python.OmfIoError) as context:
+        with self.assertRaises(omf_python.OmfFileIoException) as context:
             omf_python.Reader(incorrect_location)
 
         # Then
@@ -94,7 +94,7 @@ class TestReader(TestCase):
 
         # When
         reader.set_limits(limits)
-        with self.assertRaises(omf_python.OmfException) as context:
+        with self.assertRaises(omf_python.OmfJsonException) as context:
             reader.project()
 
         # Then

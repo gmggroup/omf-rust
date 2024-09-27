@@ -55,7 +55,7 @@ class TestOmf1Converter(TestCase):
 
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
             # When
-            with self.assertRaises(OSError) as context:
+            with self.assertRaises(omf_python.OmfFileIoException) as context:
                 converter.convert(omf1_file, omf2_file.name)
 
             # Then
@@ -111,7 +111,7 @@ class TestOmf1Converter(TestCase):
         with NamedTemporaryFile(suffix=".omf") as omf2_file:
             # When
             converter.set_limits(limits)
-            with self.assertRaises(OSError) as context:
+            with self.assertRaises(omf_python.OmfLimitExceededException) as context:
                 converter.convert(omf1_file, omf2_file.name)
 
             # Then
