@@ -3,17 +3,16 @@ use crate::array::{
     PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
     PyVectorArray, PyVertexArray,
 };
+use crate::errors::{OmfException, OmfIoError};
 use crate::validate::PyProblem;
-use crate::errors::OmfException;
 use crate::PyProject;
 use omf::file::{Limits, Reader};
 use omf::Color;
-use pyo3::types::PyBytes;
-use std::fs::File;
-
 use pyo3::exceptions::{PyIOError, PyValueError};
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 use pyo3_stub_gen::derive::*;
+use std::fs::File;
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Limits")]
@@ -72,7 +71,7 @@ impl PyReader {
     /// Makes only the minimum number of reads to check the file header and footer.
     /// Fails with an error if an IO error occurs or the file isn’t in OMF 2 format.
     pub fn new(filepath: &str) -> PyResult<Self> {
-        let file = File::open(filepath).map_err(|e| PyErr::new::<PyIOError, _>(e.to_string()))?;
+        let file = File::open(filepath).map_err(|e| OmfIoError::new_err(e.to_string()))?;
         let reader = Reader::new(file).map_err(OmfException::py_err)?;
         Ok(PyReader(reader))
     }

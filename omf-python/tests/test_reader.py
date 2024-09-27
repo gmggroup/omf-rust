@@ -43,11 +43,11 @@ class TestReader(TestCase):
         incorrect_location = path.join(self.examples_dir, "testfilenotfound.omf")
 
         # When
-        with self.assertRaises(OSError) as context:
+        with self.assertRaises(omf_python.OmfIoError) as context:
             omf_python.Reader(incorrect_location)
 
         # Then
-        self.assertEqual(str(context.exception), "No such file or directory (os error 2)")
+        self.assertEqual(str(context.exception), "File IO error: No such file or directory (os error 2)")
 
     def test_should_return_expected_default_limits(self) -> None:
         # Given
