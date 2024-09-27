@@ -57,33 +57,28 @@ class TestNumberAttribute(TestCase):
         colormap = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap
 
         self.assertIsInstance(colormap, omf_python.NumberColormapContinuous)
-        self.assertIsInstance(colormap.range, omf_python.NumberRangeFloat)
         self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
 
     def test_should_return_continuous_colormap_float_range(self) -> None:
-        range = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap.range
+        range = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap.range()
 
-        self.assertEqual(range.min, 0.0)
-        self.assertEqual(range.max, 2.0)
+        self.assertEqual(range["min"], 0.0)
+        self.assertEqual(range["max"], 2.0)
 
     def test_should_return_continuous_colormap_date_range(self) -> None:
-        range = self.ccmap_project.elements()[0].attributes()[1].get_data().colormap.range
-
-        self.assertIsInstance(range, omf_python.NumberRangeDate)
+        range = self.ccmap_project.elements()[0].attributes()[1].get_data().colormap.range()
 
         expected_min = datetime.date(1995, 5, 1)
         expected_max = datetime.date(1998, 8, 1)
 
-        self.assertEqual(range.min, expected_min)
-        self.assertEqual(range.max, expected_max)
+        self.assertEqual(range["min"], expected_min)
+        self.assertEqual(range["max"], expected_max)
 
     def test_should_return_continuous_colormap_datetime_range(self) -> None:
-        range = self.ccmap_project.elements()[0].attributes()[2].get_data().colormap.range
-
-        self.assertIsInstance(range, omf_python.NumberRangeDateTime)
+        range = self.ccmap_project.elements()[0].attributes()[2].get_data().colormap.range()
 
         expected_min = datetime.datetime(1995, 5, 1, 5, 1, tzinfo=datetime.timezone.utc)
         expected_max = datetime.datetime(1998, 8, 1, 8, 1, tzinfo=datetime.timezone.utc)
 
-        self.assertEqual(range.min, expected_min)
-        self.assertEqual(range.max, expected_max)
+        self.assertEqual(range["min"], expected_min)
+        self.assertEqual(range["max"], expected_max)
