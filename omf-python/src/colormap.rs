@@ -2,7 +2,6 @@ use crate::array::{PyBoundaryArray, PyGradientArray};
 use omf::{NumberColormap, NumberRange};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
@@ -21,36 +20,18 @@ pub struct PyNumberColormapContinuous(pub NumberColormap);
 #[pymethods]
 impl PyNumberColormapContinuous {
     /// Value range.
-    fn range(&self, py: Python) -> PyResult<PyObject> {
-        let result = PyDict::new_bound(py);
-
-        match &self.0 {
-            NumberColormap::Continuous { range, .. } => match &range {
-                NumberRange::Float { min, max } => {
-                    result.set_item("min", min)?;
-                    result.set_item("max", max)?;
-                }
-                NumberRange::Integer { min, max } => {
-                    result.set_item("min", min)?;
-                    result.set_item("max", max)?;
-                }
-                NumberRange::Date { min, max } => {
-                    result.set_item("min", min)?;
-                    result.set_item("max", max)?;
-                }
-                NumberRange::DateTime { min, max } => {
-                    result.set_item("min", min)?;
-                    result.set_item("max", max)?;
-                }
+    fn range(&self, py: Python<'_>) -> PyResult<PyObject> {
+        match self.0 {
+            NumberColormap::Continuous { range, .. } => match range {
+                NumberRange::Float { min, max, .. } => Ok((min, max).into_py(py)),
+                NumberRange::Integer { min, max, .. } => Ok((min, max).into_py(py)),
+                NumberRange::Date { min, max, .. } => Ok((min, max).into_py(py)),
+                NumberRange::DateTime { min, max, .. } => Ok((min, max).into_py(py)),
             },
-            _ => {
-                return Err(PyValueError::new_err(
-                    "NumberColormap variant is not supported",
-                ))
-            }
+            _ => Err(PyValueError::new_err(
+                "NumberColormap variant is not supported",
+            )),
         }
-
-        Ok(result.into_py(py))
     }
 
     #[getter]
