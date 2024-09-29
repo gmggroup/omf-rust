@@ -1,7 +1,7 @@
 use crate::array::{
     PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
-    PyVectorArray, PyVertexArray,
+    PyNameArray, PyNumberArray, PyScalarArray, PySegmentArray, PyTexcoordArray, PyTextArray,
+    PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use crate::errors::OmfException;
 use crate::validate::PyProblem;
@@ -117,6 +117,15 @@ impl PyReader {
         let problems_array: Vec<PyProblem> =
             problems.iter().map(|e| PyProblem(e.clone())).collect();
         Ok((PyProject(project), problems_array))
+    }
+
+    /// Read a Scalar array.
+    pub fn array_scalars(&self, array: &PyScalarArray) -> PyResult<Vec<f64>> {
+        self.0
+            .array_scalars(&array.0)
+            .map_err(OmfException::py_err)?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(OmfException::py_err)
     }
 
     /// Read a Vertex array.

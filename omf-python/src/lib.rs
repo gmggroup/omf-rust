@@ -1,4 +1,4 @@
-use grid::PyOrient2;
+use grid::{PyGrid2Regular, PyGrid2Tensor, PyOrient2};
 /// Python bindings.
 use pyo3::prelude::*;
 use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
@@ -17,8 +17,8 @@ mod validate;
 
 use array::{
     PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
-    PyVectorArray, PyVertexArray,
+    PyNameArray, PyNumberArray, PyScalarArray, PySegmentArray, PyTexcoordArray, PyTextArray,
+    PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
@@ -32,7 +32,7 @@ use errors::{
     OmfLimitExceededException, OmfNotSupportedException, OmfValidationFailedException,
 };
 use file::reader::{PyLimits, PyReader};
-use geometry::{PyLineSet, PyPointSet, PySurface};
+use geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
 use project::PyProject;
 use validate::PyProblem;
@@ -67,13 +67,17 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyNumberColormapDiscrete>()?;
     m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
+    m.add_class::<PyScalarArray>()?;
     m.add_class::<PySegmentArray>()?;
     m.add_class::<PyVertexArray>()?;
     m.add_class::<PyTexcoordArray>()?;
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;
+    m.add_class::<PyGrid2Regular>()?;
+    m.add_class::<PyGrid2Tensor>()?;
     m.add_class::<PyOrient2>()?;
+    m.add_class::<PyGridSurface>()?;
     m.add_class::<PyPointSet>()?;
     m.add_class::<PyLineSet>()?;
     m.add_class::<PyProject>()?;

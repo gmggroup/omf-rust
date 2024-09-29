@@ -3,6 +3,11 @@ use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
+#[pyclass(name = "ScalarArray")]
+/// Floating-point scalar values.
+pub struct PyScalarArray(pub Array<array_type::Scalar>);
+
+#[gen_stub_pyclass]
 #[pyclass(name = "VertexArray")]
 /// Vertex locations in 3D.
 pub struct PyVertexArray(pub Array<array_type::Vertex>);
@@ -86,6 +91,7 @@ macro_rules! array_type_impl {
 }
 
 array_type_impl! {
+    PyScalarArray
     PyVertexArray
     PySegmentArray
     PyIndexArray
