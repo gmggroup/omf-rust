@@ -22,20 +22,20 @@ class TestReader(TestCase):
 
     def test_should_raise_exception_for_validation_error(self) -> None:
         # Given
-        onf_file_with_problem = path.join(path.dirname(__file__), "data/missing_member.omf")
-        reader = omf_python.Reader(onf_file_with_problem)
+        onf_file_with_error = path.join(path.dirname(__file__), "data/missing_parquet.omf")
+        reader = omf_python.Reader(onf_file_with_error)
 
         with self.assertRaises(omf_python.OmfValidationFailedException) as context:
             reader.project()
 
         self.assertEqual(str(context.exception),
             "OMF validation failed:\n"
-            "  Error: 'Surface::triangles' refers to non-existent archive member '2.parquet', inside 'Pyramid surface'"
+            "  Error: 'PointSet::vertices' refers to non-existent archive member '1.parquet', inside 'Missing'"
         )
 
     def test_should_return_expected_problems(self) -> None:
         # Given
-        onf_file_with_problem = path.join(path.dirname(__file__), "data/problem.omf")
+        onf_file_with_problem = path.join(path.dirname(__file__), "data/duplicate_element_name.omf")
         reader = omf_python.Reader(onf_file_with_problem)
         _, problems = reader.project()
 
@@ -44,11 +44,11 @@ class TestReader(TestCase):
 
         problem = problems[0]
 
-        self.assertEqual(str(problem), "Warning: \'Element::attributes[..]::name\' contains duplicate of \"Numbers\", inside 'Pyramid surface'")
-        self.assertEqual(problem.name, "Pyramid surface")
-        self.assertEqual(problem.field, "attributes[..]::name")
-        self.assertEqual(problem.reason, "contains duplicate of \"Numbers\"")
-        self.assertEqual(problem.type_name, "Element")
+        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"Duplicate\", inside 'Duplicate Element Name'")
+        self.assertEqual(problem.name, "Duplicate Element Name")
+        self.assertEqual(problem.field, "elements[..]::name")
+        self.assertEqual(problem.reason, "contains duplicate of \"Duplicate\"")
+        self.assertEqual(problem.type_name, "Project")
         self.assertEqual(problem.is_error(), False)
 
     def test_should_raise_expected_file_not_found_exception(self) -> None:

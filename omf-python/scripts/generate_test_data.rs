@@ -1,15 +1,15 @@
+use chrono::{DateTime, NaiveDate};
+use omf::{file::Writer, *};
 use std::{
-    fs::{File, OpenOptions},
+    fs::{remove_file, File, OpenOptions},
     io::Write,
     path::Path,
     str::FromStr,
 };
-
-use chrono::{DateTime, NaiveDate};
-use omf::{file::Writer, *};
+use zip::{read::ZipArchive, ZipWriter};
 
 fn continuous_colormap() {
-    let mut writer = Writer::new(temp_file("tests/data/continuous_colormap.omf", b"")).unwrap();
+    let mut writer = Writer::new(create_file("tests/data/continuous_colormap.omf", b"")).unwrap();
 
     let mut project = Project::new("Continuous Colormap Test");
     project.description =
@@ -101,7 +101,74 @@ fn continuous_colormap() {
     assert!(warnings.is_empty());
 }
 
-fn temp_file(name: &str, contents: &[u8]) -> File {
+fn duplicate_element_name() {
+    let mut writer =
+        Writer::new(create_file("tests/data/duplicate_element_name.omf", b"")).unwrap();
+
+    let mut project = Project::new("Duplicate Element Name");
+    project.description = "An OMF 2.0 project with a duplicate element name".to_owned();
+
+    let element = Element::new(
+        "Duplicate",
+        PointSet::new(
+            writer
+                .array_vertices([
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                ])
+                .unwrap(),
+        ),
+    );
+
+    project.elements.push(element.clone());
+    project.elements.push(element.clone());
+
+    writer.finish(project).unwrap();
+}
+
+fn missing_parquet() {
+    let temp_file_path = "tests/data/missing_parquet.omf.tmp";
+    let mut writer = Writer::new(create_file(temp_file_path, b"")).unwrap();
+
+    let mut project = Project::new("Missing Parquet");
+    project.description = "An OMF 2.0 project missing an expected parquet file".to_owned();
+
+    let element = Element::new(
+        "Missing",
+        PointSet::new(
+            writer
+                .array_vertices([
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                ])
+                .unwrap(),
+        ),
+    );
+
+    project.elements.push(element);
+    writer.finish(project).unwrap();
+
+    // Replace archive with one only containing the index.json.gz file
+    let file = File::open(temp_file_path).unwrap();
+    let mut archive = ZipArchive::new(file).unwrap();
+    let index_file = archive.by_name("index.json.gz").unwrap();
+
+    let mut new_zip = ZipWriter::new(create_file("tests/data/missing_parquet.omf", b""));
+
+    let comment = format!("{FORMAT_NAME} {FORMAT_VERSION_MAJOR}.{FORMAT_VERSION_MINOR}");
+    new_zip.set_comment(comment);
+
+    new_zip.raw_copy_file(index_file).unwrap();
+    new_zip.finish().unwrap();
+
+    remove_file(temp_file_path).unwrap();
+}
+
+fn create_file(name: &str, contents: &[u8]) -> File {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(name);
     let mut f = OpenOptions::new()
         .truncate(true)
@@ -116,4 +183,6 @@ fn temp_file(name: &str, contents: &[u8]) -> File {
 
 fn main() {
     continuous_colormap();
+    duplicate_element_name();
+    missing_parquet();
 }
