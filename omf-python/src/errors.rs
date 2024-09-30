@@ -78,7 +78,9 @@ impl OmfException {
         match e {
             Error::IoError(_) => OmfFileIoException::new_err(s),
             Error::LimitExceeded(_) => OmfLimitExceededException::new_err(s),
-            Error::ValidationFailed(_) => OmfValidationFailedException::new_err(s),
+            Error::ValidationFailed(problems) => {
+                OmfValidationFailedException::new_err(problems.to_string())
+            }
             Error::DeserializationFailed(_) => OmfJsonException::new_err(s),
             // Remaining errors are converted to generic OMF exceptions.
             _ => OmfException::new_err(s),

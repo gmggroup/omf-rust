@@ -20,6 +20,19 @@ class TestReader(TestCase):
         project, _ = reader.project()
         self.assertEqual(project.name, "Pyramid")
 
+    def test_should_raise_exception_for_validation_error(self) -> None:
+        # Given
+        onf_file_with_problem = path.join(path.dirname(__file__), "data/missing_member.omf")
+        reader = omf_python.Reader(onf_file_with_problem)
+
+        with self.assertRaises(omf_python.OmfValidationFailedException) as context:
+            reader.project()
+
+        self.assertEqual(str(context.exception),
+            "OMF validation failed:\n"
+            "  Error: 'Surface::triangles' refers to non-existent archive member '2.parquet', inside 'Pyramid surface'"
+        )
+
     def test_should_return_expected_problems(self) -> None:
         # Given
         onf_file_with_problem = path.join(path.dirname(__file__), "data/problem.omf")

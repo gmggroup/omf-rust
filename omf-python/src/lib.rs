@@ -89,10 +89,7 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
         "OmfLimitExceededException",
         py.get_type_bound::<OmfLimitExceededException>(),
     )?;
-    m.add(
-        "OmfJsonException",
-        py.get_type_bound::<OmfJsonException>(),
-    )?;
+    m.add("OmfJsonException", py.get_type_bound::<OmfJsonException>())?;
     m.add(
         "OmfValidationFailedException",
         py.get_type_bound::<OmfValidationFailedException>(),
