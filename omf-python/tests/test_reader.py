@@ -64,7 +64,7 @@ class TestReader(TestCase):
             reader.array_vertices(vertices_array)
 
         # Then
-        self.assertEqual(str(context.exception), "Data error: Error: array length 999 does not the declared length 4")
+        self.assertEqual(str(context.exception), "Data error: Error: array length 999 does not match the declared length 4")
 
     def test_should_raise_expected_file_not_found_exception(self) -> None:
         # Given
