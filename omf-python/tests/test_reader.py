@@ -44,12 +44,27 @@ class TestReader(TestCase):
 
         problem = problems[0]
 
-        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"Duplicate\", inside 'Duplicate Element Name'")
-        self.assertEqual(problem.name, "Duplicate Element Name")
+        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"Duplicate\", inside 'Duplicate Element Name Test'")
+        self.assertEqual(problem.name, "Duplicate Element Name Test")
         self.assertEqual(problem.field, "elements[..]::name")
         self.assertEqual(problem.reason, "contains duplicate of \"Duplicate\"")
         self.assertEqual(problem.type_name, "Project")
         self.assertEqual(problem.is_error(), False)
+
+    def test_should_raise_expected_invalid_data_exception(self) -> None:
+        # Given
+        onf_file_with_array_length_mismatch = path.join(path.dirname(__file__), "data/array_length_mismatch.omf")
+
+        reader = omf_python.Reader(onf_file_with_array_length_mismatch)
+        project, _ = reader.project()
+        vertices_array = project.elements()[0].geometry().vertices
+
+        # When
+        with self.assertRaises(omf_python.OmfInvalidDataException) as context:
+            reader.array_vertices(vertices_array)
+
+        # Then
+        self.assertEqual(str(context.exception), "Data error: Error: array length 999 does not the declared length 4")
 
     def test_should_raise_expected_file_not_found_exception(self) -> None:
         # Given

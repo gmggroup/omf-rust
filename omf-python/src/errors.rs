@@ -58,6 +58,14 @@ create_exception_impl!(
 );
 create_exception_impl!(
     omf_python,
+    OmfInvalidDataException,
+    OmfException,
+    "OmfException",
+    "Exception raised when an OMF file contains invalid data."
+);
+
+create_exception_impl!(
+    omf_python,
     OmfValidationFailedException,
     OmfException,
     "OmfException",
@@ -78,6 +86,7 @@ impl OmfException {
         match e {
             Error::IoError(_) => OmfFileIoException::new_err(s),
             Error::LimitExceeded(_) => OmfLimitExceededException::new_err(s),
+            Error::InvalidData(_) => OmfInvalidDataException::new_err(s),
             Error::ValidationFailed(problems) => {
                 OmfValidationFailedException::new_err(problems.to_string())
             }

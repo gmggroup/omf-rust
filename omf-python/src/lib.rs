@@ -27,8 +27,8 @@ use attribute::{
 use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
 use errors::{
-    OmfException, OmfFileIoException, OmfJsonException, OmfLimitExceededException,
-    OmfNotSupportedException, OmfValidationFailedException,
+    OmfException, OmfFileIoException, OmfInvalidDataException, OmfJsonException,
+    OmfLimitExceededException, OmfNotSupportedException, OmfValidationFailedException,
 };
 use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
@@ -90,6 +90,10 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
         py.get_type_bound::<OmfLimitExceededException>(),
     )?;
     m.add("OmfJsonException", py.get_type_bound::<OmfJsonException>())?;
+    m.add(
+        "OmfInvalidDataException",
+        py.get_type_bound::<OmfInvalidDataException>(),
+    )?;
     m.add(
         "OmfValidationFailedException",
         py.get_type_bound::<OmfValidationFailedException>(),
