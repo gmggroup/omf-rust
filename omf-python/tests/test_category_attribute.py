@@ -27,7 +27,7 @@ class TestCategoryAttribute(TestCase):
         }
         self.assertEqual(metadata, expected_metadata)
 
-        self.assertEqual(self.attribute.location, "Vertices")
+        self.assertEqual(self.attribute.location, omf_python.Location.Vertices)
 
     def test_should_return_category_attribute_array_instances(self) -> None:
         attribute_data = self.attribute.get_data()

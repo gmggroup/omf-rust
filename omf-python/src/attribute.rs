@@ -10,6 +10,29 @@ use omf::{Attribute, AttributeData, Location, NumberColormap};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
+
+#[gen_stub_pyclass_enum]
+#[pyclass(name = "Location")]
+/// Describes what part of the geometry an attribute attaches to.
+///
+/// See the documentation for each Geometry variant for a list of what
+/// locations are valid.
+pub enum PyLocation {
+    /// The attribute contains one value for each point, vertex, or block corner.
+    Vertices,
+    /// The attribute contains one value for each line segment, triangle, or block.
+    /// For sub-blocked block models that means parent blocks.
+    Primitives,
+    /// The attribute contains one value for each sub-block in a block model.
+    Subblocks,
+    /// The attribute contains one value for each sub-element in Composite geometry.
+    Elements,
+    /// Used by ProjectedTexture attributes.The texture is projected onto the element.
+    Projected,
+    /// Used for category sub-attributes. The attribute contains one value for each category.
+    Categories,
+}
+
 #[gen_stub_pyclass]
 #[pyclass(name = "Attribute")]
 /// Describes data attached to an Element.
@@ -64,16 +87,15 @@ impl PyAttribute {
     /// Selects which part of the element the attribute is attached to.
     ///
     /// See the documentation for each Geometry variant for a list of what locations are valid.
-    fn location(&self) -> String {
+    fn location(&self) -> PyLocation {
         match self.0.location {
-            Location::Vertices => "Vertices",
-            Location::Primitives => "Primitives",
-            Location::Subblocks => "Subblocks",
-            Location::Elements => "Elements",
-            Location::Projected => "Projected",
-            Location::Categories => "Categories",
+            Location::Vertices => PyLocation::Vertices,
+            Location::Primitives => PyLocation::Primitives,
+            Location::Subblocks => PyLocation::Subblocks,
+            Location::Elements => PyLocation::Elements,
+            Location::Projected => PyLocation::Projected,
+            Location::Categories => PyLocation::Categories,
         }
-        .to_string()
     }
 
     #[getter]

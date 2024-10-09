@@ -23,7 +23,7 @@ use array::{
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
     PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataProjectedTexture,
-    PyAttributeDataText, PyAttributeDataVector,
+    PyAttributeDataText, PyAttributeDataVector, PyLocation,
 };
 use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
@@ -62,6 +62,7 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyImageArray>()?;
     m.add_class::<PyIndexArray>()?;
     m.add_class::<PyGradientArray>()?;
+    m.add_class::<PyLocation>()?;
     m.add_class::<PyNumberArray>()?;
     m.add_class::<PyNumberColormapContinuous>()?;
     m.add_class::<PyNumberColormapDiscrete>()?;
