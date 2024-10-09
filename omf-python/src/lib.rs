@@ -1,3 +1,4 @@
+use grid::PyOrient2;
 /// Python bindings.
 use pyo3::prelude::*;
 use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
@@ -16,13 +17,13 @@ mod validate;
 
 use array::{
     PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray,
-    PyVertexArray,
+    PyNameArray, PyNumberArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
+    PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
-    PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataText,
-    PyAttributeDataVector,
+    PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataProjectedTexture,
+    PyAttributeDataText, PyAttributeDataVector,
 };
 use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use element::PyElement;
@@ -34,6 +35,7 @@ use file::reader::{PyLimits, PyReader};
 use geometry::{PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
 use project::PyProject;
+use validate::PyProblem;
 
 /// Returns the version of the library
 #[gen_stub_pyfunction]
@@ -51,6 +53,7 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyAttributeDataColor>()?;
     m.add_class::<PyAttributeDataMappedTexture>()?;
     m.add_class::<PyAttributeDataNumber>()?;
+    m.add_class::<PyAttributeDataProjectedTexture>()?;
     m.add_class::<PyAttributeDataText>()?;
     m.add_class::<PyAttributeDataVector>()?;
     m.add_class::<PyBooleanArray>()?;
@@ -64,14 +67,17 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyNumberColormapDiscrete>()?;
     m.add_class::<PyTextArray>()?;
     m.add_class::<PyVectorArray>()?;
+    m.add_class::<PySegmentArray>()?;
     m.add_class::<PyVertexArray>()?;
     m.add_class::<PyTexcoordArray>()?;
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;
+    m.add_class::<PyOrient2>()?;
     m.add_class::<PyPointSet>()?;
     m.add_class::<PyLineSet>()?;
     m.add_class::<PyProject>()?;
+    m.add_class::<PyProblem>()?;
     m.add_class::<PyReader>()?;
     m.add_class::<PySurface>()?;
     m.add_class::<PyLimits>()?;
