@@ -32,7 +32,6 @@ fn continuous_colormap() {
             writer.array_triangles([[0, 1, 2], [0, 2, 3]]).unwrap(),
         ),
     );
-
     surface
         .attributes
         .push(Attribute::from_numbers_continuous_colormap(
@@ -233,6 +232,42 @@ fn array_length_mismatch() {
     remove_file(temp_file_path).unwrap();
 }
 
+fn element_metadata() {
+    let mut writer = Writer::new(create_file("tests/data/element_metadata.omf", b"")).unwrap();
+
+    let mut project = Project::new("Element Metadata Test");
+    project.description = "An OMF 2.0 project with element metadata".to_owned();
+
+    let mut element = Element::new(
+        "Element",
+        PointSet::new(
+            writer
+                .array_vertices([
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                ])
+                .unwrap(),
+        ),
+    );
+    element
+        .metadata
+        .insert("sub-type".to_owned(), Value::String("point".to_owned()));
+    element.metadata.insert(
+        "date_created".to_owned(),
+        Value::String("2024-10-14T00:00:00Z".to_owned()),
+    );
+    element.metadata.insert(
+        "date_modified".to_owned(),
+        Value::String("2024-10-15T00:00:00Z".to_owned()),
+    );
+
+    project.elements.push(element.clone());
+
+    writer.finish(project).unwrap();
+}
+
 fn add_file_from_another_zip(zip: &mut ZipWriter<File>, zip_file_name: &str, zip_file_entry: &str) {
     let file = File::open(zip_file_name).unwrap();
     let mut archive = ZipArchive::new(file).unwrap();
@@ -258,4 +293,5 @@ fn main() {
     duplicate_element_name();
     missing_parquet();
     array_length_mismatch();
+    element_metadata();
 }

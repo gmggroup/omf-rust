@@ -1,4 +1,3 @@
-import json
 import omf_python
 from os import path
 from unittest import TestCase
@@ -15,19 +14,16 @@ class TestCategoryAttribute(TestCase):
         self.assertIsInstance(self.attribute, omf_python.Attribute)
 
         self.assertEqual(self.attribute.name, "Categories")
-
         self.assertEqual(self.attribute.description, "Divides the points into top and base.")
-
         self.assertEqual(self.attribute.units, "whatever")
 
-        metadata_string = self.attribute.metadata
-        metadata = json.loads(metadata_string)
         expected_metadata = {
             "key": "value"
         }
-        self.assertEqual(metadata, expected_metadata)
+        self.assertDictEqual(self.attribute.metadata, expected_metadata)
 
         self.assertEqual(self.attribute.location, omf_python.Location.Vertices)
+
 
     def test_should_return_category_attribute_array_instances(self) -> None:
         attribute_data = self.attribute.get_data()

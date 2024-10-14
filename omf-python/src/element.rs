@@ -1,11 +1,12 @@
 use crate::attribute::PyAttribute;
-use crate::errors::OmfNotSupportedException;
+use crate::errors::{OmfException, OmfNotSupportedException};
 use crate::geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
 use omf::Color;
 use omf::Element;
 use omf::Geometry;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
+use serde_pyobject::to_pyobject;
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Element")]
@@ -28,6 +29,12 @@ impl PyElement {
     /// Optional element description.
     fn description(&self) -> String {
         self.0.description.clone()
+    }
+
+    #[getter]
+    /// Element metadata.
+    fn metadata<'p>(&self, py: Python<'p>) -> PyResult<Bound<'p, PyAny>> {
+        to_pyobject(py, &self.0.metadata).map_err(|e| OmfException::new_err(e.to_string()))
     }
 
     /// List of attributes, if any.
