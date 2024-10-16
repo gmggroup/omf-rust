@@ -189,7 +189,7 @@ fn array_length_mismatch() {
     project.elements.push(element);
     writer.finish(project).unwrap();
 
-    // Open an decompress the generated index.json file
+    // Open and decompress the generated index.json file
     let file = File::open(temp_file_path).unwrap();
     let mut archive = ZipArchive::new(file).unwrap();
     let index_file = archive.by_name("index.json.gz").unwrap();
