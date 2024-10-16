@@ -1,6 +1,6 @@
 [package]
 name = "omf_python"
-version = "0.1.0"
+version = "0.1.2"
 description = "Python bindings for the Rust OMF package."
 edition = "2021"
 license = "MIT"
