@@ -1,5 +1,5 @@
 use crate::attribute::PyAttribute;
-use crate::errors::{OmfException, OmfNotSupportedException};
+use crate::errors::{OmfJsonException, OmfNotSupportedException};
 use crate::geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
 use omf::Color;
 use omf::Element;
@@ -34,7 +34,7 @@ impl PyElement {
     #[getter]
     /// Element metadata.
     fn metadata<'p>(&self, py: Python<'p>) -> PyResult<Bound<'p, PyAny>> {
-        to_pyobject(py, &self.0.metadata).map_err(|e| OmfException::new_err(e.to_string()))
+        to_pyobject(py, &self.0.metadata).map_err(|e| OmfJsonException::new_err(e.to_string()))
     }
 
     /// List of attributes, if any.

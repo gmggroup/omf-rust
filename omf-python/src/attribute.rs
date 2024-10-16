@@ -3,7 +3,7 @@ use crate::array::{
     PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
 };
 use crate::colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
-use crate::errors::{OmfException, OmfNotSupportedException};
+use crate::errors::{OmfJsonException, OmfNotSupportedException};
 use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location, NumberColormap};
 use pyo3::exceptions::PyValueError;
@@ -79,7 +79,7 @@ impl PyAttribute {
     #[getter]
     /// Attribute metadata.
     fn metadata<'p>(&self, py: Python<'p>) -> PyResult<Bound<'p, PyAny>> {
-        to_pyobject(py, &self.0.metadata).map_err(|e| OmfException::new_err(e.to_string()))
+        to_pyobject(py, &self.0.metadata).map_err(|e| OmfJsonException::new_err(e.to_string()))
     }
 
     #[getter]
