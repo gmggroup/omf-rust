@@ -67,7 +67,7 @@ pub struct PyReader(Reader);
 impl PyReader {
     #[new]
     /// Creates a reader from an OMF file path.
-
+    ///
     /// Makes only the minimum number of reads to check the file header and footer.
     /// Fails with an error if an IO error occurs or the file isn’t in OMF 2 format.
     pub fn new(filepath: &str) -> PyResult<Self> {
