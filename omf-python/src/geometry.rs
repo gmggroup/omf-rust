@@ -59,16 +59,23 @@ pub struct PySurface(pub Surface);
 #[pymethods]
 impl PySurface {
     #[getter]
+    /// Origin of the surface relative to the project coordinate reference system.
     fn origin(&self) -> [f64; 3] {
         self.0.origin
     }
 
     #[getter]
+    /// Array with `Vertex` type storing the vertex locations.
+    ///
+    /// Add `origin` and the project origin to get the locations relative
+    /// to the project coordinate reference system.
     fn vertices(&self) -> PyVertexArray {
         PyVertexArray(self.0.vertices.clone())
     }
 
     #[getter]
+    /// Array with `Triangle` type storing each triangle as a triple of indices into `vertices`.
+    /// Triangle winding should be counter-clockwise around an outward-pointing normal.
     fn triangles(&self) -> PyTriangleArray {
         PyTriangleArray(self.0.triangles.clone())
     }
