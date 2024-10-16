@@ -12,7 +12,8 @@ use pyo3_stub_gen::derive::*;
 use serde_pyobject::to_pyobject;
 
 #[gen_stub_pyclass_enum]
-#[pyclass(name = "Location")]
+#[pyclass(eq, eq_int, name = "Location")]
+#[derive(PartialEq)]
 /// Describes what part of the geometry an attribute attaches to.
 ///
 /// See the documentation for each Geometry variant for a list of what
