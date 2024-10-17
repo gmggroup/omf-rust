@@ -77,6 +77,16 @@ pub struct PyBooleanArray(pub Array<array_type::Boolean>);
 /// Discrete color-map boundaries.
 pub struct PyBoundaryArray(pub Array<array_type::Boundary>);
 
+#[gen_stub_pyclass]
+#[pyclass(name = "RegularSubblockArray")]
+/// Parent indices and corners of regular sub-blocks.
+pub struct PyRegularSubblockArray(pub Array<array_type::RegularSubblock>);
+
+#[gen_stub_pyclass]
+#[pyclass(name = "FreeformSubblockArray")]
+/// Parent indices and corners of free-form sub-blocks.
+pub struct PyFreeformSubblockArray(pub Array<array_type::FreeformSubblock>);
+
 macro_rules! array_type_impl {
     ($($arrayType:ty)*) => ($(
         #[gen_stub_pymethods]
@@ -106,4 +116,6 @@ array_type_impl! {
     PyTextArray
     PyBooleanArray
     PyBoundaryArray
+    PyRegularSubblockArray
+    PyFreeformSubblockArray
 }

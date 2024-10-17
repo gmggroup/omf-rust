@@ -15,7 +15,6 @@ class TestGridSurface(TestCase):
         self.assertIsInstance(grid_surface, omf_python.GridSurface)
 
         orientation = grid_surface.orient
-
         self.assertEqual([-1.5, -1.5, 0], orientation.origin)
         self.assertEqual([1, 0, 0], orientation.u)
         self.assertEqual([0, 1, 0], orientation.v)
@@ -27,7 +26,7 @@ class TestGridSurface(TestCase):
         )
 
         grid = grid_surface.grid
-        self.assertIsInstance(grid, omf_python.Tensor)
+        self.assertIsInstance(grid, omf_python.Grid2Tensor)
         self.assertEqual([2, 2], grid.count())
 
         u = grid.u

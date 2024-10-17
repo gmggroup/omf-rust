@@ -1,10 +1,12 @@
-use grid::{PyGrid2Regular, PyGrid2Tensor, PyOrient2};
+use block_model::PyBlockModel;
+use grid::{PyGrid2Regular, PyGrid2Tensor, PyGrid3Regular, PyGrid3Tensor, PyOrient2, PyOrient3};
 /// Python bindings.
 use pyo3::prelude::*;
 use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
 
 mod array;
 mod attribute;
+mod block_model;
 mod colormap;
 mod element;
 mod errors;
@@ -16,9 +18,9 @@ mod project;
 mod validate;
 
 use array::{
-    PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PyScalarArray, PySegmentArray, PyTexcoordArray, PyTextArray,
-    PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyBooleanArray, PyBoundaryArray, PyColorArray, PyFreeformSubblockArray, PyGradientArray,
+    PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PyRegularSubblockArray, PyScalarArray,
+    PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use attribute::{
     PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
@@ -73,11 +75,17 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyVertexArray>()?;
     m.add_class::<PyTexcoordArray>()?;
     m.add_class::<PyTriangleArray>()?;
+    m.add_class::<PyRegularSubblockArray>()?;
+    m.add_class::<PyFreeformSubblockArray>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;
     m.add_class::<PyGrid2Regular>()?;
     m.add_class::<PyGrid2Tensor>()?;
+    m.add_class::<PyGrid3Regular>()?;
+    m.add_class::<PyGrid3Tensor>()?;
     m.add_class::<PyOrient2>()?;
+    m.add_class::<PyOrient3>()?;
+    m.add_class::<PyBlockModel>()?;
     m.add_class::<PyGridSurface>()?;
     m.add_class::<PyPointSet>()?;
     m.add_class::<PyLineSet>()?;

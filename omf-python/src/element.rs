@@ -1,4 +1,5 @@
 use crate::attribute::PyAttribute;
+use crate::block_model::PyBlockModel;
 use crate::errors::{OmfJsonException, OmfNotSupportedException};
 use crate::geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
 use omf::Color;
@@ -55,6 +56,7 @@ impl PyElement {
             Geometry::GridSurface(grid_surface) => {
                 Ok(PyGridSurface(grid_surface.clone()).into_py(py))
             }
+            Geometry::BlockModel(block_model) => Ok(PyBlockModel(block_model.clone()).into_py(py)),
             _ => Err(OmfNotSupportedException::new_err(
                 "Geometry type not supported",
             )),

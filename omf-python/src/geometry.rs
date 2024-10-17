@@ -93,10 +93,10 @@ impl PyGridSurface {
     fn grid(&self, py: Python<'_>) -> PyObject {
         match self.0.grid {
             omf::Grid2::Regular { .. } => PyGrid2Regular::try_from(self.0.grid.clone())
-                .expect("conversion from Regular should succeed")
+                .expect("conversion from Grid2::Regular should succeed")
                 .into_py(py),
             omf::Grid2::Tensor { .. } => PyGrid2Tensor::try_from(self.0.grid.clone())
-                .expect("conversion from Tensor should succeed")
+                .expect("conversion from Grid2::Tensor should succeed")
                 .into_py(py),
         }
     }

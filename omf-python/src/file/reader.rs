@@ -1,7 +1,7 @@
 use crate::array::{
-    PyBooleanArray, PyBoundaryArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray,
-    PyNameArray, PyNumberArray, PyScalarArray, PySegmentArray, PyTexcoordArray, PyTextArray,
-    PyTriangleArray, PyVectorArray, PyVertexArray,
+    PyBooleanArray, PyBoundaryArray, PyColorArray, PyFreeformSubblockArray, PyGradientArray,
+    PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PyRegularSubblockArray, PyScalarArray,
+    PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
 };
 use crate::errors::OmfException;
 use crate::validate::PyProblem;
@@ -273,5 +273,29 @@ impl PyReader {
                 _ => None,
             })
             .collect())
+    }
+
+    /// Read a RegularSubblock array.
+    pub fn array_regular_subblocks(
+        &self,
+        array: &PyRegularSubblockArray,
+    ) -> PyResult<Vec<([u32; 3], [u32; 6])>> {
+        self.0
+            .array_regular_subblocks(&array.0)
+            .map_err(OmfException::py_err)?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(OmfException::py_err)
+    }
+
+    /// Read a FreeformSubblock array.
+    pub fn array_freeform_subblocks(
+        &self,
+        array: &PyFreeformSubblockArray,
+    ) -> PyResult<Vec<([u32; 3], [f64; 6])>> {
+        self.0
+            .array_freeform_subblocks(&array.0)
+            .map_err(OmfException::py_err)?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(OmfException::py_err)
     }
 }
