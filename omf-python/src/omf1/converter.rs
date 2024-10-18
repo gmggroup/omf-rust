@@ -1,7 +1,7 @@
 use crate::errors::OmfException;
 use crate::file::reader::PyLimits;
 use crate::validate::PyProblem;
-use omf::file::{Compression, Limits};
+use omf::file::Compression;
 use omf::omf1::detect_open as omf1_detect_open;
 use omf::omf1::Converter;
 use pyo3::prelude::*;
@@ -37,23 +37,12 @@ impl PyOmf1Converter {
 
     /// Returns the current limits.
     fn limits(&self) -> PyResult<PyLimits> {
-        let limits = self.0.limits();
-        Ok(PyLimits {
-            json_bytes: limits.json_bytes,
-            image_bytes: limits.image_bytes,
-            image_dim: limits.image_dim,
-            validation: limits.validation,
-        })
+        Ok(self.0.limits().into())
     }
 
     /// Set the limits to use during conversion.
     fn set_limits(&mut self, limits: &PyLimits) {
-        self.0.set_limits(Limits {
-            json_bytes: limits.json_bytes,
-            image_bytes: limits.image_bytes,
-            image_dim: limits.image_dim,
-            validation: limits.validation,
-        });
+        self.0.set_limits((*limits).into());
     }
 
     /// Returns the current compression level.

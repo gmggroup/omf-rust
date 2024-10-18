@@ -17,6 +17,7 @@ use std::fs::File;
 #[gen_stub_pyclass]
 #[pyclass(name = "Limits")]
 /// Memory limits for reading OMF files.
+#[derive(Clone, Copy)]
 pub struct PyLimits {
     #[pyo3(get, set)]
     pub json_bytes: Option<u64>,
@@ -28,18 +29,34 @@ pub struct PyLimits {
     pub validation: Option<u32>,
 }
 
+impl From<Limits> for PyLimits {
+    fn from(limits: Limits) -> Self {
+        Self {
+            json_bytes: limits.json_bytes,
+            image_bytes: limits.image_bytes,
+            image_dim: limits.image_dim,
+            validation: limits.validation,
+        }
+    }
+}
+
+impl From<PyLimits> for Limits {
+    fn from(py_limits: PyLimits) -> Self {
+        Self {
+            json_bytes: py_limits.json_bytes,
+            image_bytes: py_limits.image_bytes,
+            image_dim: py_limits.image_dim,
+            validation: py_limits.validation,
+        }
+    }
+}
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyLimits {
     #[new]
     pub fn new() -> PyResult<Self> {
-        let limits = Limits::default();
-        Ok(PyLimits {
-            json_bytes: limits.json_bytes,
-            image_bytes: limits.image_bytes,
-            image_dim: limits.image_dim,
-            validation: limits.validation,
-        })
+        Ok(Limits::default().into())
     }
 }
 
@@ -78,13 +95,7 @@ impl PyReader {
 
     /// Returns the current limits.
     fn limits(&self) -> PyResult<PyLimits> {
-        let limits = self.0.limits();
-        Ok(PyLimits {
-            json_bytes: limits.json_bytes,
-            image_bytes: limits.image_bytes,
-            image_dim: limits.image_dim,
-            validation: limits.validation,
-        })
+        Ok(self.0.limits().into())
     }
 
     /// Sets the memory limits.
@@ -93,12 +104,7 @@ impl PyReader {
     /// allow denial of service attacks with maliciously crafted files. Running without limits
     /// is not recommended.
     fn set_limits(&mut self, limits: &PyLimits) {
-        self.0.set_limits(Limits {
-            json_bytes: limits.json_bytes,
-            image_bytes: limits.image_bytes,
-            image_dim: limits.image_dim,
-            validation: limits.validation,
-        });
+        self.0.set_limits((*limits).into());
     }
 
     /// Return the version number of the file, which can only be [2, 0] right now.
