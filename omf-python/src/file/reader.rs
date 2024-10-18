@@ -60,7 +60,7 @@ impl PyLimits {
 ///     When loading arrays and images from OMF files, beware of "zip bombs"
 ///     where data is maliciously crafted to expand to an excessive size when decompressed,
 ///     leading to a potential denial of service attack.
-///     Use the limits provided check arrays sizes before allocating memory.
+///     Use the limits provided and check arrays sizes before allocating memory.
 pub struct PyReader(Reader);
 #[gen_stub_pymethods]
 #[pymethods]
