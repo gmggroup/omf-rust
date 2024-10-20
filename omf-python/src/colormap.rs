@@ -20,17 +20,15 @@ pub struct PyNumberColormapContinuous(pub NumberColormap);
 #[pymethods]
 impl PyNumberColormapContinuous {
     /// Value range.
-    fn range(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn range(&self, py: Python<'_>) -> PyObject {
         match self.0 {
             NumberColormap::Continuous { range, .. } => match range {
-                NumberRange::Float { min, max, .. } => Ok((min, max).into_py(py)),
-                NumberRange::Integer { min, max, .. } => Ok((min, max).into_py(py)),
-                NumberRange::Date { min, max, .. } => Ok((min, max).into_py(py)),
-                NumberRange::DateTime { min, max, .. } => Ok((min, max).into_py(py)),
+                NumberRange::Float { min, max, .. } => (min, max).into_py(py),
+                NumberRange::Integer { min, max, .. } => (min, max).into_py(py),
+                NumberRange::Date { min, max, .. } => (min, max).into_py(py),
+                NumberRange::DateTime { min, max, .. } => (min, max).into_py(py),
             },
-            _ => Err(PyValueError::new_err(
-                "NumberColormap variant is not supported",
-            )),
+            _ => unimplemented!("NumberColormap variant is not supported"),
         }
     }
 
