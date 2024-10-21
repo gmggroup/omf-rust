@@ -2,7 +2,7 @@
 
 use std::{fs::read_dir, path::Path, time::Instant};
 
-use omf::{error::Error, file::Reader, omf1::Converter};
+use omf::{error::Error, file::Reader, omf1::Converter, AttributeData};
 
 #[test]
 fn convert_omf1() {
@@ -33,6 +33,28 @@ fn convert_omf1() {
   "date_modified": "2017-10-04T21:46:17Z"
 }"#
     ));
+}
+
+/// Tests that the fix for [#13](https://github.com/gmggroup/omf-rust/issues/13) works.
+///
+/// The axis vectors of a projected image weren't normalized correctly, and they were
+/// wrongly required to be orthogonal.
+#[test]
+fn convert_omf1_plane_surface() {
+    let output_path = Path::new(env!("CARGO_TARGET_TMPDIR")).join("plane_surface.2.omf");
+    let converter = Converter::new();
+    let warnings = converter
+        .convert_open("tests/omf1/plane_surface.omf", &output_path)
+        .unwrap();
+    let warning_strings: Vec<_> = warnings.into_iter().map(|p| p.to_string()).collect();
+    assert_eq!(warning_strings, Vec::<String>::new());
+    let project = Reader::open(&output_path).unwrap().project().unwrap().0;
+    let image = &project.elements[0].attributes[3];
+    let AttributeData::ProjectedTexture { orient, .. } = &image.data else {
+        panic!("wrong type");
+    };
+    assert!(vec3_approx_equal(orient.u, [0.9905557, 0.1371108, 0.0]));
+    assert!(vec3_approx_equal(orient.v, [-0.0957124, 0.9954090, 0.0]));
 }
 
 #[ignore = "requires local files"]
@@ -81,4 +103,9 @@ fn convert_external_files() {
         }
     }
     assert!(success);
+}
+
+fn vec3_approx_equal(a: [f64; 3], b: [f64; 3]) -> bool {
+    const THRESHOLD: f64 = 1e-6;
+    a.into_iter().zip(b).all(|(a, b)| (a - b).abs() < THRESHOLD)
 }
