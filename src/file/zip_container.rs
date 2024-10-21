@@ -87,13 +87,13 @@ pub(crate) struct SubFileWrite<'a> {
     inner: &'a mut ZipWriter<File>,
 }
 
-impl<'a> SubFileWrite<'a> {
+impl SubFileWrite<'_> {
     pub fn name(&self) -> &str {
         &self.name
     }
 }
 
-impl<'a> std::io::Write for SubFileWrite<'a> {
+impl std::io::Write for SubFileWrite<'_> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         self.inner.write(buf)
     }

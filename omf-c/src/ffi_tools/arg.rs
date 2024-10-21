@@ -7,7 +7,7 @@ use crate::error::{Error, InvalidArg};
 /// # Safety
 ///
 /// Pointer must be null or valid. See `core::ptr::const_ptr::as_ref` for details.
-pub unsafe fn ref_from_ptr<T>(arg_name: &'static str, ptr: *const T) -> Result<&T, Error> {
+pub unsafe fn ref_from_ptr<'a, T>(arg_name: &'static str, ptr: *const T) -> Result<&'a T, Error> {
     unsafe { ptr.as_ref() }.ok_or(InvalidArg::Null(arg_name).into())
 }
 
@@ -16,7 +16,7 @@ pub unsafe fn ref_from_ptr<T>(arg_name: &'static str, ptr: *const T) -> Result<&
 /// # Safety
 ///
 /// Pointer must be null or valid. See `core::ptr::const_ptr::as_mut` for details.
-pub unsafe fn mut_from_ptr<T>(arg_name: &'static str, ptr: *mut T) -> Result<&mut T, Error> {
+pub unsafe fn mut_from_ptr<'a, T>(arg_name: &'static str, ptr: *mut T) -> Result<&'a mut T, Error> {
     unsafe { ptr.as_mut() }.ok_or(InvalidArg::Null(arg_name).into())
 }
 
