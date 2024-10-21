@@ -28,7 +28,7 @@ pub enum PyLocation {
     Subblocks,
     /// The attribute contains one value for each sub-element in Composite geometry.
     Elements,
-    /// Used by ProjectedTexture attributes.The texture is projected onto the element.
+    /// Used by ProjectedTexture attributes. The texture is projected onto the element.
     Projected,
     /// Used for category sub-attributes. The attribute contains one value for each category.
     Categories,
