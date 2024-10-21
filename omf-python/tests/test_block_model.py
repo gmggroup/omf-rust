@@ -63,7 +63,16 @@ class TestBlockModel(TestCase):
         block_model : omf_python.BlockModel = project.elements()[6].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
-        subblocks_array = block_model.subblocks
+        regular_subblocks = block_model.subblocks
+        self.assertIsInstance(regular_subblocks, omf_python.RegularSubblocks)
+
+        expected_mode = omf_python.SubblockMode.Octree
+        self.assertEqual(expected_mode, regular_subblocks.mode)
+
+        expected_count = [4, 4, 4]
+        self.assertEqual(expected_count, regular_subblocks.count)
+
+        subblocks_array = regular_subblocks.subblocks
         self.assertIsInstance(subblocks_array, omf_python.RegularSubblockArray)
 
         expected_regular_subblock_values = [
@@ -90,7 +99,10 @@ class TestBlockModel(TestCase):
         block_model : omf_python.BlockModel = project.elements()[7].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
-        subblocks_array = block_model.subblocks
+        freeform_subblocks = block_model.subblocks
+        self.assertIsInstance(freeform_subblocks, omf_python.FreeformSubblocks)
+
+        subblocks_array = freeform_subblocks.subblocks
         self.assertIsInstance(subblocks_array, omf_python.FreeformSubblockArray)
 
         expected_freeform_subblock_values = [

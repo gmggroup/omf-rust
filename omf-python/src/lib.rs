@@ -1,4 +1,4 @@
-use block_model::PyBlockModel;
+use block_model::{PyBlockModel, PyFreeformSubblocks, PyRegularSubblocks, PySubblockMode};
 use grid::{PyGrid2Regular, PyGrid2Tensor, PyGrid3Regular, PyGrid3Tensor, PyOrient2, PyOrient3};
 /// Python bindings.
 use pyo3::prelude::*;
@@ -77,6 +77,9 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyTriangleArray>()?;
     m.add_class::<PyRegularSubblockArray>()?;
     m.add_class::<PyFreeformSubblockArray>()?;
+    m.add_class::<PyRegularSubblocks>()?;
+    m.add_class::<PyFreeformSubblocks>()?;
+    m.add_class::<PySubblockMode>()?;
     m.add_class::<PyNameArray>()?;
     m.add_class::<PyElement>()?;
     m.add_class::<PyGrid2Regular>()?;
