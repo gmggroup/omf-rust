@@ -347,7 +347,8 @@ impl Validate for Surface {
 
 impl Validate for GridSurface {
     fn validate_inner(&mut self, val: &mut Validator) {
-        val.enter("GridSurface")
+        let mut val = val
+            .enter("GridSurface")
             .obj(&mut self.orient)
             .obj(&mut self.grid)
             .array_opt(self.heights.as_mut(), Constraint::Scalar, "heights")
@@ -356,6 +357,7 @@ impl Validate for GridSurface {
                 self.grid.flat_corner_count(),
                 "heights",
             );
+        self.orient.validate_ortho(&mut val);
     }
 }
 

@@ -14,7 +14,7 @@ pub trait RowGrouper {
     fn next_column(&mut self) -> Result<Option<SerializedColumnWriter<'_>>, ParquetError>;
 }
 
-impl<'a, W: Write + Send> RowGrouper for SerializedRowGroupWriter<'a, W> {
+impl<W: Write + Send> RowGrouper for SerializedRowGroupWriter<'_, W> {
     fn next_column(&mut self) -> Result<Option<SerializedColumnWriter<'_>>, ParquetError> {
         SerializedRowGroupWriter::next_column(self)
     }
