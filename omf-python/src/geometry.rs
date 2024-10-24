@@ -108,6 +108,7 @@ impl PyGridSurface {
         }
     }
 
+    #[getter]
     /// Array with `Scalar` type storing the offset of each grid vertex from the place.
     /// Heights may be positive or negative. Will be absent from flat 2D grids.
     fn heights(&self) -> Option<PyScalarArray> {

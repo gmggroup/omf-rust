@@ -20,7 +20,7 @@ class TestGridSurface(TestCase):
         self.assertEqual([1, 0, 0], orientation.u)
         self.assertEqual([0, 1, 0], orientation.v)
 
-        height_array = grid_surface.heights()
+        height_array = grid_surface.heights
         self.assertEqual(9, height_array.item_count())
         self.assertEqual(
             [0, 0, 0, 0, 2, 0, 0, 0, 0], reader.array_scalars(height_array)
