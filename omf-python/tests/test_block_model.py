@@ -1,6 +1,7 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
 
 
 class TestBlockModel(TestCase):
@@ -11,7 +12,7 @@ class TestBlockModel(TestCase):
     def test_should_return_expected_regular_block_model(self) -> None:
         reader = omf_python.Reader(self.one_of_everything)
         project, _ = reader.project()
-        block_model : omf_python.BlockModel = project.elements()[4].geometry()
+        block_model: omf_python.BlockModel = project.elements()[4].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
         orientation = block_model.orient
@@ -22,8 +23,8 @@ class TestBlockModel(TestCase):
 
         grid = block_model.grid
         self.assertIsInstance(grid, omf_python.Grid3Regular)
-        self.assertEqual([1,1,1], grid.size)
-        self.assertEqual([2,2,2], grid.count())
+        self.assertEqual([1, 1, 1], grid.size)
+        self.assertEqual([2, 2, 2], grid.count())
         self.assertEqual(8, grid.flat_count())
         self.assertEqual(27, grid.flat_corner_count())
 
@@ -33,12 +34,12 @@ class TestBlockModel(TestCase):
     def test_should_have_expected_tensor_block_model(self) -> None:
         reader = omf_python.Reader(self.one_of_everything)
         project, _ = reader.project()
-        block_model : omf_python.BlockModel = project.elements()[5].geometry()
+        block_model: omf_python.BlockModel = project.elements()[5].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
         grid = block_model.grid
         self.assertIsInstance(grid, omf_python.Grid3Tensor)
-        self.assertEqual([2,2,2], grid.count())
+        self.assertEqual([2, 2, 2], grid.count())
         self.assertEqual(8, grid.flat_count())
         self.assertEqual(27, grid.flat_corner_count())
 
@@ -60,7 +61,7 @@ class TestBlockModel(TestCase):
     def test_should_have_expected_regular_subblocks(self) -> None:
         reader = omf_python.Reader(self.one_of_everything)
         project, _ = reader.project()
-        block_model : omf_python.BlockModel = project.elements()[6].geometry()
+        block_model: omf_python.BlockModel = project.elements()[6].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
         regular_subblocks = block_model.subblocks
@@ -90,13 +91,13 @@ class TestBlockModel(TestCase):
         ]
         self.assertListEqual(
             expected_regular_subblock_values,
-            reader.array_regular_subblocks(subblocks_array)
+            reader.array_regular_subblocks(subblocks_array),
         )
 
     def test_should_have_expected_freeform_subblocks(self) -> None:
         reader = omf_python.Reader(self.one_of_everything)
         project, _ = reader.project()
-        block_model : omf_python.BlockModel = project.elements()[7].geometry()
+        block_model: omf_python.BlockModel = project.elements()[7].geometry()
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
         freeform_subblocks = block_model.subblocks
@@ -124,4 +125,6 @@ class TestBlockModel(TestCase):
         freeform_subblock_values = [
             (a, [round(i, 4) for i in b]) for (a, b) in freeform_subblock_values
         ]
-        self.assertListEqual(expected_freeform_subblock_values, freeform_subblock_values)
+        self.assertListEqual(
+            expected_freeform_subblock_values, freeform_subblock_values
+        )

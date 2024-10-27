@@ -1,6 +1,8 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
+
 
 class TestTextAttribute(TestCase):
     def setUp(self) -> None:

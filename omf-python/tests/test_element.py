@@ -1,6 +1,8 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
+
 
 class TestElement(TestCase):
     def test_should_return_expected_element_metadata(self) -> None:
@@ -14,6 +16,6 @@ class TestElement(TestCase):
         expected_metadata = {
             "date_created": "2024-10-14T00:00:00Z",
             "date_modified": "2024-10-15T00:00:00Z",
-            "sub-type": "point"
+            "sub-type": "point",
         }
         self.assertEqual(expected_metadata, element.metadata)

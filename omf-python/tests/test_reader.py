@@ -1,6 +1,7 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
 
 
 class TestReader(TestCase):
@@ -22,20 +23,25 @@ class TestReader(TestCase):
 
     def test_should_raise_exception_for_validation_error(self) -> None:
         # Given
-        onf_file_with_error = path.join(path.dirname(__file__), "data/missing_parquet.omf")
+        onf_file_with_error = path.join(
+            path.dirname(__file__), "data/missing_parquet.omf"
+        )
         reader = omf_python.Reader(onf_file_with_error)
 
         with self.assertRaises(omf_python.OmfValidationFailedException) as context:
             reader.project()
 
-        self.assertEqual(str(context.exception),
+        self.assertEqual(
+            str(context.exception),
             "OMF validation failed:\n"
-            "  Error: 'PointSet::vertices' refers to non-existent archive member '1.parquet', inside 'Missing'"
+            "  Error: 'PointSet::vertices' refers to non-existent archive member '1.parquet', inside 'Missing'",
         )
 
     def test_should_return_expected_problems(self) -> None:
         # Given
-        onf_file_with_problem = path.join(path.dirname(__file__), "data/duplicate_element_name.omf")
+        onf_file_with_problem = path.join(
+            path.dirname(__file__), "data/duplicate_element_name.omf"
+        )
         reader = omf_python.Reader(onf_file_with_problem)
         _, problems = reader.project()
 
@@ -44,16 +50,21 @@ class TestReader(TestCase):
 
         problem = problems[0]
 
-        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"Duplicate\", inside 'Duplicate Element Name Test'")
+        self.assertEqual(
+            str(problem),
+            "Warning: 'Project::elements[..]::name' contains duplicate of \"Duplicate\", inside 'Duplicate Element Name Test'",
+        )
         self.assertEqual(problem.name, "Duplicate Element Name Test")
         self.assertEqual(problem.field, "elements[..]::name")
-        self.assertEqual(problem.reason, "contains duplicate of \"Duplicate\"")
+        self.assertEqual(problem.reason, 'contains duplicate of "Duplicate"')
         self.assertEqual(problem.type_name, "Project")
         self.assertEqual(problem.is_error(), False)
 
     def test_should_raise_expected_invalid_data_exception(self) -> None:
         # Given
-        onf_file_with_array_length_mismatch = path.join(path.dirname(__file__), "data/array_length_mismatch.omf")
+        onf_file_with_array_length_mismatch = path.join(
+            path.dirname(__file__), "data/array_length_mismatch.omf"
+        )
 
         reader = omf_python.Reader(onf_file_with_array_length_mismatch)
         project, _ = reader.project()
@@ -64,7 +75,10 @@ class TestReader(TestCase):
             reader.array_vertices(vertices_array)
 
         # Then
-        self.assertEqual(str(context.exception), "Data error: Error: array length 999 does not match the declared length 4")
+        self.assertEqual(
+            str(context.exception),
+            "Data error: Error: array length 999 does not match the declared length 4",
+        )
 
     def test_should_raise_expected_file_not_found_exception(self) -> None:
         # Given
@@ -75,7 +89,10 @@ class TestReader(TestCase):
             omf_python.Reader(incorrect_location)
 
         # Then
-        self.assertEqual(str(context.exception), "File IO error: No such file or directory (os error 2)")
+        self.assertEqual(
+            str(context.exception),
+            "File IO error: No such file or directory (os error 2)",
+        )
 
     def test_should_return_expected_default_limits(self) -> None:
         # Given
@@ -126,4 +143,7 @@ class TestReader(TestCase):
             reader.project()
 
         # Then
-        self.assertEqual(str(context.exception), "JSON deserialization error: Error: safety limit exceeded")
+        self.assertEqual(
+            str(context.exception),
+            "JSON deserialization error: Error: safety limit exceeded",
+        )

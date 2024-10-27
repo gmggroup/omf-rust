@@ -1,6 +1,8 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
+
 
 class TestPointSet(TestCase):
     def setUp(self) -> None:
@@ -25,5 +27,11 @@ class TestPointSet(TestCase):
         vertices = self.reader.array_vertices(vertices_array)
 
         # Then
-        expected_vertices = [[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        expected_vertices = [
+            [-1.0, -1.0, 0.0],
+            [1.0, -1.0, 0.0],
+            [1.0, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+        ]
         self.assertEqual(vertices, expected_vertices)

@@ -5,24 +5,24 @@
 
 import omf_python
 
-project = 'OMF Rust Python API'
-copyright = '2024, Seequent'
-author = 'Catalyst IT'
+project = "OMF Rust Python API"
+copyright = "2024, Seequent"
+author = "Catalyst IT"
 
 release = omf_python.version()
 version = release
 
 extensions = [
-    'sphinx.ext.napoleon',
-    'autoapi.extension',
+    "sphinx.ext.napoleon",
+    "autoapi.extension",
 ]
 
-autoapi_dirs = ['../../']
-autoapi_file_patterns = ['omf_python.pyi']
+autoapi_dirs = ["../../"]
+autoapi_file_patterns = ["omf_python.pyi"]
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 html_static_path = []

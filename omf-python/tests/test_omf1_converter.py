@@ -1,7 +1,8 @@
-import omf_python
 from os import path
-from unittest import TestCase
 from tempfile import NamedTemporaryFile
+from unittest import TestCase
+
+import omf_python
 
 
 class TestOmf1Converter(TestCase):
@@ -40,10 +41,13 @@ class TestOmf1Converter(TestCase):
 
         problem = problems[0]
 
-        self.assertEqual(str(problem), "Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''")
+        self.assertEqual(
+            str(problem),
+            "Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''",
+        )
         self.assertEqual(problem.name, "")
         self.assertEqual(problem.field, "elements[..]::name")
-        self.assertEqual(problem.reason, "contains duplicate of \"\"")
+        self.assertEqual(problem.reason, 'contains duplicate of ""')
         self.assertEqual(problem.type_name, "Project")
         self.assertEqual(problem.is_error(), False)
 
@@ -59,7 +63,10 @@ class TestOmf1Converter(TestCase):
                 converter.convert(omf1_file, omf2_file.name)
 
             # Then
-            self.assertEqual(str(context.exception), "File IO error: No such file or directory (os error 2)")
+            self.assertEqual(
+                str(context.exception),
+                "File IO error: No such file or directory (os error 2)",
+            )
 
     def test_should_return_expected_default_limits(self) -> None:
         # Given

@@ -1,6 +1,7 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
 
 
 class TestGeometrySurface(TestCase):
@@ -55,4 +56,4 @@ class TestGeometrySurface(TestCase):
         surface = project.elements()[0]
 
         # Then
-        self.assertEqual([255,255,0,255], surface.color)
+        self.assertEqual([255, 255, 0, 255], surface.color)

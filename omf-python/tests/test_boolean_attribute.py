@@ -1,6 +1,8 @@
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
+
 
 class TestBooleanAttribute(TestCase):
     def setUp(self) -> None:
@@ -13,7 +15,9 @@ class TestBooleanAttribute(TestCase):
         self.attribute = self.project.elements()[4].attributes()[0]
 
     def test_should_return_boolean_attribute_instance(self) -> None:
-        self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataBoolean)
+        self.assertIsInstance(
+            self.attribute.get_data(), omf_python.AttributeDataBoolean
+        )
 
     def test_should_return_boolean_attribute_values_item_count(self) -> None:
         actual_count = self.attribute.get_data().values.item_count()

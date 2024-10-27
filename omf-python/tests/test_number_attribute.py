@@ -1,7 +1,9 @@
 import datetime
-import omf_python
 from os import path
 from unittest import TestCase
+
+import omf_python
+
 
 class TestNumberAttribute(TestCase):
     def setUp(self) -> None:
@@ -22,7 +24,13 @@ class TestNumberAttribute(TestCase):
     def test_should_return_number_attribute_values(self) -> None:
         attribute_data = self.attribute.get_data()
 
-        expected_values = [946684800.0, 946688400.0, 946692000.0, 946695600.0, 946699200.0]
+        expected_values = [
+            946684800.0,
+            946688400.0,
+            946692000.0,
+            946695600.0,
+            946699200.0,
+        ]
         actual_values = self.reader.array_numbers(attribute_data.values)
 
         self.assertEqual(expected_values, actual_values)
@@ -40,17 +48,26 @@ class TestNumberAttribute(TestCase):
         self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
 
     def test_should_return_discrete_colormap_boundaries(self) -> None:
-        boundary_array = self.project.elements()[0].attributes()[2].get_data().colormap.boundaries
+        boundary_array = (
+            self.project.elements()[0].attributes()[2].get_data().colormap.boundaries
+        )
         actual_boundaries = self.reader.array_boundaries(boundary_array)
 
         expected_boundaries = [946688400.0, 946692000.0, 946695600.0]
         self.assertEqual(actual_boundaries, expected_boundaries)
 
     def test_should_return_discrete_colormap_gradient(self) -> None:
-        gradient_array = self.project.elements()[0].attributes()[2].get_data().colormap.gradient
+        gradient_array = (
+            self.project.elements()[0].attributes()[2].get_data().colormap.gradient
+        )
         actual_gradient = self.reader.array_gradient(gradient_array)
 
-        expected_gradient = [[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255], [255, 255, 255, 255]]
+        expected_gradient = [
+            [0, 0, 255, 255],
+            [0, 255, 0, 255],
+            [255, 0, 0, 255],
+            [255, 255, 255, 255],
+        ]
         self.assertEqual(actual_gradient, expected_gradient)
 
     def test_should_return_continuous_colormap(self) -> None:
@@ -60,13 +77,17 @@ class TestNumberAttribute(TestCase):
         self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
 
     def test_should_return_continuous_colormap_float_range(self) -> None:
-        min, max = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap.range()
+        min, max = (
+            self.ccmap_project.elements()[0].attributes()[0].get_data().colormap.range()
+        )
 
         self.assertEqual(min, 0.0)
         self.assertEqual(max, 2.0)
 
     def test_should_return_continuous_colormap_date_range(self) -> None:
-        min, max = self.ccmap_project.elements()[0].attributes()[1].get_data().colormap.range()
+        min, max = (
+            self.ccmap_project.elements()[0].attributes()[1].get_data().colormap.range()
+        )
 
         expected_min = datetime.date(1995, 5, 1)
         expected_max = datetime.date(1998, 8, 1)
@@ -75,7 +96,9 @@ class TestNumberAttribute(TestCase):
         self.assertEqual(max, expected_max)
 
     def test_should_return_continuous_colormap_datetime_range(self) -> None:
-        min, max = self.ccmap_project.elements()[0].attributes()[2].get_data().colormap.range()
+        min, max = (
+            self.ccmap_project.elements()[0].attributes()[2].get_data().colormap.range()
+        )
 
         expected_min = datetime.datetime(1995, 5, 1, 5, 1, tzinfo=datetime.timezone.utc)
         expected_max = datetime.datetime(1998, 8, 1, 8, 1, tzinfo=datetime.timezone.utc)
