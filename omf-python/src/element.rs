@@ -57,9 +57,9 @@ impl PyElement {
                 Ok(PyGridSurface(grid_surface.clone()).into_py(py))
             }
             Geometry::BlockModel(block_model) => Ok(PyBlockModel(block_model.clone()).into_py(py)),
-            _ => Err(OmfNotSupportedException::new_err(
-                "Geometry type not supported",
-            )),
+            unsupported => Err(OmfNotSupportedException::new_err(format!(
+                "Geometry type not supported for {unsupported:?}"
+            ))),
         }
     }
 
