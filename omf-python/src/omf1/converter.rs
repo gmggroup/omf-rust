@@ -27,17 +27,23 @@ pub fn detect_omf1(path: String) -> PyResult<bool> {
 /// This object allows you to set up the desired parameters then convert one or more files.
 pub struct PyOmf1Converter(pub Converter);
 
+impl Default for PyOmf1Converter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyOmf1Converter {
     #[new]
-    pub fn new() -> PyResult<Self> {
-        Ok(PyOmf1Converter(Converter::new()))
+    pub fn new() -> Self {
+        PyOmf1Converter(Converter::new())
     }
 
     /// Returns the current limits.
-    fn limits(&self) -> PyResult<PyLimits> {
-        Ok(self.0.limits().into())
+    fn limits(&self) -> PyLimits {
+        self.0.limits().into()
     }
 
     /// Set the limits to use during conversion.
@@ -46,8 +52,8 @@ impl PyOmf1Converter {
     }
 
     /// Returns the current compression level.
-    fn compression(&self) -> PyResult<u32> {
-        Ok(self.0.compression().level())
+    fn compression(&self) -> u32 {
+        self.0.compression().level()
     }
 
     /// Set the compression level to use when writing. Range 0-9.

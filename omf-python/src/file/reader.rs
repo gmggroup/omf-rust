@@ -51,12 +51,18 @@ impl From<PyLimits> for Limits {
     }
 }
 
+impl Default for PyLimits {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyLimits {
     #[new]
-    pub fn new() -> PyResult<Self> {
-        Ok(Limits::default().into())
+    pub fn new() -> Self {
+        Limits::default().into()
     }
 }
 
@@ -94,8 +100,8 @@ impl PyReader {
     }
 
     /// Returns the current limits.
-    fn limits(&self) -> PyResult<PyLimits> {
-        Ok(self.0.limits().into())
+    fn limits(&self) -> PyLimits {
+        self.0.limits().into()
     }
 
     /// Sets the memory limits.
