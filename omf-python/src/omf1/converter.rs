@@ -12,7 +12,7 @@ use std::path::Path;
 #[gen_stub_pyfunction()]
 #[pyfunction]
 /// Returns true if the path looks more like OMF1 than OMF2.
-pub fn detect_omf1(path: String) -> PyResult<bool> {
+pub fn detect_omf1(path: &str) -> PyResult<bool> {
     let path = Path::new(&path);
     match omf1_detect_open(path) {
         Ok(result) => Ok(result),
