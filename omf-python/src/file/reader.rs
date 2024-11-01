@@ -96,7 +96,7 @@ impl PyReader {
     pub fn new(filepath: &str) -> PyResult<Self> {
         let file = File::open(filepath).map_err(|e| OmfException::py_err(IoError(e)))?;
         let reader = Reader::new(file).map_err(OmfException::py_err)?;
-        Ok(PyReader(reader))
+        Ok(Self(reader))
     }
 
     /// Returns the current limits.

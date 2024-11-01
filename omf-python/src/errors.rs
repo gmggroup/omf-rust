@@ -92,7 +92,7 @@ impl OmfException {
             }
             Error::DeserializationFailed(_) => OmfJsonException::new_err(s),
             // Remaining errors are converted to generic OMF exceptions.
-            _ => OmfException::new_err(s),
+            _ => Self::new_err(s),
         }
     }
 }

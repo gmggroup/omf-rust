@@ -38,7 +38,7 @@ impl Default for PyOmf1Converter {
 impl PyOmf1Converter {
     #[new]
     pub fn new() -> Self {
-        PyOmf1Converter(Converter::new())
+        Self(Converter::new())
     }
 
     /// Returns the current limits.
