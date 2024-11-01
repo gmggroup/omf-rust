@@ -86,7 +86,7 @@ impl PyAttribute {
     /// Selects which part of the element the attribute is attached to.
     ///
     /// See the documentation for each Geometry variant for a list of what locations are valid.
-    fn location(&self) -> PyLocation {
+    const fn location(&self) -> PyLocation {
         match self.0.location {
             Location::Vertices => PyLocation::Vertices,
             Location::Primitives => PyLocation::Primitives,

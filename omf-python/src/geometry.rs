@@ -91,7 +91,7 @@ pub struct PyGridSurface(pub GridSurface);
 impl PyGridSurface {
     #[getter]
     /// Position and orientation of the surface.
-    fn orient(&self) -> PyOrient2 {
+    const fn orient(&self) -> PyOrient2 {
         PyOrient2(self.0.orient)
     }
 

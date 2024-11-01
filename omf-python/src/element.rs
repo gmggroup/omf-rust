@@ -65,7 +65,7 @@ impl PyElement {
 
     #[getter]
     /// Optional solid color.
-    fn color(&self) -> Option<Color> {
+    const fn color(&self) -> Option<Color> {
         self.0.color
     }
 }
