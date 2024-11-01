@@ -98,30 +98,24 @@ impl PyAttribute {
     }
 
     /// The attribute data.
-    fn get_data(&self, py: Python<'_>) -> PyResult<PyObject> {
+    fn get_data(&self, py: Python<'_>) -> PyObject {
         match &self.0.data {
             AttributeData::Category { .. } => {
-                Ok(PyAttributeDataCategory(self.0.data.clone()).into_py(py))
+                PyAttributeDataCategory(self.0.data.clone()).into_py(py)
             }
-            AttributeData::Color { .. } => {
-                Ok(PyAttributeDataColor(self.0.data.clone()).into_py(py))
-            }
+            AttributeData::Color { .. } => PyAttributeDataColor(self.0.data.clone()).into_py(py),
             AttributeData::MappedTexture { .. } => {
-                Ok(PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py))
+                PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py)
             }
             AttributeData::ProjectedTexture { .. } => {
-                Ok(PyAttributeDataProjectedTexture(self.0.data.clone()).into_py(py))
+                PyAttributeDataProjectedTexture(self.0.data.clone()).into_py(py)
             }
-            AttributeData::Number { .. } => {
-                Ok(PyAttributeDataNumber(self.0.data.clone()).into_py(py))
-            }
-            AttributeData::Vector { .. } => {
-                Ok(PyAttributeDataVector(self.0.data.clone()).into_py(py))
-            }
+            AttributeData::Number { .. } => PyAttributeDataNumber(self.0.data.clone()).into_py(py),
+            AttributeData::Vector { .. } => PyAttributeDataVector(self.0.data.clone()).into_py(py),
             AttributeData::Boolean { .. } => {
-                Ok(PyAttributeDataBoolean(self.0.data.clone()).into_py(py))
+                PyAttributeDataBoolean(self.0.data.clone()).into_py(py)
             }
-            AttributeData::Text { .. } => Ok(PyAttributeDataText(self.0.data.clone()).into_py(py)),
+            AttributeData::Text { .. } => PyAttributeDataText(self.0.data.clone()).into_py(py),
         }
     }
 }
