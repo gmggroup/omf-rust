@@ -13,7 +13,7 @@ use serde_pyobject::to_pyobject;
 
 #[gen_stub_pyclass_enum]
 #[pyclass(eq, eq_int, name = "Location")]
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 /// Describes what part of the geometry an attribute attaches to.
 ///
 /// See the documentation for each Geometry variant for a list of what
