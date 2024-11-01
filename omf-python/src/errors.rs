@@ -80,7 +80,7 @@ create_exception_impl!(
 );
 
 impl OmfException {
-    /// Convert OMF errors to OmfException derived python exceptions
+    /// Convert OMF errors to `OmfException` derived python exceptions
     pub(crate) fn py_err(e: Error) -> PyErr {
         let s = e.to_string();
         match e {
