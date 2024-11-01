@@ -43,7 +43,7 @@ use validate::PyProblem;
 #[gen_stub_pyfunction]
 #[pyfunction]
 fn version() -> String {
-    env!("CARGO_PKG_VERSION").to_string()
+    env!("CARGO_PKG_VERSION").to_owned()
 }
 
 /// This module provides python bindings for omf-rust.

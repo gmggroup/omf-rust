@@ -21,7 +21,7 @@ impl PyProblem {
 
     #[getter]
     fn type_name(&self) -> String {
-        self.0.ty.to_string()
+        self.0.ty.to_owned()
     }
 
     #[getter]
