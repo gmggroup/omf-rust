@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -24,8 +25,9 @@ class TestMappedTextureAttribute(TestCase):
         self.assertEqual(4, texcoords.item_count())
         coordinates = self.reader.array_texcoords(texcoords)
         self.assertEqual(4, len(coordinates))
-        COORDINATES = [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]
-        self.assertEqual(COORDINATES, coordinates)
+        self.assertEqual(numpy.float64, coordinates.dtype)
+        COORDINATES = numpy.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+        self.assertTrue(numpy.array_equal(COORDINATES, coordinates))
 
         # And it should contain an image
         image = self.attribute.get_data().image

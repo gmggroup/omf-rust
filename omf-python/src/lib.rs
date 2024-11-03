@@ -33,7 +33,7 @@ use errors::{
     OmfException, OmfFileIoException, OmfInvalidDataException, OmfJsonException,
     OmfLimitExceededException, OmfNotSupportedException, OmfValidationFailedException,
 };
-use file::reader::{PyLimits, PyReader};
+use file::reader::{PyBoundaryType, PyLimits, PyReader};
 use geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
 use omf1::converter::{detect_omf1, PyOmf1Converter};
 use project::PyProject;
@@ -97,6 +97,7 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyReader>()?;
     m.add_class::<PySurface>()?;
     m.add_class::<PyLimits>()?;
+    m.add_class::<PyBoundaryType>()?;
     m.add_class::<PyOmf1Converter>()?;
 
     m.add_function(wrap_pyfunction!(version, m)?)?;

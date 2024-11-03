@@ -72,6 +72,7 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install omf_python --find-links dist --force-reinstall
+          pip install numpy
           pip install pytest
           pytest
 

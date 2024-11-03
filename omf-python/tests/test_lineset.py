@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -17,7 +18,7 @@ class TestLineSet(TestCase):
 
     def test_should_return_expected_origin(self) -> None:
         lineset_origin = self.lineset.geometry().origin
-        self.assertEqual(lineset_origin, [0.0, 0.0, 0.0])
+        self.assertTrue(numpy.array_equal(lineset_origin, [0.0, 0.0, 0.0]))
 
     def test_should_return_expected_vertices(self) -> None:
         # Given
@@ -27,14 +28,17 @@ class TestLineSet(TestCase):
         vertices = self.reader.array_vertices(vertices_array)
 
         # Then
-        expected_vertices = [
-            [-1.0, -1.0, 0.0],
-            [1.0, -1.0, 0.0],
-            [1.0, 1.0, 0.0],
-            [-1.0, 1.0, 0.0],
-            [0.0, 0.0, 1.0],
-        ]
-        self.assertEqual(vertices, expected_vertices)
+        expected_vertices = numpy.array(
+            [
+                [-1.0, -1.0, 0.0],
+                [1.0, -1.0, 0.0],
+                [1.0, 1.0, 0.0],
+                [-1.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ]
+        )
+        self.assertEqual(numpy.float32, vertices.dtype)
+        self.assertTrue(numpy.array_equal(vertices, expected_vertices))
 
     def test_should_return_expected_segments(self) -> None:
         # Given
@@ -44,14 +48,16 @@ class TestLineSet(TestCase):
         segments = self.reader.array_segments(segments_array)
 
         # Then
-        expected_segments = [
-            [0, 1],
-            [1, 2],
-            [2, 3],
-            [3, 0],
-            [0, 4],
-            [1, 4],
-            [2, 4],
-            [3, 4],
-        ]
-        self.assertEqual(segments, expected_segments)
+        expected_segments = numpy.array(
+            [
+                [0, 1],
+                [1, 2],
+                [2, 3],
+                [3, 0],
+                [0, 4],
+                [1, 4],
+                [2, 4],
+                [3, 4],
+            ]
+        )
+        self.assertTrue(numpy.array_equal(segments, expected_segments))

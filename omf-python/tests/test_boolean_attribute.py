@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -26,7 +27,14 @@ class TestBooleanAttribute(TestCase):
     def test_should_return_boolean_attribute_values(self) -> None:
         attribute_data = self.attribute.get_data()
 
-        expected_values = [False, False, False, False, False, False, False, True]
-        actual_values = self.reader.array_booleans(attribute_data.values)
+        expected_values = numpy.array(
+            [False, False, False, False, False, False, False, True]
+        )
+        values, mask = self.reader.array_booleans(attribute_data.values)
 
-        self.assertEqual(expected_values, actual_values)
+        self.assertTrue(numpy.array_equal(expected_values, values))
+        self.assertTrue(
+            numpy.array_equal(
+                numpy.zeros(shape=len(expected_values), dtype=numpy.bool), mask
+            )
+        )

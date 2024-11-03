@@ -1,4 +1,5 @@
-use omf::{Grid2, Grid3, Orient2, Orient3, Vector3};
+use numpy::PyArray1;
+use omf::{Grid2, Grid3, Orient2, Orient3};
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
@@ -239,18 +240,18 @@ pub struct PyOrient2(pub Orient2);
 #[pymethods]
 impl PyOrient2 {
     #[getter]
-    fn origin(&self) -> Vector3 {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]
-    fn u(&self) -> Vector3 {
-        self.0.u
+    fn u<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.u)
     }
 
     #[getter]
-    fn v(&self) -> Vector3 {
-        self.0.v
+    fn v<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.v)
     }
 }
 
@@ -263,22 +264,22 @@ pub struct PyOrient3(pub Orient3);
 #[pymethods]
 impl PyOrient3 {
     #[getter]
-    fn origin(&self) -> Vector3 {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]
-    fn u(&self) -> Vector3 {
-        self.0.u
+    fn u<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.u)
     }
 
     #[getter]
-    fn v(&self) -> Vector3 {
-        self.0.v
+    fn v<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.v)
     }
 
     #[getter]
-    fn w(&self) -> Vector3 {
-        self.0.w
+    fn w<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.w)
     }
 }

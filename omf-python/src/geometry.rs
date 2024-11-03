@@ -2,6 +2,7 @@ use crate::{
     array::{PyScalarArray, PySegmentArray, PyTriangleArray, PyVertexArray},
     grid::{PyGrid2Regular, PyGrid2Tensor, PyOrient2},
 };
+use numpy::PyArray1;
 use omf::{GridSurface, LineSet, PointSet, Surface};
 
 use pyo3::prelude::*;
@@ -16,8 +17,8 @@ pub struct PyPointSet(pub PointSet);
 #[pymethods]
 impl PyPointSet {
     #[getter]
-    fn origin(&self) -> [f64; 3] {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]
@@ -35,8 +36,8 @@ pub struct PyLineSet(pub LineSet);
 #[pymethods]
 impl PyLineSet {
     #[getter]
-    fn origin(&self) -> [f64; 3] {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]
@@ -60,8 +61,8 @@ pub struct PySurface(pub Surface);
 impl PySurface {
     #[getter]
     /// Origin of the surface relative to the project coordinate reference system.
-    fn origin(&self) -> [f64; 3] {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]

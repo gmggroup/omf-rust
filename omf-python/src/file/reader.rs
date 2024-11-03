@@ -6,9 +6,16 @@ use crate::array::{
 use crate::errors::OmfException;
 use crate::validate::PyProblem;
 use crate::PyProject;
-use omf::error::Error::IoError;
+use chrono::{DateTime, NaiveDate, Utc};
+use itertools::Itertools as _;
+use numpy::datetime::{units, Datetime};
+use numpy::ndarray::Array;
+use numpy::{Element, IntoPyArray as _, PyArray, PyArray1, PyArray2};
+use omf::data::{Boundaries, Boundary, NumberType, Numbers, Scalars, Texcoords, Vectors, Vertices};
+use omf::date_time;
+use omf::error::Error::{self, IoError};
 use omf::file::{Limits, Reader};
-use omf::Color;
+use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3_stub_gen::derive::*;
@@ -66,6 +73,127 @@ impl PyLimits {
     }
 }
 
+#[gen_stub_pyclass_enum]
+#[pyclass(name = "BoundaryType", eq)]
+#[derive(PartialEq, Eq)]
+pub enum PyBoundaryType {
+    Less,
+    LessEqual,
+}
+
+trait IntoNullablePyElement<E: Element> {
+    fn into_nullable_pyelement(self) -> E;
+}
+
+impl<T: Default + Element> IntoNullablePyElement<T> for Option<T> {
+    fn into_nullable_pyelement(self) -> T {
+        self.unwrap_or_default()
+    }
+}
+
+impl IntoNullablePyElement<Datetime<units::Days>> for Option<NaiveDate> {
+    fn into_nullable_pyelement(self) -> Datetime<units::Days> {
+        self.map_or_else(Default::default, date_time::date_to_i64)
+            .into()
+    }
+}
+
+impl IntoNullablePyElement<Datetime<units::Microseconds>> for Option<DateTime<Utc>> {
+    fn into_nullable_pyelement(self) -> Datetime<units::Microseconds> {
+        self.map_or_else(Default::default, date_time::date_time_to_i64)
+            .into()
+    }
+}
+
+type BoundPyArray1<'py, T> = Bound<'py, PyArray1<T>>;
+type BoundPyArray2<'py, T> = Bound<'py, PyArray2<T>>;
+
+fn pyarray2_from_vec<T: Element, const N: usize>(
+    py: Python<'_>,
+    array: Vec<[T; N]>,
+) -> PyResult<BoundPyArray2<'_, T>> {
+    Ok(PyArray::from_owned_array_bound(
+        py,
+        Array::from_shape_vec((array.len(), N), array.into_flattened())
+            .map_err(|e| PyRuntimeError::new_err(format!("failed to create shaped array ({e})")))?,
+    ))
+}
+
+fn pyarray1_from_iter<T: Element, Iter: Iterator<Item = Result<T, Error>>>(
+    py: Python<'_>,
+    iter: Iter,
+) -> PyResult<BoundPyArray1<'_, T>> {
+    Ok(iter
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(OmfException::py_err)?
+        .into_pyarray_bound(py))
+}
+
+fn pyarray2_from_iter<T: Element, const N: usize, Iter: Iterator<Item = Result<[T; N], Error>>>(
+    py: Python<'_>,
+    iter: Iter,
+) -> PyResult<BoundPyArray2<'_, T>> {
+    pyarray2_from_vec(
+        py,
+        iter.collect::<Result<Vec<_>, _>>()
+            .map_err(OmfException::py_err)?,
+    )
+}
+
+fn nullable_pyarray1_from_iter<E: Element, T, Iter: Iterator<Item = Result<Option<T>, Error>>>(
+    py: Python<'_>,
+    iter: Iter,
+) -> PyResult<(BoundPyArray1<'_, E>, BoundPyArray1<'_, bool>)>
+where
+    Option<T>: IntoNullablePyElement<E>,
+{
+    let (mask, array): (Vec<_>, Vec<_>) = iter
+        .map_ok(|e| (e.is_none(), e.into_nullable_pyelement()))
+        .collect::<Result<_, _>>()
+        .map_err(OmfException::py_err)?;
+
+    Ok((array.into_pyarray_bound(py), mask.into_pyarray_bound(py)))
+}
+
+fn nullable_pyarray2_from_iter<
+    T: Element + Copy,
+    const N: usize,
+    Iter: Iterator<Item = Result<Option<[T; N]>, Error>>,
+>(
+    py: Python<'_>,
+    iter: Iter,
+) -> PyResult<(BoundPyArray2<'_, T>, BoundPyArray1<'_, bool>)>
+where
+    [T; N]: Default,
+{
+    let (mask, array): (Vec<_>, Vec<_>) = iter
+        .map_ok(|v| (v.is_none(), v.unwrap_or_default()))
+        .collect::<Result<_, _>>()
+        .map_err(OmfException::py_err)?;
+
+    Ok((pyarray2_from_vec(py, array)?, mask.into_pyarray_bound(py)))
+}
+
+fn zipped_pyarray2_from_iter<
+    T: Element,
+    U: Element,
+    const M: usize,
+    const N: usize,
+    Iter: Iterator<Item = Result<([T; M], [U; N]), Error>>,
+>(
+    py: Python<'_>,
+    iter: Iter,
+) -> PyResult<(BoundPyArray2<'_, T>, BoundPyArray2<'_, U>)> {
+    let (first, second): (Vec<_>, Vec<_>) = iter
+        .process_results(|r| r.unzip())
+        .map_err(OmfException::py_err)?;
+
+    Ok((
+        pyarray2_from_vec(py, first)?,
+        pyarray2_from_vec(py, second)?,
+    ))
+}
+
 #[gen_stub_pyclass]
 #[pyclass(name = "Reader")]
 /// OMF reader object.
@@ -85,6 +213,7 @@ impl PyLimits {
 ///     leading to a potential denial of service attack.
 ///     Use the limits provided and check arrays sizes before allocating memory.
 pub struct PyReader(Reader);
+
 #[gen_stub_pymethods]
 #[pymethods]
 impl PyReader {
@@ -132,84 +261,131 @@ impl PyReader {
     }
 
     /// Read a Scalar array.
-    pub fn array_scalars(&self, array: &PyScalarArray) -> PyResult<Vec<f64>> {
-        self.0
+    pub fn array_scalars<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyScalarArray,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        match self
+            .0
             .array_scalars(&array.0)
             .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+        {
+            Scalars::F32(scalars) => pyarray1_from_iter(py, scalars).map(Bound::into_any),
+            Scalars::F64(scalars) => pyarray1_from_iter(py, scalars).map(Bound::into_any),
+        }
     }
 
     /// Read a Vertex array.
-    pub fn array_vertices(&self, array: &PyVertexArray) -> PyResult<Vec<[f64; 3]>> {
-        self.0
+    pub fn array_vertices<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyVertexArray,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        match self
+            .0
             .array_vertices(&array.0)
             .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+        {
+            Vertices::F32(vertices) => pyarray2_from_iter(py, vertices).map(Bound::into_any),
+            Vertices::F64(vertices) => pyarray2_from_iter(py, vertices).map(Bound::into_any),
+        }
     }
 
     /// Read a Segment array.
-    pub fn array_segments(&self, array: &PySegmentArray) -> PyResult<Vec<[u32; 2]>> {
-        self.0
-            .array_segments(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_segments<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PySegmentArray,
+    ) -> PyResult<BoundPyArray2<'py, u32>> {
+        pyarray2_from_iter(
+            py,
+            self.0
+                .array_segments(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
     }
 
     /// Read an Index array.
-    pub fn array_indices(&self, array: &PyIndexArray) -> PyResult<Vec<Option<u32>>> {
-        self.0
-            .array_indices(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<Option<u32>>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_indices<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyIndexArray,
+    ) -> PyResult<(BoundPyArray1<'py, u32>, Bound<'py, PyAny>)> {
+        nullable_pyarray1_from_iter(
+            py,
+            self.0
+                .array_indices(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
+        .map(|(a, b)| (a, b.into_any()))
     }
 
     /// Read a Triangle array.
-    pub fn array_triangles(&self, array: &PyTriangleArray) -> PyResult<Vec<[u32; 3]>> {
-        self.0
-            .array_triangles(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_triangles<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyTriangleArray,
+    ) -> PyResult<BoundPyArray2<'py, u32>> {
+        pyarray2_from_iter(
+            py,
+            self.0
+                .array_triangles(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
     }
 
     /// Read a Color array.
-    pub fn array_color(&self, array: &PyColorArray) -> PyResult<Vec<Option<Color>>> {
-        self.0
-            .array_colors(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_color<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyColorArray,
+    ) -> PyResult<(BoundPyArray2<'py, u8>, Bound<'py, PyAny>)> {
+        nullable_pyarray2_from_iter(
+            py,
+            self.0
+                .array_colors(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
+        .map(|(a, b)| (a, b.into_any()))
     }
 
     /// Read a Gradient array.
-    pub fn array_gradient(&self, array: &PyGradientArray) -> PyResult<Vec<[u8; 4]>> {
-        self.0
-            .array_gradient(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_gradient<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyGradientArray,
+    ) -> PyResult<BoundPyArray2<'py, u8>> {
+        pyarray2_from_iter(
+            py,
+            self.0
+                .array_gradient(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
     }
 
     /// Read a Name array.
     pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
-        self.0
-            .array_names(&array.0)
-            .map_err(OmfException::py_err)?
+        let names = self.0.array_names(&array.0).map_err(OmfException::py_err)?;
+        names
             .collect::<Result<Vec<_>, _>>()
             .map_err(OmfException::py_err)
     }
 
     /// Read a Texcoord array.
-    pub fn array_texcoords(&self, array: &PyTexcoordArray) -> PyResult<Vec<[f64; 2]>> {
-        self.0
+    pub fn array_texcoords<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyTexcoordArray,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        match self
+            .0
             .array_texcoords(&array.0)
             .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+        {
+            Texcoords::F32(texcoords) => pyarray2_from_iter(py, texcoords).map(Bound::into_any),
+            Texcoords::F64(texcoords) => pyarray2_from_iter(py, texcoords).map(Bound::into_any),
+        }
     }
 
     /// Read bytes of an Image.
@@ -225,30 +401,58 @@ impl PyReader {
     }
 
     /// Read a Number array.
-    pub fn array_numbers(&self, array: &PyNumberArray) -> PyResult<Vec<f64>> {
-        let numbers_f64 = self
+    pub fn array_numbers<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyNumberArray,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        match self
             .0
             .array_numbers(&array.0)
             .map_err(OmfException::py_err)?
-            .try_into_f64()
-            .map_err(OmfException::py_err)?;
-
-        Ok(numbers_f64
-            .into_iter()
-            .filter_map(|item| match item {
-                Ok(Some(value)) => Some(value),
-                _ => None,
-            })
-            .collect())
+        {
+            Numbers::F32(numbers) => {
+                nullable_pyarray1_from_iter(py, numbers).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Numbers::F64(numbers) => {
+                nullable_pyarray1_from_iter(py, numbers).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Numbers::I64(numbers) => {
+                nullable_pyarray1_from_iter(py, numbers).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Numbers::Date(numbers) => {
+                nullable_pyarray1_from_iter(py, numbers).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Numbers::DateTime(numbers) => {
+                nullable_pyarray1_from_iter(py, numbers).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+        }
     }
 
     /// Read a Vector array.
-    pub fn array_vectors(&self, array: &PyVectorArray) -> PyResult<Vec<Option<[f64; 3]>>> {
-        self.0
+    pub fn array_vectors<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyVectorArray,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        match self
+            .0
             .array_vectors(&array.0)
             .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+        {
+            Vectors::F32x2(vectors) => {
+                nullable_pyarray2_from_iter(py, vectors).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Vectors::F64x2(vectors) => {
+                nullable_pyarray2_from_iter(py, vectors).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Vectors::F32x3(vectors) => {
+                nullable_pyarray2_from_iter(py, vectors).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+            Vectors::F64x3(vectors) => {
+                nullable_pyarray2_from_iter(py, vectors).map(|(a, b)| (a.into_any(), b.into_any()))
+            }
+        }
     }
 
     /// Read a Text array.
@@ -261,53 +465,83 @@ impl PyReader {
     }
 
     /// Read a Boolean array.
-    pub fn array_booleans(&self, array: &PyBooleanArray) -> PyResult<Vec<Option<bool>>> {
-        self.0
-            .array_booleans(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    pub fn array_booleans<'py>(
+        &self,
+        py: Python<'py>,
+        array: &PyBooleanArray,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        nullable_pyarray1_from_iter(
+            py,
+            self.0
+                .array_booleans(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
+        .map(|(a, b)| (a.into_any(), b.into_any()))
     }
 
     /// Read a Boundary array.
-    pub fn array_boundaries(&self, array: &PyBoundaryArray) -> PyResult<Vec<f64>> {
-        let numbers_f64 = self
+    pub fn array_boundaries(
+        &self,
+        py: Python<'_>,
+        array: &PyBoundaryArray,
+    ) -> PyResult<Vec<(Py<PyAny>, PyBoundaryType)>> {
+        fn map_boundary<T: IntoPy<Py<PyAny>> + NumberType>(
+            py: Python<'_>,
+            b: Boundary<T>,
+        ) -> (Py<PyAny>, PyBoundaryType) {
+            match b {
+                Boundary::Less(v) => (v.into_py(py), PyBoundaryType::Less),
+                Boundary::LessEqual(v) => (v.into_py(py), PyBoundaryType::LessEqual),
+            }
+        }
+
+        let boundaries: Result<Vec<_>, _> = match self
             .0
             .array_boundaries(&array.0)
             .map_err(OmfException::py_err)?
-            .try_into_f64()
-            .map_err(OmfException::py_err)?;
-
-        Ok(numbers_f64
-            .into_iter()
-            .filter_map(|item| match item {
-                Ok(boundary) => Some(boundary.value()),
-                _ => None,
-            })
-            .collect())
+        {
+            Boundaries::F32(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
+            Boundaries::F64(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
+            Boundaries::I64(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
+            Boundaries::Date(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
+            Boundaries::DateTime(boundaries) => {
+                boundaries.map_ok(|b| map_boundary(py, b)).collect()
+            }
+        };
+        boundaries.map_err(OmfException::py_err)
     }
 
     /// Read a RegularSubblock array.
-    pub fn array_regular_subblocks(
+    pub fn array_regular_subblocks<'py>(
         &self,
+        py: Python<'py>,
         array: &PyRegularSubblockArray,
-    ) -> PyResult<Vec<([u32; 3], [u32; 6])>> {
-        self.0
-            .array_regular_subblocks(&array.0)
-            .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+    ) -> PyResult<(BoundPyArray2<'py, u32>, BoundPyArray2<'py, u32>)> {
+        zipped_pyarray2_from_iter(
+            py,
+            self.0
+                .array_regular_subblocks(&array.0)
+                .map_err(OmfException::py_err)?,
+        )
     }
 
     /// Read a FreeformSubblock array.
-    pub fn array_freeform_subblocks(
+    pub fn array_freeform_subblocks<'py>(
         &self,
+        py: Python<'py>,
         array: &PyFreeformSubblockArray,
-    ) -> PyResult<Vec<([u32; 3], [f64; 6])>> {
-        self.0
+    ) -> PyResult<(BoundPyArray2<'py, u32>, Bound<'py, PyAny>)> {
+        match self
+            .0
             .array_freeform_subblocks(&array.0)
             .map_err(OmfException::py_err)?
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(OmfException::py_err)
+        {
+            omf::data::FreeformSubblocks::F32(subblocks) => {
+                zipped_pyarray2_from_iter(py, subblocks).map(|(a, b)| (a, b.into_any()))
+            }
+            omf::data::FreeformSubblocks::F64(subblocks) => {
+                zipped_pyarray2_from_iter(py, subblocks).map(|(a, b)| (a, b.into_any()))
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -16,14 +17,21 @@ class TestColorAttribute(TestCase):
         values = self.attribute.get_data().values
         self.assertEqual(6, values.item_count())
 
-        color_array = self.reader.array_color(values)
+        color_array, color_mask = self.reader.array_color(values)
         self.assertEqual(6, len(color_array))
-        expected_colors = [
-            [255, 0, 0, 255],
-            [255, 255, 0, 255],
-            [0, 255, 0, 255],
-            [0, 0, 255, 255],
-            [255, 255, 255, 255],
-            [255, 255, 255, 255],
-        ]
-        self.assertEqual(expected_colors, color_array)
+        expected_colors = numpy.array(
+            [
+                [255, 0, 0, 255],
+                [255, 255, 0, 255],
+                [0, 255, 0, 255],
+                [0, 0, 255, 255],
+                [255, 255, 255, 255],
+                [255, 255, 255, 255],
+            ]
+        )
+        self.assertTrue(numpy.array_equal(expected_colors, color_array))
+        self.assertTrue(
+            numpy.array_equal(
+                numpy.zeros(shape=len(expected_colors), dtype=numpy.bool), color_mask
+            )
+        )

@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -39,10 +40,15 @@ class TestCategoryAttribute(TestCase):
     def test_should_return_category_attribute_expected_values(self) -> None:
         attribute_data = self.attribute.get_data()
 
-        values = self.reader.array_indices(attribute_data.values)
+        values, mask = self.reader.array_indices(attribute_data.values)
 
-        expected_values = [0, 0, 0, 0, 1]
-        self.assertEqual(values, expected_values)
+        expected_values = numpy.array([0, 0, 0, 0, 1])
+        self.assertTrue(numpy.array_equal(values, expected_values))
+        self.assertTrue(
+            numpy.array_equal(
+                mask, numpy.zeros(shape=len(expected_values), dtype=numpy.bool)
+            )
+        )
 
         names = self.reader.array_names(attribute_data.names)
 
@@ -51,8 +57,8 @@ class TestCategoryAttribute(TestCase):
 
         gradient = self.reader.array_gradient(attribute_data.gradient)
 
-        expected_gradient = [[255, 128, 0, 255], [0, 128, 255, 255]]
-        self.assertEqual(gradient, expected_gradient)
+        expected_gradient = numpy.array([[255, 128, 0, 255], [0, 128, 255, 255]])
+        self.assertTrue(numpy.array_equal(gradient, expected_gradient))
 
         category_attributes = attribute_data.attributes
 

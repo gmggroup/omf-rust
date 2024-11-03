@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -19,7 +20,7 @@ class TestProject(TestCase):
         self.assertEqual(project.description, "Contains a square pyramid.")
         self.assertEqual(project.coordinate_reference_system, "")
         self.assertEqual(project.units, "")
-        self.assertEqual(project.origin, [0.0, 0.0, 0.0])
+        self.assertTrue(numpy.array_equal(project.origin, [0.0, 0.0, 0.0]))
         self.assertEqual(project.author, "Somebody")
         self.assertEqual(project.application, "OMF Rust example")
 

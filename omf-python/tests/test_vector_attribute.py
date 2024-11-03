@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -18,13 +19,26 @@ class TestVectorAttribute(TestCase):
     def test_should_return_vector_attribute_values(self) -> None:
         attribute_data = self.attribute.get_data()
 
-        expected_values = [
-            [1.0, 0.0, 0.0],
-            [1.0, 1.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0],
-            None,
-        ]
-        actual_values = self.reader.array_vectors(attribute_data.values)
+        expected_values = numpy.array(
+            [
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, 1.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+            ]
+        )
+        expected_mask = numpy.array(
+            [
+                False,
+                False,
+                False,
+                False,
+                True,
+            ]
+        )
+        values, mask = self.reader.array_vectors(attribute_data.values)
 
-        self.assertEqual(expected_values, actual_values)
+        self.assertEqual(numpy.float32, values.dtype)
+        self.assertTrue(numpy.array_equal(expected_values, values))
+        self.assertTrue(numpy.array_equal(expected_mask, mask))

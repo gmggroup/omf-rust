@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -17,7 +18,7 @@ class TestPointSet(TestCase):
 
     def test_should_return_expected_origin(self) -> None:
         pointset_origin = self.pointset.geometry().origin
-        self.assertEqual(pointset_origin, [0.0, 0.0, 0.0])
+        self.assertTrue(numpy.array_equal(pointset_origin, [0.0, 0.0, 0.0]))
 
     def test_should_return_expected_vertices(self) -> None:
         # Given
@@ -27,11 +28,14 @@ class TestPointSet(TestCase):
         vertices = self.reader.array_vertices(vertices_array)
 
         # Then
-        expected_vertices = [
-            [-1.0, -1.0, 0.0],
-            [1.0, -1.0, 0.0],
-            [1.0, 1.0, 0.0],
-            [-1.0, 1.0, 0.0],
-            [0.0, 0.0, 1.0],
-        ]
-        self.assertEqual(vertices, expected_vertices)
+        expected_vertices = numpy.array(
+            [
+                [-1.0, -1.0, 0.0],
+                [1.0, -1.0, 0.0],
+                [1.0, 1.0, 0.0],
+                [-1.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ]
+        )
+        self.assertEqual(numpy.float32, vertices.dtype)
+        self.assertTrue(numpy.array_equal(vertices, expected_vertices))

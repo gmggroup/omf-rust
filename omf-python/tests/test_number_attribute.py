@@ -2,7 +2,9 @@ import datetime
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
+from omf_python import BoundaryType
 
 
 class TestNumberAttribute(TestCase):
@@ -24,16 +26,24 @@ class TestNumberAttribute(TestCase):
     def test_should_return_number_attribute_values(self) -> None:
         attribute_data = self.attribute.get_data()
 
-        expected_values = [
-            946684800.0,
-            946688400.0,
-            946692000.0,
-            946695600.0,
-            946699200.0,
-        ]
-        actual_values = self.reader.array_numbers(attribute_data.values)
+        expected_values = numpy.array(
+            [
+                "2000-01-01T00:00:00.000000",
+                "2000-01-01T01:00:00.000000",
+                "2000-01-01T02:00:00.000000",
+                "2000-01-01T03:00:00.000000",
+                "2000-01-01T04:00:00.000000",
+            ],
+            dtype="datetime64[us]",
+        )
+        values, mask = self.reader.array_numbers(attribute_data.values)
 
-        self.assertEqual(expected_values, actual_values)
+        self.assertTrue(numpy.array_equal(expected_values, values))
+        self.assertTrue(
+            numpy.array_equal(
+                numpy.zeros(shape=len(expected_values), dtype=numpy.bool), mask
+            )
+        )
 
     def test_should_handle_empty_colormap(self) -> None:
         number_attribute_data = self.project.elements()[0].attributes()[0].get_data()
@@ -51,20 +61,35 @@ class TestNumberAttribute(TestCase):
         boundary_array = self.attribute.get_data().colormap.boundaries
         actual_boundaries = self.reader.array_boundaries(boundary_array)
 
-        expected_boundaries = [946688400.0, 946692000.0, 946695600.0]
+        expected_boundaries = [
+            (
+                datetime.datetime(2000, 1, 1, 1, 0, tzinfo=datetime.timezone.utc),
+                BoundaryType.Less,
+            ),
+            (
+                datetime.datetime(2000, 1, 1, 2, 0, tzinfo=datetime.timezone.utc),
+                BoundaryType.Less,
+            ),
+            (
+                datetime.datetime(2000, 1, 1, 3, 0, tzinfo=datetime.timezone.utc),
+                BoundaryType.LessEqual,
+            ),
+        ]
         self.assertEqual(actual_boundaries, expected_boundaries)
 
     def test_should_return_discrete_colormap_gradient(self) -> None:
         gradient_array = self.attribute.get_data().colormap.gradient
         actual_gradient = self.reader.array_gradient(gradient_array)
 
-        expected_gradient = [
-            [0, 0, 255, 255],
-            [0, 255, 0, 255],
-            [255, 0, 0, 255],
-            [255, 255, 255, 255],
-        ]
-        self.assertEqual(actual_gradient, expected_gradient)
+        expected_gradient = numpy.array(
+            [
+                [0, 0, 255, 255],
+                [0, 255, 0, 255],
+                [255, 0, 0, 255],
+                [255, 255, 255, 255],
+            ]
+        )
+        self.assertTrue(numpy.array_equal(actual_gradient, expected_gradient))
 
     def test_should_return_continuous_colormap(self) -> None:
         colormap = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap

@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -26,9 +27,9 @@ class TestProjectedTextureAttribute(TestCase):
 
         orient = attribute_data.orient
 
-        self.assertEqual([0.0, 0.0, 0.0], orient.origin)
-        self.assertEqual([1.0, 0.0, 0.0], orient.u)
-        self.assertEqual([0.0, 1.0, 0.0], orient.v)
+        self.assertTrue(numpy.array_equal([0.0, 0.0, 0.0], orient.origin))
+        self.assertTrue(numpy.array_equal([1.0, 0.0, 0.0], orient.u))
+        self.assertTrue(numpy.array_equal([0.0, 1.0, 0.0], orient.v))
 
         image = attribute_data.image
 

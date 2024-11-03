@@ -1,4 +1,5 @@
 use crate::element::PyElement;
+use numpy::PyArray1;
 use omf::Project;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
@@ -46,8 +47,8 @@ impl PyProject {
     ///
     /// Most geometries also have their own origin field. To get the real location add this origin and the geometry origin
     /// to all locations within each element.
-    fn origin(&self) -> [f64; 3] {
-        self.0.origin
+    fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice_bound(py, &self.0.origin)
     }
 
     #[getter]

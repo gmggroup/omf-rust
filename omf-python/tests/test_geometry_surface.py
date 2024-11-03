@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -30,20 +31,31 @@ class TestGeometrySurface(TestCase):
 
         # And the vertices are what we expect
         vertices = reader.array_vertices(vertices_array)
-        VERTICES = [[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0], [0, 0, 1]]
-        self.assertEqual(VERTICES, vertices)
+        VERTICES = numpy.array(
+            [
+                [-1, -1, 0],
+                [1, -1, 0],
+                [1, 1, 0],
+                [-1, 1, 0],
+                [0, 0, 1],
+            ]
+        )
+        self.assertEqual(numpy.float32, vertices.dtype)
+        self.assertTrue(numpy.array_equal(VERTICES, vertices))
 
         # And the triangles are what we expect
         triangles = reader.array_triangles(triangles_array)
-        TRIANGLES = [
-            [0, 1, 4],
-            [1, 2, 4],
-            [2, 3, 4],
-            [3, 0, 4],
-            [0, 2, 1],
-            [0, 3, 2],
-        ]
-        self.assertEqual(TRIANGLES, triangles)
+        TRIANGLES = numpy.array(
+            [
+                [0, 1, 4],
+                [1, 2, 4],
+                [2, 3, 4],
+                [3, 0, 4],
+                [0, 2, 1],
+                [0, 3, 2],
+            ]
+        )
+        self.assertTrue(numpy.array_equal(TRIANGLES, triangles))
 
     def test_should_contain_color(self) -> None:
         # Given

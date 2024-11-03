@@ -1,6 +1,7 @@
 from os import path
 from unittest import TestCase
 
+import numpy
 import omf_python
 
 
@@ -16,10 +17,10 @@ class TestBlockModel(TestCase):
         self.assertIsInstance(block_model, omf_python.BlockModel)
 
         orientation = block_model.orient
-        self.assertEqual([-1, -1, -1], orientation.origin)
-        self.assertEqual([1, 0, 0], orientation.u)
-        self.assertEqual([0, 1, 0], orientation.v)
-        self.assertEqual([0, 0, 1], orientation.w)
+        self.assertTrue(numpy.array_equal([-1, -1, -1], orientation.origin))
+        self.assertTrue(numpy.array_equal([1, 0, 0], orientation.u))
+        self.assertTrue(numpy.array_equal([0, 1, 0], orientation.v))
+        self.assertTrue(numpy.array_equal([0, 0, 1], orientation.w))
 
         grid = block_model.grid
         self.assertIsInstance(grid, omf_python.Grid3Regular)
@@ -46,17 +47,23 @@ class TestBlockModel(TestCase):
         u = grid.u
         self.assertIsInstance(u, omf_python.ScalarArray)
         self.assertEqual(2, u.item_count())
-        self.assertEqual([0.6666, 1.333], reader.array_scalars(u))
+        u_scalars = reader.array_scalars(u)
+        self.assertEqual(numpy.float64, u_scalars.dtype)
+        self.assertTrue(numpy.array_equal([0.6666, 1.333], u_scalars))
 
         v = grid.v
         self.assertIsInstance(v, omf_python.ScalarArray)
         self.assertEqual(2, v.item_count())
-        self.assertEqual([0.6666, 1.333], reader.array_scalars(v))
+        v_scalars = reader.array_scalars(v)
+        self.assertEqual(numpy.float64, v_scalars.dtype)
+        self.assertTrue(numpy.array_equal([0.6666, 1.333], v_scalars))
 
         w = grid.w
         self.assertIsInstance(w, omf_python.ScalarArray)
         self.assertEqual(2, w.item_count())
-        self.assertEqual([1.0, 1.0], reader.array_scalars(w))
+        w_scalars = reader.array_scalars(w)
+        self.assertEqual(numpy.float64, w_scalars.dtype)
+        self.assertTrue(numpy.array_equal([1.0, 1.0], w_scalars))
 
     def test_should_have_expected_regular_subblocks(self) -> None:
         reader = omf_python.Reader(self.one_of_everything)
@@ -76,22 +83,51 @@ class TestBlockModel(TestCase):
         subblocks_array = regular_subblocks.subblocks
         self.assertIsInstance(subblocks_array, omf_python.RegularSubblockArray)
 
-        expected_regular_subblock_values = [
-            ([0, 0, 0], [0, 0, 0, 4, 4, 4]),
-            ([1, 0, 0], [0, 0, 0, 4, 4, 4]),
-            ([0, 1, 0], [0, 0, 0, 4, 4, 4]),
-            ([1, 1, 0], [0, 0, 0, 4, 4, 4]),
-            ([0, 0, 1], [0, 0, 0, 4, 4, 4]),
-            ([1, 0, 1], [0, 0, 0, 4, 4, 4]),
-            ([0, 1, 1], [0, 0, 0, 4, 4, 4]),
-            ([1, 1, 1], [0, 0, 0, 2, 2, 2]),
-            ([1, 1, 1], [0, 2, 0, 1, 3, 1]),
-            ([1, 1, 1], [2, 0, 0, 3, 1, 1]),
-            ([1, 1, 1], [0, 0, 2, 1, 1, 3]),
-        ]
-        self.assertListEqual(
-            expected_regular_subblock_values,
-            reader.array_regular_subblocks(subblocks_array),
+        expected_regular_subblock_parents = numpy.array(
+            [
+                [0, 0, 0],
+                [1, 0, 0],
+                [0, 1, 0],
+                [1, 1, 0],
+                [0, 0, 1],
+                [1, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+            ]
+        )
+        expected_regular_subblock_corners = numpy.array(
+            [
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 4, 4, 4],
+                [0, 0, 0, 2, 2, 2],
+                [0, 2, 0, 1, 3, 1],
+                [2, 0, 0, 3, 1, 1],
+                [0, 0, 2, 1, 1, 3],
+            ]
+        )
+
+        regular_subblock_parents, regular_subblock_corners = (
+            reader.array_regular_subblocks(subblocks_array)
+        )
+        self.assertTrue(
+            numpy.array_equal(
+                expected_regular_subblock_parents,
+                regular_subblock_parents,
+            )
+        )
+        self.assertTrue(
+            numpy.array_equal(
+                expected_regular_subblock_corners,
+                regular_subblock_corners,
+            )
         )
 
     def test_should_have_expected_freeform_subblocks(self) -> None:
@@ -106,25 +142,47 @@ class TestBlockModel(TestCase):
         subblocks_array = freeform_subblocks.subblocks
         self.assertIsInstance(subblocks_array, omf_python.FreeformSubblockArray)
 
-        expected_freeform_subblock_values = [
-            ([0, 0, 0], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([1, 0, 0], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([0, 1, 0], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([1, 1, 0], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([0, 0, 1], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([1, 0, 1], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([0, 1, 1], [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]),
-            ([1, 1, 1], [0.0, 0.0, 0.0, 1.0, 1.0, 0.3333]),
-            ([1, 1, 1], [0.0, 0.0, 0.3333, 0.75, 0.75, 0.6666]),
-            ([1, 1, 1], [0.0, 0.0, 0.6666, 0.5, 0.5, 1.0]),
-        ]
+        expected_freeform_subblock_parents = numpy.array(
+            [
+                [0, 0, 0],
+                [1, 0, 0],
+                [0, 1, 0],
+                [1, 1, 0],
+                [0, 0, 1],
+                [1, 0, 1],
+                [0, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1],
+            ]
+        )
+        expected_freeform_subblock_corners = numpy.array(
+            [
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 1.0, 1.0, 0.3333],
+                [0.0, 0.0, 0.3333, 0.75, 0.75, 0.6666],
+                [0.0, 0.0, 0.6666, 0.5, 0.5, 1.0],
+            ]
+        )
 
-        freeform_subblock_values = reader.array_freeform_subblocks(subblocks_array)
+        freeform_subblock_parents, freeform_subblock_corners = (
+            reader.array_freeform_subblocks(subblocks_array)
+        )
+        self.assertEqual(numpy.uint32, freeform_subblock_parents.dtype)
 
-        # Round floating point values to check they're almost equal
-        freeform_subblock_values = [
-            (a, [round(i, 4) for i in b]) for (a, b) in freeform_subblock_values
-        ]
-        self.assertListEqual(
-            expected_freeform_subblock_values, freeform_subblock_values
+        self.assertTrue(
+            numpy.array_equal(
+                expected_freeform_subblock_parents, freeform_subblock_parents
+            )
+        )
+        self.assertTrue(
+            numpy.allclose(
+                expected_freeform_subblock_corners, freeform_subblock_corners
+            )
         )
