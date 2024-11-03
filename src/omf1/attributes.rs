@@ -202,10 +202,11 @@ pub(super) fn attribute(
 }
 
 fn projection_axis(axis: [f64; 3]) -> ([f64; 3], f64) {
-    let length: f64 = axis.iter().map(|x| x * x).sum();
-    if length == 0.0 {
+    let length_squared: f64 = axis.iter().map(|x| x * x).sum();
+    if length_squared == 0.0 {
         ([0.0, 0.0, 0.0], 0.0)
     } else {
+        let length = length_squared.sqrt();
         (axis.map(|x| x / length), length)
     }
 }
