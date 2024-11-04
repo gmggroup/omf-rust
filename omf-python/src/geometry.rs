@@ -99,12 +99,8 @@ impl PyGridSurface {
     /// 2D grid definition, which can be regular or tensor.
     fn grid(&self, py: Python<'_>) -> PyObject {
         match self.0.grid {
-            omf::Grid2::Regular { .. } => PyGrid2Regular::try_from(self.0.grid.clone())
-                .expect("conversion from Grid2::Regular should succeed")
-                .into_py(py),
-            omf::Grid2::Tensor { .. } => PyGrid2Tensor::try_from(self.0.grid.clone())
-                .expect("conversion from Grid2::Tensor should succeed")
-                .into_py(py),
+            omf::Grid2::Regular { .. } => PyGrid2Regular::from(self.0.grid.clone()).into_py(py),
+            omf::Grid2::Tensor { .. } => PyGrid2Tensor::from(self.0.grid.clone()).into_py(py),
         }
     }
 

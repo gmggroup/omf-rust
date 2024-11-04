@@ -63,13 +63,12 @@ impl PyRegularSubblocks {
     }
 }
 
-impl TryFrom<Subblocks> for PyRegularSubblocks {
-    type Error = ();
-
-    fn try_from(value: Subblocks) -> Result<Self, Self::Error> {
+impl From<Subblocks> for PyRegularSubblocks {
+    // Note: this implementation may panic.
+    fn from(value: Subblocks) -> Self {
         match value {
-            Subblocks::Regular { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Subblocks::Regular { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
@@ -101,13 +100,12 @@ impl PyFreeformSubblocks {
     }
 }
 
-impl TryFrom<Subblocks> for PyFreeformSubblocks {
-    type Error = ();
-
-    fn try_from(value: Subblocks) -> Result<Self, Self::Error> {
+impl From<Subblocks> for PyFreeformSubblocks {
+    // Note: this implementation may panic.
+    fn from(value: Subblocks) -> Self {
         match value {
-            Subblocks::Freeform { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Subblocks::Freeform { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
@@ -136,12 +134,8 @@ impl PyBlockModel {
     /// Block sizes.
     fn grid(&self, py: Python<'_>) -> PyObject {
         match self.0.grid {
-            omf::Grid3::Regular { .. } => PyGrid3Regular::try_from(self.0.grid.clone())
-                .expect("conversion from Grid3::Regular should succeed")
-                .into_py(py),
-            omf::Grid3::Tensor { .. } => PyGrid3Tensor::try_from(self.0.grid.clone())
-                .expect("conversion from Grid3::Tensor should succeed")
-                .into_py(py),
+            omf::Grid3::Regular { .. } => PyGrid3Regular::from(self.0.grid.clone()).into_py(py),
+            omf::Grid3::Tensor { .. } => PyGrid3Tensor::from(self.0.grid.clone()).into_py(py),
         }
     }
 
@@ -150,16 +144,12 @@ impl PyBlockModel {
     fn subblocks(&self, py: Python<'_>) -> Option<PyObject> {
         match &self.0.subblocks {
             Some(subblocks) => match subblocks {
-                Subblocks::Regular { .. } => Some(
-                    PyRegularSubblocks::try_from(subblocks.clone())
-                        .expect("conversion from Subblocks::Regular should succeed")
-                        .into_py(py),
-                ),
-                Subblocks::Freeform { .. } => Some(
-                    PyFreeformSubblocks::try_from(subblocks.clone())
-                        .expect("conversion from Subblocks::Freeform should succeed")
-                        .into_py(py),
-                ),
+                Subblocks::Regular { .. } => {
+                    Some(PyRegularSubblocks::from(subblocks.clone()).into_py(py))
+                }
+                Subblocks::Freeform { .. } => {
+                    Some(PyFreeformSubblocks::from(subblocks.clone()).into_py(py))
+                }
             },
             None => None,
         }

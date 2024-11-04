@@ -10,13 +10,12 @@ use crate::array::PyScalarArray;
 /// Regularly spaced cells.
 pub struct PyGrid2Regular(Grid2);
 
-impl TryFrom<Grid2> for PyGrid2Regular {
-    type Error = ();
-
-    fn try_from(value: Grid2) -> Result<Self, Self::Error> {
+impl From<Grid2> for PyGrid2Regular {
+    // Note: this implementation may panic.
+    fn from(value: Grid2) -> Self {
         match value {
-            Grid2::Regular { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Grid2::Regular { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
@@ -61,13 +60,12 @@ impl PyGrid2Regular {
 /// Tensor cells, where each row and column can have a different size.
 pub struct PyGrid2Tensor(Grid2);
 
-impl TryFrom<Grid2> for PyGrid2Tensor {
-    type Error = ();
-
-    fn try_from(value: Grid2) -> Result<Self, Self::Error> {
+impl From<Grid2> for PyGrid2Tensor {
+    // Note: this implementation may panic.
+    fn from(value: Grid2) -> Self {
         match value {
-            Grid2::Tensor { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Grid2::Tensor { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
@@ -123,13 +121,12 @@ impl PyGrid2Tensor {
 /// Regularly spaced cells.
 pub struct PyGrid3Regular(Grid3);
 
-impl TryFrom<Grid3> for PyGrid3Regular {
-    type Error = ();
-
-    fn try_from(value: Grid3) -> Result<Self, Self::Error> {
+impl From<Grid3> for PyGrid3Regular {
+    // Note: this implementation may panic.
+    fn from(value: Grid3) -> Self {
         match value {
-            Grid3::Regular { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Grid3::Regular { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
@@ -174,13 +171,12 @@ impl PyGrid3Regular {
 /// Tensor cells, where each row, column and layer can have a different size.
 pub struct PyGrid3Tensor(Grid3);
 
-impl TryFrom<Grid3> for PyGrid3Tensor {
-    type Error = ();
-
-    fn try_from(value: Grid3) -> Result<Self, Self::Error> {
+impl From<Grid3> for PyGrid3Tensor {
+    // Note: this implementation may panic.
+    fn from(value: Grid3) -> Self {
         match value {
-            Grid3::Tensor { .. } => Ok(Self(value)),
-            _ => Err(()),
+            Grid3::Tensor { .. } => Self(value),
+            _ => unreachable!(),
         }
     }
 }
