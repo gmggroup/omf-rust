@@ -1,8 +1,16 @@
 use crate::array::{PyBoundaryArray, PyGradientArray};
 use omf::{NumberColormap, NumberRange};
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
+
+macro_rules! number_colormap_field {
+    ($self:ident, $variant:ident :: $field:ident) => {
+        match &$self.0 {
+            NumberColormap::$variant { $field, .. } => $field,
+            _ => unreachable!("NumberColormap variant is not supported"),
+        }
+    };
+}
 
 #[gen_stub_pyclass]
 #[pyclass(name = "NumberColormapContinuous")]
@@ -21,26 +29,18 @@ pub struct PyNumberColormapContinuous(pub NumberColormap);
 impl PyNumberColormapContinuous {
     /// Value range.
     fn range(&self, py: Python<'_>) -> PyObject {
-        match self.0 {
-            NumberColormap::Continuous { range, .. } => match range {
-                NumberRange::Float { min, max, .. } => (min, max).into_py(py),
-                NumberRange::Integer { min, max, .. } => (min, max).into_py(py),
-                NumberRange::Date { min, max, .. } => (min, max).into_py(py),
-                NumberRange::DateTime { min, max, .. } => (min, max).into_py(py),
-            },
-            _ => unimplemented!("NumberColormap variant is not supported"),
+        match *number_colormap_field!(self, Continuous::range) {
+            NumberRange::Float { min, max, .. } => (min, max).into_py(py),
+            NumberRange::Integer { min, max, .. } => (min, max).into_py(py),
+            NumberRange::Date { min, max, .. } => (min, max).into_py(py),
+            NumberRange::DateTime { min, max, .. } => (min, max).into_py(py),
         }
     }
 
     #[getter]
     /// Array with `Gradient` type storing the smooth color gradient.
-    fn gradient(&self) -> PyResult<PyGradientArray> {
-        match &self.0 {
-            NumberColormap::Continuous { gradient, .. } => Ok(PyGradientArray(gradient.clone())),
-            _ => Err(PyValueError::new_err(
-                "NumberColormap variant is not supported",
-            )),
-        }
+    fn gradient(&self) -> PyGradientArray {
+        PyGradientArray(number_colormap_field!(self, Continuous::gradient).clone())
     }
 }
 
@@ -59,27 +59,15 @@ impl PyNumberColormapDiscrete {
     /// Array with `Boundary` type storing the smooth color gradient, containing the value
     /// and inclusiveness of each boundary. Values must increase along the array.
     /// Boundary values type should match the type of the number array.
-    fn boundaries(&self) -> PyResult<Option<PyBoundaryArray>> {
-        match &self.0 {
-            NumberColormap::Discrete { boundaries, .. } => {
-                Ok(Some(PyBoundaryArray(boundaries.clone())))
-            }
-            _ => Err(PyValueError::new_err(
-                "NumberColormap variant is not supported",
-            )),
-        }
+    fn boundaries(&self) -> PyBoundaryArray {
+        PyBoundaryArray(number_colormap_field!(self, Discrete::boundaries).clone())
     }
 
     #[getter]
     /// Array with `Gradient` type storing the colors of the discrete ranges.
     /// Length must be one more than `boundaries`, with the extra color used for values above
     /// the last boundary.
-    fn gradient(&self) -> PyResult<PyGradientArray> {
-        match &self.0 {
-            NumberColormap::Discrete { gradient, .. } => Ok(PyGradientArray(gradient.clone())),
-            _ => Err(PyValueError::new_err(
-                "NumberColormap variant is not supported",
-            )),
-        }
+    fn gradient(&self) -> PyGradientArray {
+        PyGradientArray(number_colormap_field!(self, Discrete::gradient).clone())
     }
 }
