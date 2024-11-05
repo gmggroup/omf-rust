@@ -171,12 +171,14 @@ const fn k() -> Vector3 {
 pub struct Orient2 {
     /// Origin point relative to the project origin and coordinate reference.
     pub origin: Vector3,
-    /// The direction of the U axis of the plane. Must be a unit vector perpendicular to `v`.
-    /// Default [1, 0, 0].
+    /// The direction of the U axis of the plane. Must be a unit vector. Default [1, 0, 0].
+    ///
+    /// Must also be perpendicular to the 'v' in grid surfaces.
     #[serde(default = "i")]
     pub u: Vector3,
-    /// The direction of the V axis of the plane. Must be a unit vector perpendicular to `u`.
-    /// Default [0, 1, 0].
+    /// The direction of the V axis of the plane. Must be a unit vector. Default [0, 1, 0].
+    ///
+    /// Must also be perpendicular to the 'u' in grid surfaces.
     #[serde(default = "j")]
     pub v: Vector3,
 }
@@ -190,6 +192,10 @@ impl Orient2 {
     /// Creates a new axis-aligned 2D orientation.
     pub fn from_origin(origin: Vector3) -> Self {
         Self::new(origin, i(), j())
+    }
+
+    pub(crate) fn validate_ortho(&self, val: &mut Validator) {
+        val.enter("Orient2").vectors_ortho2(self.u, self.v);
     }
 }
 
@@ -291,8 +297,7 @@ impl Validate for Orient2 {
         val.enter("Orient2")
             .finite_seq(self.origin, "origin")
             .unit_vector(self.u, "u")
-            .unit_vector(self.v, "v")
-            .vectors_ortho2(self.u, self.v);
+            .unit_vector(self.v, "v");
     }
 }
 

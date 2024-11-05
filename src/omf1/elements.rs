@@ -53,7 +53,7 @@ impl Project {
     }
 }
 
-impl<'a> ElementModel<'a> {
+impl ElementModel<'_> {
     pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
         match *self {
             Self::PointSetElement(x) => x.convert(r, w),
@@ -177,7 +177,7 @@ impl VolumeElement {
     }
 }
 
-impl<'a> DataModel<'a> {
+impl DataModel<'_> {
     pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
         match *self {
             DataModel::ScalarData(x) => x.convert(r, w),

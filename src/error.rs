@@ -30,7 +30,7 @@ fn format_corners<T: Display>(corners: &[T; 6]) -> String {
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
 pub enum InvalidData {
     /// Data length does not match the Array.
-    #[error("Error: array length {found} does not the declared length {expected}")]
+    #[error("Error: array length {found} does not match the declared length {expected}")]
     LengthMismatch { found: u64, expected: u64 },
     /// A size is <= 0.
     #[error("size value {value} is zero or less")]

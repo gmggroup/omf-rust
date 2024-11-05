@@ -32,7 +32,7 @@ parquet = ["dep:parquet", "dep:bytes"]
 omf1 = ["parquet"]
 
 [workspace]
-members = ["omf-c"]
+members = ["omf-c", "omf-python"]
 
 [workspace.dependencies]
 bytes = "1"

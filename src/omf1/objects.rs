@@ -30,7 +30,7 @@ struct KeyVisitor<T> {
     _phantom: PhantomData<T>,
 }
 
-impl<'de, T> serde::de::Visitor<'de> for KeyVisitor<T> {
+impl<T> serde::de::Visitor<'_> for KeyVisitor<T> {
     type Value = Key<T>;
 
     fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {

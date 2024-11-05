@@ -1,0 +1,7 @@
+maturin>=1,<2
+numpy
+patchelf>=0.17
+pytest
+sphinx
+sphinx-rtd-theme
+sphinx-autoapi
