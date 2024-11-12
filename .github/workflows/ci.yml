@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -48,18 +48,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
 
-      - name: Test
+      - name: Build for Windows/Linux
+        if: runner.os != 'macOS'
+        run: cargo build --all --release
+
+      - name: Build for Mac
+        if: runner.os == 'macOS'
+        env:
+          # Required for linking on macOS
+          RUSTFLAGS: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
+        run: cargo build --all --release
+
+      - name: Test for Windows/Linux
+        if: runner.os != 'macOS'
         run: cargo test --all
 
-      - name: Build
-        run: cargo build --all --release
+      - name: Test for Mac
+        if: runner.os == 'macOS'
+        env:
+          # Required for linking on macOS
+          RUSTFLAGS: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
+        run: cargo test --all
 
       - name: C Examples
         if: runner.os != 'Windows'

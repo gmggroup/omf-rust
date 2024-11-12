@@ -7,7 +7,7 @@ license = "MIT"
 
 [dependencies]
 omf = { path = ".." }
-pyo3 = { version = "0.22.0", features = ["extension-module", "chrono"] }
+pyo3 = { version = "0.22.6", features = ["extension-module", "chrono"] }
 pyo3-stub-gen = "0.6.0"
 env_logger = "0.11.5"
 serde-pyobject = "0.4.0"
@@ -16,7 +16,7 @@ chrono.workspace = true
 zip.workspace = true
 serde.workspace = true
 flate2.workspace = true
-numpy = "0.22.0"
+numpy = "0.22.1"
 itertools = "0.13.0"
 
 [build-dependencies]
