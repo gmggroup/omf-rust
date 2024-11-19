@@ -96,6 +96,34 @@ fn continuous_colormap() {
                 .unwrap(),
         ));
 
+    surface
+        .attributes
+        .push(Attribute::from_numbers_continuous_colormap(
+            "Elevation (f32)",
+            Location::Vertices,
+            writer
+                .array_numbers([Some(0.0_f32), Some(1.0), Some(2.0), Some(1.5)])
+                .unwrap(),
+            (0.0, 2.0),
+            writer
+                .array_gradient([[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255]])
+                .unwrap(),
+        ));
+
+    surface
+        .attributes
+        .push(Attribute::from_numbers_continuous_colormap(
+            "Elevation (i64)",
+            Location::Vertices,
+            writer
+                .array_numbers([Some(0_i64), Some(100), Some(200), Some(150)])
+                .unwrap(),
+            (0, 200),
+            writer
+                .array_gradient([[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255]])
+                .unwrap(),
+        ));
+
     project.elements.push(surface);
 
     let (.., warnings) = writer.finish(project).unwrap();
