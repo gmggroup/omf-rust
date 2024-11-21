@@ -410,7 +410,7 @@ fn one_of_everything() -> (Vec<u8>, Project) {
             },
         ),
     ));
-    // Composite elememnt.
+    // Composite element.
     project.elements.push(Element::new(
         "Composite",
         Composite::new(vec![
