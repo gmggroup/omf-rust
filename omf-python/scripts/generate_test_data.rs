@@ -124,7 +124,7 @@ fn duplicate_element_name() {
     );
 
     project.elements.push(element.clone());
-    project.elements.push(element.clone());
+    project.elements.push(element);
 
     writer.finish(project).unwrap();
 }
