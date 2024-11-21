@@ -296,6 +296,122 @@ fn element_metadata() {
     writer.finish(project).unwrap();
 }
 
+fn null_attribute_values() {
+    let mut writer = Writer::new(create_file("tests/data/null_attribute_values.omf", b"")).unwrap();
+
+    let mut project = Project::new("Null Attribute Values Test");
+    project.description =
+        "A simple OMF 2.0 project with attributes, some of which are null".to_owned();
+
+    let mut surface = Element::new(
+        "Test Surface",
+        Surface::new(
+            writer
+                .array_vertices([
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                ])
+                .unwrap(),
+            writer.array_triangles([[0, 1, 2], [0, 2, 3]]).unwrap(),
+        ),
+    );
+
+    surface.attributes.push(Attribute::from_numbers(
+        "Numbers (f32)",
+        Location::Vertices,
+        writer
+            .array_numbers([Some(0.0_f32), Some(1.0), None, Some(1.5)])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_numbers(
+        "Numbers (f64)",
+        Location::Vertices,
+        writer
+            .array_numbers([Some(0.0_f64), Some(1.0), None, Some(1.5)])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_numbers(
+        "Numbers (i64)",
+        Location::Vertices,
+        writer
+            .array_numbers([Some(0_i64), Some(100), None, Some(150)])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_numbers(
+        "Numbers (Date)",
+        Location::Vertices,
+        writer
+            .array_numbers([
+                Some(NaiveDate::from_ymd_opt(1995, 5, 1).unwrap()),
+                Some(NaiveDate::from_ymd_opt(1996, 6, 1).unwrap()),
+                None,
+                Some(NaiveDate::from_ymd_opt(1998, 8, 1).unwrap()),
+            ])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_numbers(
+        "Numbers (DateTime)",
+        Location::Vertices,
+        writer
+            .array_numbers([
+                Some(DateTime::from_str("1995-05-01T05:01:00Z").unwrap()),
+                Some(DateTime::from_str("1996-06-01T06:01:00Z").unwrap()),
+                None,
+                Some(DateTime::from_str("1998-08-01T08:01:00Z").unwrap()),
+            ])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_categories(
+        "Categories",
+        Location::Vertices,
+        writer
+            .array_indices([Some(0), Some(1), None, Some(2)])
+            .unwrap(),
+        writer
+            .array_names(["Zero".to_owned(), "One".to_owned(), "Two".to_owned()])
+            .unwrap(),
+        Some(
+            writer
+                .array_gradient([[0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255]])
+                .unwrap(),
+        ),
+        [],
+    ));
+
+    surface.attributes.push(Attribute::from_booleans(
+        "Booleans",
+        Location::Vertices,
+        writer
+            .array_booleans([Some(false), Some(true), None, Some(false)])
+            .unwrap(),
+    ));
+
+    surface.attributes.push(Attribute::from_colors(
+        "Colors",
+        Location::Vertices,
+        writer
+            .array_colors([
+                Some([0, 0, 255, 255]),
+                Some([0, 255, 0, 255]),
+                None,
+                Some([255, 0, 0, 255]),
+            ])
+            .unwrap(),
+    ));
+
+    project.elements.push(surface);
+
+    let (.., warnings) = writer.finish(project).unwrap();
+    assert!(warnings.is_empty());
+}
+
 fn add_file_from_another_zip(zip: &mut ZipWriter<File>, zip_file_name: &str, zip_file_entry: &str) {
     let file = File::open(zip_file_name).unwrap();
     let mut archive = ZipArchive::new(file).unwrap();
@@ -322,4 +438,5 @@ fn main() {
     missing_parquet();
     array_length_mismatch();
     element_metadata();
+    null_attribute_values();
 }
