@@ -1,4 +1,4 @@
-use std::{ffi::c_char, ptr::null};
+use std::{ffi::c_char, fs::File, ptr::null};
 
 use crate::{
     error::{set_error, Error},
@@ -149,8 +149,8 @@ pub(crate) fn next_boundary<T: omf::data::NumberType>(
 
 // f32 scalars.
 
-pub struct Scalars32(omf::data::GenericScalars<f32>);
-pub(crate) fn scalars32_new(iter: omf::data::GenericScalars<f32>) -> *mut Scalars32 {
+pub struct Scalars32(omf::data::GenericScalars<f32, File>);
+pub(crate) fn scalars32_new(iter: omf::data::GenericScalars<f32, File>) -> *mut Scalars32 {
     alloc(Scalars32(iter))
 }
 
@@ -166,9 +166,9 @@ pub extern "C" fn omf_scalars32_next(iter: *mut Scalars32, value: *mut f32) -> b
 
 // f64 scalars, can cast from f32.
 
-pub struct Scalars64(omf::data::Scalars);
+pub struct Scalars64(omf::data::Scalars<File>);
 
-pub(crate) fn scalars64_new(iter: omf::data::Scalars) -> *mut Scalars64 {
+pub(crate) fn scalars64_new(iter: omf::data::Scalars<File>) -> *mut Scalars64 {
     alloc(Scalars64(iter))
 }
 
@@ -184,9 +184,9 @@ pub extern "C" fn omf_scalars64_next(iter: *mut Scalars64, value: *mut f64) -> b
 
 // f32 vertices.
 
-pub struct Vertices32(omf::data::GenericArrays<f32, 3>);
+pub struct Vertices32(omf::data::GenericArrays<f32, 3, File>);
 
-pub(crate) fn vertices32_new(iter: omf::data::GenericArrays<f32, 3>) -> *mut Vertices32 {
+pub(crate) fn vertices32_new(iter: omf::data::GenericArrays<f32, 3, File>) -> *mut Vertices32 {
     alloc(Vertices32(iter))
 }
 
@@ -201,9 +201,9 @@ pub extern "C" fn omf_vertices32_next(iter: *mut Vertices32, value: *mut f32) ->
 
 // f64 vertices, can cast from f32.
 
-pub struct Vertices64(omf::data::Vertices);
+pub struct Vertices64(omf::data::Vertices<File>);
 
-pub(crate) fn vertices64_new(iter: omf::data::Vertices) -> *mut Vertices64 {
+pub(crate) fn vertices64_new(iter: omf::data::Vertices<File>) -> *mut Vertices64 {
     alloc(Vertices64(iter))
 }
 
@@ -219,9 +219,9 @@ pub extern "C" fn omf_vertices64_next(iter: *mut Vertices64, value: *mut f64) ->
 
 // Segments.
 
-pub struct Segments(omf::data::GenericPrimitives<2>);
+pub struct Segments(omf::data::GenericPrimitives<2, File>);
 
-pub(crate) fn segments_new(iter: omf::data::GenericPrimitives<2>) -> *mut Segments {
+pub(crate) fn segments_new(iter: omf::data::GenericPrimitives<2, File>) -> *mut Segments {
     alloc(Segments(iter))
 }
 
@@ -237,8 +237,8 @@ pub extern "C" fn omf_segments_next(iter: *mut Segments, value: *mut u32) -> boo
 
 // Triangles.
 
-pub struct Triangles(omf::data::GenericPrimitives<3>);
-pub(crate) fn triangles_new(iter: omf::data::GenericPrimitives<3>) -> *mut Triangles {
+pub struct Triangles(omf::data::GenericPrimitives<3, File>);
+pub(crate) fn triangles_new(iter: omf::data::GenericPrimitives<3, File>) -> *mut Triangles {
     alloc(Triangles(iter))
 }
 
@@ -254,8 +254,8 @@ pub extern "C" fn omf_triangles_next(iter: *mut Triangles, value: *mut u32) -> b
 
 // Gradient.
 
-pub struct Gradient(omf::data::Gradient);
-pub(crate) fn gradient_new(iter: omf::data::Gradient) -> *mut Gradient {
+pub struct Gradient(omf::data::Gradient<File>);
+pub(crate) fn gradient_new(iter: omf::data::Gradient<File>) -> *mut Gradient {
     alloc(Gradient(iter))
 }
 
@@ -271,9 +271,9 @@ pub extern "C" fn omf_gradient_next(iter: *mut Gradient, value: *mut u8) -> bool
 
 // f32 texture coordinates.
 
-pub struct Texcoords32(omf::data::GenericArrays<f32, 2>);
+pub struct Texcoords32(omf::data::GenericArrays<f32, 2, File>);
 
-pub(crate) fn texcoords32_new(iter: omf::data::GenericArrays<f32, 2>) -> *mut Texcoords32 {
+pub(crate) fn texcoords32_new(iter: omf::data::GenericArrays<f32, 2, File>) -> *mut Texcoords32 {
     alloc(Texcoords32(iter))
 }
 
@@ -289,9 +289,9 @@ pub extern "C" fn omf_texcoords32_next(iter: *mut Texcoords32, value: *mut f32) 
 
 // f64 texcoords, can cast from f32.
 
-pub struct Texcoords64(omf::data::Texcoords);
+pub struct Texcoords64(omf::data::Texcoords<File>);
 
-pub(crate) fn texcoords64_new(iter: omf::data::Texcoords) -> *mut Texcoords64 {
+pub(crate) fn texcoords64_new(iter: omf::data::Texcoords<File>) -> *mut Texcoords64 {
     alloc(Texcoords64(iter))
 }
 
@@ -307,9 +307,11 @@ pub extern "C" fn omf_texcoords64_next(iter: *mut Texcoords64, value: *mut f64) 
 
 // f64 discrete colormap boundaries.
 
-pub struct BoundariesFloat64(omf::data::BoundariesF64);
+pub struct BoundariesFloat64(omf::data::BoundariesF64<File>);
 
-pub(crate) fn boundaries_float64_new(iter: omf::data::BoundariesF64) -> *mut BoundariesFloat64 {
+pub(crate) fn boundaries_float64_new(
+    iter: omf::data::BoundariesF64<File>,
+) -> *mut BoundariesFloat64 {
     alloc(BoundariesFloat64(iter))
 }
 
@@ -329,10 +331,10 @@ pub extern "C" fn omf_boundaries_float64_next(
 
 // f32 discrete colormap boundaries.
 
-pub struct BoundariesFloat32(omf::data::GenericBoundaries<f32>);
+pub struct BoundariesFloat32(omf::data::GenericBoundaries<f32, File>);
 
 pub(crate) fn boundaries_float32_new(
-    iter: omf::data::GenericBoundaries<f32>,
+    iter: omf::data::GenericBoundaries<f32, File>,
 ) -> *mut BoundariesFloat32 {
     alloc(BoundariesFloat32(iter))
 }
@@ -353,9 +355,9 @@ pub extern "C" fn omf_boundaries_float32_next(
 
 // i64 discrete colormap boundaries.
 
-pub struct BoundariesInt64(omf::data::BoundariesI64);
+pub struct BoundariesInt64(omf::data::BoundariesI64<File>);
 
-pub(crate) fn boundaries_int64_new(iter: omf::data::BoundariesI64) -> *mut BoundariesInt64 {
+pub(crate) fn boundaries_int64_new(iter: omf::data::BoundariesI64<File>) -> *mut BoundariesInt64 {
     alloc(BoundariesInt64(iter))
 }
 
@@ -375,9 +377,11 @@ pub extern "C" fn omf_boundaries_int64_next(
 
 // f32 numbers.
 
-pub struct NumbersFloat32(omf::data::GenericNumbers<f32>);
+pub struct NumbersFloat32(omf::data::GenericNumbers<f32, File>);
 
-pub(crate) fn numbers_float32_new(iter: omf::data::GenericNumbers<f32>) -> *mut NumbersFloat32 {
+pub(crate) fn numbers_float32_new(
+    iter: omf::data::GenericNumbers<f32, File>,
+) -> *mut NumbersFloat32 {
     alloc(NumbersFloat32(iter))
 }
 
@@ -397,9 +401,9 @@ pub extern "C" fn omf_numbers_float32_next(
 
 // f64 numbers, casting from date and date-time as well.
 
-pub struct NumbersFloat64(omf::data::NumbersF64);
+pub struct NumbersFloat64(omf::data::NumbersF64<File>);
 
-pub(crate) fn numbers_float64_new(iter: omf::data::NumbersF64) -> *mut NumbersFloat64 {
+pub(crate) fn numbers_float64_new(iter: omf::data::NumbersF64<File>) -> *mut NumbersFloat64 {
     alloc(NumbersFloat64(iter))
 }
 
@@ -419,9 +423,9 @@ pub extern "C" fn omf_numbers_float64_next(
 
 // i64 numbers, casting from date and date-time as well.
 
-pub struct NumbersInt64(omf::data::NumbersI64);
+pub struct NumbersInt64(omf::data::NumbersI64<File>);
 
-pub(crate) fn numbers_int64_new(iter: omf::data::NumbersI64) -> *mut NumbersInt64 {
+pub(crate) fn numbers_int64_new(iter: omf::data::NumbersI64<File>) -> *mut NumbersInt64 {
     alloc(NumbersInt64(iter))
 }
 
@@ -441,9 +445,9 @@ pub extern "C" fn omf_numbers_int64_next(
 
 // Nullable indices.
 
-pub struct Indices(omf::data::Indices);
+pub struct Indices(omf::data::Indices<File>);
 
-pub(crate) fn indices_new(iter: omf::data::Indices) -> *mut Indices {
+pub(crate) fn indices_new(iter: omf::data::Indices<File>) -> *mut Indices {
     alloc(Indices(iter))
 }
 
@@ -463,9 +467,9 @@ pub extern "C" fn omf_indices_next(
 
 // Nullable booleans.
 
-pub struct Booleans(omf::data::Booleans);
+pub struct Booleans(omf::data::Booleans<File>);
 
-pub(crate) fn booleans_new(iter: omf::data::Booleans) -> *mut Booleans {
+pub(crate) fn booleans_new(iter: omf::data::Booleans<File>) -> *mut Booleans {
     alloc(Booleans(iter))
 }
 
@@ -485,8 +489,8 @@ pub extern "C" fn omf_booleans_next(
 
 // Nullable colors.
 
-pub struct Colors(omf::data::Colors);
-pub(crate) fn colors_new(iter: omf::data::Colors) -> *mut Colors {
+pub struct Colors(omf::data::Colors<File>);
+pub(crate) fn colors_new(iter: omf::data::Colors<File>) -> *mut Colors {
     alloc(Colors(iter))
 }
 
@@ -507,11 +511,11 @@ pub extern "C" fn omf_omf_colors_next(
 // Non-nullable name strings.
 
 pub struct Names {
-    iter: omf::data::Names,
+    iter: omf::data::Names<File>,
     bytes: BytesCache,
 }
 
-pub(crate) fn names_new(iter: omf::data::Names) -> *mut Names {
+pub(crate) fn names_new(iter: omf::data::Names<File>) -> *mut Names {
     Box::into_raw(Box::new(Names {
         iter,
         bytes: Default::default(),
@@ -549,11 +553,11 @@ pub extern "C" fn omf_names_next(
 // Nullable text strings.
 
 pub struct Text {
-    iter: omf::data::Text,
+    iter: omf::data::Text<File>,
     bytes: BytesCache,
 }
 
-pub(crate) fn text_new(iter: omf::data::Text) -> *mut Text {
+pub(crate) fn text_new(iter: omf::data::Text<File>) -> *mut Text {
     Box::into_raw(Box::new(Text {
         iter,
         bytes: Default::default(),
@@ -595,9 +599,11 @@ pub extern "C" fn omf_text_next(
 
 // Regular sub-blocks
 
-pub struct RegularSubblocks(omf::data::RegularSubblocks);
+pub struct RegularSubblocks(omf::data::RegularSubblocks<File>);
 
-pub(crate) fn regular_subblocks_new(iter: omf::data::RegularSubblocks) -> *mut RegularSubblocks {
+pub(crate) fn regular_subblocks_new(
+    iter: omf::data::RegularSubblocks<File>,
+) -> *mut RegularSubblocks {
     alloc(RegularSubblocks(iter))
 }
 
@@ -632,10 +638,10 @@ pub extern "C" fn omf_regular_subblocks_next(
 
 // Free-form sub-blocks with f64 corners, casts from f64
 
-pub struct FreeformSubblocks32(omf::data::GenericFreeformSubblocks<f32>);
+pub struct FreeformSubblocks32(omf::data::GenericFreeformSubblocks<f32, File>);
 
 pub(crate) fn freeform_subblocks32_new(
-    iter: omf::data::GenericFreeformSubblocks<f32>,
+    iter: omf::data::GenericFreeformSubblocks<f32, File>,
 ) -> *mut FreeformSubblocks32 {
     alloc(FreeformSubblocks32(iter))
 }
@@ -671,10 +677,10 @@ pub extern "C" fn omf_freeform_subblocks32_next(
 
 // Free-form sub-blocks with f32 corners
 
-pub struct FreeformSubblocks64(omf::data::FreeformSubblocks);
+pub struct FreeformSubblocks64(omf::data::FreeformSubblocks<File>);
 
 pub(crate) fn freeform_subblocks64_new(
-    iter: omf::data::FreeformSubblocks,
+    iter: omf::data::FreeformSubblocks<File>,
 ) -> *mut FreeformSubblocks64 {
     alloc(FreeformSubblocks64(iter))
 }
@@ -710,9 +716,9 @@ pub extern "C" fn omf_freeform_subblocks64_next(
 
 // 3D vectors with type f64, casts from anything
 
-pub struct Vectors64x3(omf::data::Vectors);
+pub struct Vectors64x3(omf::data::Vectors<File>);
 
-pub(crate) fn vectors64x3_new(iter: omf::data::Vectors) -> *mut Vectors64x3 {
+pub(crate) fn vectors64x3_new(iter: omf::data::Vectors<File>) -> *mut Vectors64x3 {
     alloc(Vectors64x3(iter))
 }
 
@@ -735,11 +741,11 @@ pub extern "C" fn omf_vectors64x3_next(
 pub struct Vectors32x3(Vec32Iter);
 
 enum Vec32Iter {
-    X2(omf::data::GenericOptionalArrays<f32, 2>),
-    X3(omf::data::GenericOptionalArrays<f32, 3>),
+    X2(omf::data::GenericOptionalArrays<f32, 2, File>),
+    X3(omf::data::GenericOptionalArrays<f32, 3, File>),
 }
 
-pub(crate) fn vectors32x3_new(iter: omf::data::Vectors) -> *mut Vectors32x3 {
+pub(crate) fn vectors32x3_new(iter: omf::data::Vectors<File>) -> *mut Vectors32x3 {
     let vec32_iter = match iter {
         omf::data::Vectors::F32x2(i) => Vec32Iter::X2(i),
         omf::data::Vectors::F32x3(i) => Vec32Iter::X3(i),
@@ -778,11 +784,11 @@ fn vec_2d_to_3d<T: omf::data::FloatType>([x, y]: [T; 2]) -> [T; 3] {
 pub struct Vectors64x2(Vec2DIter);
 
 enum Vec2DIter {
-    F32(omf::data::GenericOptionalArrays<f32, 2>),
-    F64(omf::data::GenericOptionalArrays<f64, 2>),
+    F32(omf::data::GenericOptionalArrays<f32, 2, File>),
+    F64(omf::data::GenericOptionalArrays<f64, 2, File>),
 }
 
-pub(crate) fn vectors64x2_new(iter: omf::data::Vectors) -> *mut Vectors64x2 {
+pub(crate) fn vectors64x2_new(iter: omf::data::Vectors<File>) -> *mut Vectors64x2 {
     let vec32_iter = match iter {
         omf::data::Vectors::F32x2(i) => Vec2DIter::F32(i),
         omf::data::Vectors::F64x2(i) => Vec2DIter::F64(i),
@@ -816,9 +822,11 @@ pub extern "C" fn omf_vectors64x2_next(
 
 // 2D vectors with type f32, no casting
 
-pub struct Vectors32x2(omf::data::GenericOptionalArrays<f32, 2>);
+pub struct Vectors32x2(omf::data::GenericOptionalArrays<f32, 2, File>);
 
-pub(crate) fn vectors32x2_new(iter: omf::data::GenericOptionalArrays<f32, 2>) -> *mut Vectors32x2 {
+pub(crate) fn vectors32x2_new(
+    iter: omf::data::GenericOptionalArrays<f32, 2, File>,
+) -> *mut Vectors32x2 {
     alloc(Vectors32x2(iter))
 }
 

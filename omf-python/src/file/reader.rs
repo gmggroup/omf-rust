@@ -212,7 +212,7 @@ fn zipped_pyarray2_from_iter<
 ///     where data is maliciously crafted to expand to an excessive size when decompressed,
 ///     leading to a potential denial of service attack.
 ///     Use the limits provided and check arrays sizes before allocating memory.
-pub struct PyReader(Reader);
+pub struct PyReader(Reader<File>);
 
 #[gen_stub_pymethods]
 #[pymethods]

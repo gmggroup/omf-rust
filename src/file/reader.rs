@@ -1,7 +1,6 @@
 use std::{
-    fs::File,
     io::{BufReader, Read},
-    path::Path,
+    sync::Arc,
 };
 
 use flate2::read::GzDecoder;
@@ -15,7 +14,7 @@ use crate::{
 
 use super::{
     zip_container::{Archive, INDEX_NAME},
-    SubFile,
+    ReadAt, SubFile,
 };
 
 pub const DEFAULT_VALIDATION_LIMIT: u32 = 100;
@@ -86,19 +85,28 @@ impl Default for Limits {
 /// > where data is maliciously crafted to expand to an excessive size when decompressed,
 /// > leading to a potential denial of service attack.
 /// > Use the limits provided and check arrays sizes before allocating memory.
-pub struct Reader {
-    archive: Archive,
+pub struct Reader<R> {
+    archive: Archive<R>,
     version: [u32; 2],
     limits: Limits,
 }
 
-impl Reader {
-    /// Creates the reader from a `SeekRead` implementation.
+#[cfg(not(target_family = "wasm"))]
+impl Reader<std::fs::File> {
+    /// Creates a reader by opening the given path.
+    pub fn open(path: impl AsRef<std::path::Path>) -> Result<Self, Error> {
+        Self::new(std::fs::File::open(path)?)
+    }
+}
+
+impl<R: ReadAt> Reader<R> {
+    /// Creates the reader from a [`ReadAt`] object.
     ///
-    /// Makes only the minimum number of reads to check the file header and footer.
-    /// Fails with an error if an IO error occurs or the file isn't in OMF 2 format.
-    pub fn new(file: File) -> Result<Self, Error> {
-        let archive = Archive::new(file)?;
+    /// This object can be a `std::fs::File`, a `Vec<u8>`, or anything you implement the trait for.
+    /// Currently this is restricted to `'static` objects, and they must be `Sync` and `Send`.
+    pub fn new(data: R) -> Result<Self, Error> {
+        let size = data.size()?;
+        let archive = Archive::new(SubFile::new(Arc::new(data), 0, size)?)?;
         let (version, pre_release) = archive.version();
         if let Some(pre) = pre_release {
             if Some(pre) != FORMAT_VERSION_PRERELEASE {
@@ -113,11 +121,6 @@ impl Reader {
             version,
             limits: Default::default(),
         })
-    }
-
-    /// Creates a reader by opening the given path.
-    pub fn open(path: impl AsRef<Path>) -> Result<Self, Error> {
-        Self::new(File::open(path)?)
     }
 
     /// Returns the current limits.
@@ -174,7 +177,7 @@ impl Reader {
     pub fn array_bytes_reader(
         &self,
         array: &array::Array<impl array::ArrayType>,
-    ) -> Result<SubFile, Error> {
+    ) -> Result<SubFile<R>, Error> {
         array.constraint(); // Check that validation has been done.
         self.archive.open(array.filename())
     }
