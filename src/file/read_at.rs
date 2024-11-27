@@ -31,7 +31,7 @@ impl ReadAt for std::fs::File {
         file.read_at(buf, offset)
     }
 
-    fn len(&self) -> std::io::Result<u64> {
+    fn size(&self) -> std::io::Result<u64> {
         self.metadata().map(|m| m.len())
     }
 }
