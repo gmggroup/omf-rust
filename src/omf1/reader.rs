@@ -41,7 +41,7 @@ impl<R: ReadAt> Omf1Reader<R> {
         let models: HashMap<String, Model> =
             serde_json::from_reader(&mut file).map_err(Omf1Error::DeserializationFailed)?;
         Ok(Self {
-            file: file.into(),
+            file,
             project,
             models,
             version,

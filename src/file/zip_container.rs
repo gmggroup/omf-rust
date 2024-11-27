@@ -145,7 +145,7 @@ impl<R: ReadAt> Archive<R> {
             ));
         };
         Ok(Self {
-            file: zip_archive.into_inner().into(),
+            file: zip_archive.into_inner(),
             members,
             version,
             pre_release,
