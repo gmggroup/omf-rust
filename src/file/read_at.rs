@@ -28,7 +28,7 @@ impl ReadAt for std::fs::File {
 impl ReadAt for std::fs::File {
     fn read_at(&self, buf: &mut [u8], offset: u64) -> std::io::Result<usize> {
         use std::os::unix::fs::FileExt;
-        file.read_at(buf, offset)
+        self.read_at(buf, offset)
     }
 
     fn size(&self) -> std::io::Result<u64> {
