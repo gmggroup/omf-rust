@@ -73,6 +73,8 @@ impl PyLimits {
     }
 }
 
+/// Enum indicating whether a particular boundary is inclusive or exclusive of
+/// the threshold value.
 #[gen_stub_pyclass_enum]
 #[pyclass(name = "BoundaryType", eq)]
 #[derive(PartialEq, Eq)]
