@@ -262,7 +262,8 @@ impl PyReader {
         Ok((PyProject(project), problems_array))
     }
 
-    /// Read a Scalar array.
+    /// Read a Scalar array and return a numpy array containing its values. The
+    /// array’s type may be :class:`numpy.float32` or :class:`numpy.float64`.
     pub fn array_scalars<'py>(
         &self,
         py: Python<'py>,
@@ -278,7 +279,9 @@ impl PyReader {
         }
     }
 
-    /// Read a Vertex array.
+    /// Read a Vertex array and return the values as a two‐dimensional numpy
+    /// array. The array’s type may be :class:`numpy.float32` or
+    /// :class:`numpy.float64`, and its rows are the (x, y, z) coordinates.
     pub fn array_vertices<'py>(
         &self,
         py: Python<'py>,
@@ -294,7 +297,9 @@ impl PyReader {
         }
     }
 
-    /// Read a Segment array.
+    /// Read a Segment array and return the values as a two‐dimensional numpy
+    /// array. The array’s type is :class:`numpy.uint32`, and its rows are (a,
+    /// b) indices into a vertex array.
     pub fn array_segments<'py>(
         &self,
         py: Python<'py>,
@@ -308,7 +313,8 @@ impl PyReader {
         )
     }
 
-    /// Read an Index array.
+    /// Read an Index array and return a tuple of two numpy arrays: the indices
+    /// themselves, and a mask indicating any values that are null.
     pub fn array_indices<'py>(
         &self,
         py: Python<'py>,
@@ -323,7 +329,9 @@ impl PyReader {
         .map(|(a, b)| (a, b.into_any()))
     }
 
-    /// Read a Triangle array.
+    /// Read a Triangle array and return the values as a two‐dimensional numpy
+    /// array. The array’s type is :class:`numpy.uint32`, and its rows are (a,
+    /// b, c) indices into a vertex array.
     pub fn array_triangles<'py>(
         &self,
         py: Python<'py>,
@@ -337,7 +345,9 @@ impl PyReader {
         )
     }
 
-    /// Read a Color array.
+    /// Read a Color array and return a tuple of two numpy arrays: the colors
+    /// represented as (r, g, b, a) rows, and a mask indicating any rows that
+    /// are null.
     pub fn array_color<'py>(
         &self,
         py: Python<'py>,
@@ -352,7 +362,8 @@ impl PyReader {
         .map(|(a, b)| (a, b.into_any()))
     }
 
-    /// Read a Gradient array.
+    /// Read a Gradient array and return the values as a two‐dimensional numpy
+    /// array whose rows are (r, g, b, a) components.
     pub fn array_gradient<'py>(
         &self,
         py: Python<'py>,
@@ -366,7 +377,7 @@ impl PyReader {
         )
     }
 
-    /// Read a Name array.
+    /// Read a Name array and return the values as a list of strings.
     pub fn array_names(&self, array: &PyNameArray) -> PyResult<Vec<String>> {
         let names = self.0.array_names(&array.0).map_err(OmfException::py_err)?;
         names
@@ -374,7 +385,9 @@ impl PyReader {
             .map_err(OmfException::py_err)
     }
 
-    /// Read a Texcoord array.
+    /// Read a Texcoord array and return the values as a two‐dimensional numpy
+    /// array. The array’s type may be :class:`numpy.float32` or
+    /// :class:`numpy.float64`, and its rows are (u, v) coordinates.
     pub fn array_texcoords<'py>(
         &self,
         py: Python<'py>,
@@ -390,7 +403,9 @@ impl PyReader {
         }
     }
 
-    /// Read bytes of an Image.
+    /// Read the encoded bytes of an Image and return them as a bytes array. The
+    /// bytes may be in JPEG or PNG format; use the image header to distinguish
+    /// the two.
     pub fn image_bytes<'p>(
         &self,
         py: Python<'p>,
@@ -402,7 +417,11 @@ impl PyReader {
             .map(|b| PyBytes::new_bound(py, &b))
     }
 
-    /// Read a Number array.
+    /// Read a Number array and return a tuple of two numpy arrays: the values
+    /// themselves, and a mask indicating any values that are null. The number
+    /// array’s type is one of :class:`numpy.float32`, :class:`numpy.float64`,
+    /// :class:`numpy.int64`, :class:`numpy.datetime64[D]` (for dates), or
+    /// :class:`numpy.datetime64[us]` (for datetimes).
     pub fn array_numbers<'py>(
         &self,
         py: Python<'py>,
@@ -431,7 +450,10 @@ impl PyReader {
         }
     }
 
-    /// Read a Vector array.
+    /// Read a Vector array and return a tuple of two numpy arrays: the vectors
+    /// themselves, and a mask indicating any rows that are null. The vector
+    /// array’s type may be :class:`numpy.float32` or :class:`numpy.float64`,
+    /// and the vectors may be 2D (x, y) or 3D (x, y, z).
     pub fn array_vectors<'py>(
         &self,
         py: Python<'py>,
@@ -457,7 +479,7 @@ impl PyReader {
         }
     }
 
-    /// Read a Text array.
+    /// Read a Text array and return the values as a list of optional strings.
     pub fn array_text(&self, array: &PyTextArray) -> PyResult<Vec<Option<String>>> {
         self.0
             .array_text(&array.0)
@@ -466,7 +488,8 @@ impl PyReader {
             .map_err(OmfException::py_err)
     }
 
-    /// Read a Boolean array.
+    /// Read a Boolean array and return a tuple of two numpy arrays: the
+    /// booleans themselves, and a mask indicating any values that are null.
     pub fn array_booleans<'py>(
         &self,
         py: Python<'py>,
@@ -481,7 +504,14 @@ impl PyReader {
         .map(|(a, b)| (a.into_any(), b.into_any()))
     }
 
-    /// Read a Boundary array.
+    /// Read a Boundary array and return the values as a list of tuples. The
+    /// first element in each tuple is an enum value, :const:`BoundaryType.Less`
+    /// or :const:`BoundaryType.LessEqual`, indicating whether the boundary is
+    /// inclusive or exclusive of the threshold value. The second element in
+    /// each tuple is the threshold value, which may be :class:`numpy.float32`,
+    /// :class:`numpy.float64`, :class:`numpy.int64`,
+    /// :class:`numpy.datetime64[D]` (for dates), or
+    /// :class:`numpy.datetime64[us]` (for datetimes).
     pub fn array_boundaries(
         &self,
         py: Python<'_>,
@@ -513,7 +543,10 @@ impl PyReader {
         boundaries.map_err(OmfException::py_err)
     }
 
-    /// Read a RegularSubblock array.
+    /// Read a RegularSubblock array and return a tuple of two numpy arrays, the
+    /// first containing parent block indices as (u, v, w) triplets, and the
+    /// second containing the corresponding corners as (u_min, v_min, w_min,
+    /// u_max, v_max, w_max). The type of both arrays is :class:`numpy.uint32`.
     pub fn array_regular_subblocks<'py>(
         &self,
         py: Python<'py>,
@@ -527,7 +560,12 @@ impl PyReader {
         )
     }
 
-    /// Read a FreeformSubblock array.
+    /// Read a FreeformSubblock array and return a tuple of two numpy arrays,
+    /// the first containing parent block indices as (u, v, w) triplets, and the
+    /// second containing the corresponding corners as (u_min, v_min, w_min,
+    /// u_max, v_max, w_max). The type of the indices array is
+    /// :class:`numpy.uint32`, and the type of the corners array is
+    /// :class:`numpy.float32` or :class:`numpy.float64`.
     pub fn array_freeform_subblocks<'py>(
         &self,
         py: Python<'py>,
