@@ -294,7 +294,7 @@ impl Attribute {
         )
     }
 
-    /// Convenience function to create a number attribute.
+    /// Convenience function to create a boolean attribute.
     pub fn from_booleans(
         name: impl Into<String>,
         location: Location,

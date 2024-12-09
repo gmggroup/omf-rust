@@ -126,3 +126,19 @@ class TestNumberAttribute(TestCase):
 
         self.assertEqual(min, expected_min)
         self.assertEqual(max, expected_max)
+
+    def test_should_return_continuous_colormap_f32_range(self) -> None:
+        min, max = (
+            self.ccmap_project.elements()[0].attributes()[3].get_data().colormap.range()
+        )
+
+        self.assertEqual(min, 0.0)
+        self.assertEqual(max, 2.0)
+
+    def test_should_return_continuous_colormap_i64_range(self) -> None:
+        min, max = (
+            self.ccmap_project.elements()[0].attributes()[4].get_data().colormap.range()
+        )
+
+        self.assertEqual(min, 0)
+        self.assertEqual(max, 200)
