@@ -187,7 +187,7 @@ impl Transform {
         let max = UVec3::new(max_i, max_j, max_k);
         let a = (parent * self.subblock_count + min).as_dvec3() * self.subblock_size;
         let b = (parent * self.subblock_count + max).as_dvec3() * self.subblock_size;
-        let size = (b - a) / 2.0;
+        let size = b - a;
         let centroid = (a + b) / 2.0;
         (self.mat * centroid + self.origin, size)
     }
