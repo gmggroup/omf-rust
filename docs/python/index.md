@@ -1,0 +1,16 @@
+# OMF Python API
+
+## Description
+A library for reading and writing files in Open Mining Format 2.0. Also supports translating OMF 1 files to OMF 2.
+
+## Installation
+To install the repository, ensure that you have pip installed and run:
+
+```shell
+$ pip install omf_python
+```
+
+## API
+::: omf_python
+    options:
+      heading_level: 3

@@ -36,7 +36,7 @@ See the [C API documentation](c/index.md).
 
 ## Python API
 
-See the [Python API documentation](../omf-python/docs/build/html/index.html).
+See the [Python API documentation](python/index.md).
 
 ## Write Your Own
 

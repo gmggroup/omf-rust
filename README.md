@@ -87,4 +87,4 @@ To build locally:
 2. Change directory into `docs/`.
 3. Run `build.bat` on Windows or `build.sh` on Linux/MacOS.
 
-This will install the required dependencies, then build the file format, Rust, and C documentation into `site/`.
+This will install the required dependencies, then build the file format, Rust, C and Python documentation into `site/`.
