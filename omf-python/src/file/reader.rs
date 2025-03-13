@@ -114,7 +114,7 @@ fn pyarray2_from_vec<T: Element, const N: usize>(
     py: Python<'_>,
     array: Vec<[T; N]>,
 ) -> PyResult<BoundPyArray2<'_, T>> {
-    Ok(PyArray::from_owned_array_bound(
+    Ok(PyArray::from_owned_array(
         py,
         Array::from_shape_vec((array.len(), N), array.into_flattened())
             .map_err(|e| PyRuntimeError::new_err(format!("failed to create shaped array ({e})")))?,
@@ -128,7 +128,7 @@ fn pyarray1_from_iter<T: Element, Iter: Iterator<Item = Result<T, Error>>>(
     Ok(iter
         .collect::<Result<Vec<_>, _>>()
         .map_err(OmfException::py_err)?
-        .into_pyarray_bound(py))
+        .into_pyarray(py))
 }
 
 fn pyarray2_from_iter<T: Element, const N: usize, Iter: Iterator<Item = Result<[T; N], Error>>>(
@@ -154,7 +154,7 @@ where
         .collect::<Result<_, _>>()
         .map_err(OmfException::py_err)?;
 
-    Ok((array.into_pyarray_bound(py), mask.into_pyarray_bound(py)))
+    Ok((array.into_pyarray(py), mask.into_pyarray(py)))
 }
 
 fn nullable_pyarray2_from_iter<
@@ -173,7 +173,7 @@ where
         .collect::<Result<_, _>>()
         .map_err(OmfException::py_err)?;
 
-    Ok((pyarray2_from_vec(py, array)?, mask.into_pyarray_bound(py)))
+    Ok((pyarray2_from_vec(py, array)?, mask.into_pyarray(py)))
 }
 
 fn zipped_pyarray2_from_iter<
@@ -414,7 +414,7 @@ impl PyReader {
         self.0
             .array_bytes(&array.0)
             .map_err(OmfException::py_err)
-            .map(|b| PyBytes::new_bound(py, &b))
+            .map(|b| PyBytes::new(py, &b))
     }
 
     /// Read a Number array and return a tuple of two numpy arrays: the values

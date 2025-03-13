@@ -19,7 +19,7 @@ impl PyPointSet {
     #[getter]
     /// Origin of the pointset relative to the project origin.
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]
@@ -41,7 +41,7 @@ impl PyLineSet {
     #[getter]
     /// Origin of the lineset relative to the project origin.
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]
@@ -70,7 +70,7 @@ impl PySurface {
     #[getter]
     /// Origin of the surface relative to the project origin.
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]

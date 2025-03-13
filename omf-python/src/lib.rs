@@ -103,27 +103,27 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
 
-    m.add("OmfException", py.get_type_bound::<OmfException>())?;
+    m.add("OmfException", py.get_type::<OmfException>())?;
     m.add(
         "OmfFileIoException",
-        py.get_type_bound::<OmfFileIoException>(),
+        py.get_type::<OmfFileIoException>(),
     )?;
     m.add(
         "OmfLimitExceededException",
-        py.get_type_bound::<OmfLimitExceededException>(),
+        py.get_type::<OmfLimitExceededException>(),
     )?;
-    m.add("OmfJsonException", py.get_type_bound::<OmfJsonException>())?;
+    m.add("OmfJsonException", py.get_type::<OmfJsonException>())?;
     m.add(
         "OmfInvalidDataException",
-        py.get_type_bound::<OmfInvalidDataException>(),
+        py.get_type::<OmfInvalidDataException>(),
     )?;
     m.add(
         "OmfValidationFailedException",
-        py.get_type_bound::<OmfValidationFailedException>(),
+        py.get_type::<OmfValidationFailedException>(),
     )?;
     m.add(
         "OmfNotSupportedException",
-        py.get_type_bound::<OmfNotSupportedException>(),
+        py.get_type::<OmfNotSupportedException>(),
     )?;
 
     Ok(())

@@ -48,7 +48,7 @@ impl PyProject {
     /// Most geometries also have their own origin field. To get the real location add this origin and the geometry origin
     /// to all locations within each element.
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]
