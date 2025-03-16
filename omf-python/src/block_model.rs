@@ -5,7 +5,7 @@ use crate::{
     grid::{PyGrid3Regular, PyGrid3Tensor, PyOrient3},
 };
 
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass_enum]
@@ -132,26 +132,26 @@ impl PyBlockModel {
 
     #[getter]
     /// Block sizes.
-    fn grid(&self, py: Python<'_>) -> PyObject {
+    fn grid(&self, py: Python<'_>) -> PyResult<PyObject> {
         match self.0.grid {
-            omf::Grid3::Regular { .. } => PyGrid3Regular::from(self.0.grid.clone()).into_py(py),
-            omf::Grid3::Tensor { .. } => PyGrid3Tensor::from(self.0.grid.clone()).into_py(py),
+            omf::Grid3::Regular { .. } => PyGrid3Regular::from(self.0.grid.clone()).into_py_any(py),
+            omf::Grid3::Tensor { .. } => PyGrid3Tensor::from(self.0.grid.clone()).into_py_any(py),
         }
     }
 
     #[getter]
     /// Optional sub-blocks, which can be regular or free-form divisions of the parent blocks.
-    fn subblocks(&self, py: Python<'_>) -> Option<PyObject> {
+    fn subblocks(&self, py: Python<'_>) -> PyResult<Option<PyObject>> {
         match &self.0.subblocks {
             Some(subblocks) => match subblocks {
-                Subblocks::Regular { .. } => {
-                    Some(PyRegularSubblocks::from(subblocks.clone()).into_py(py))
-                }
-                Subblocks::Freeform { .. } => {
-                    Some(PyFreeformSubblocks::from(subblocks.clone()).into_py(py))
-                }
+                Subblocks::Regular { .. } => PyRegularSubblocks::from(subblocks.clone())
+                    .into_py_any(py)
+                    .map(Some),
+                Subblocks::Freeform { .. } => PyFreeformSubblocks::from(subblocks.clone())
+                    .into_py_any(py)
+                    .map(Some),
             },
-            None => None,
+            None => Ok(None),
         }
     }
 }

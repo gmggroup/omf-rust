@@ -6,7 +6,7 @@ use crate::colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
 use crate::errors::OmfJsonException;
 use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location, NumberColormap};
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use pyo3_stub_gen::derive::*;
 use serde_pyobject::to_pyobject;
 
@@ -97,24 +97,30 @@ impl PyAttribute {
     }
 
     /// The attribute data.
-    fn get_data(&self, py: Python<'_>) -> PyObject {
+    fn get_data(&self, py: Python<'_>) -> PyResult<PyObject> {
         match &self.0.data {
             AttributeData::Category { .. } => {
-                PyAttributeDataCategory(self.0.data.clone()).into_py(py)
+                PyAttributeDataCategory(self.0.data.clone()).into_py_any(py)
             }
-            AttributeData::Color { .. } => PyAttributeDataColor(self.0.data.clone()).into_py(py),
+            AttributeData::Color { .. } => {
+                PyAttributeDataColor(self.0.data.clone()).into_py_any(py)
+            }
             AttributeData::MappedTexture { .. } => {
-                PyAttributeDataMappedTexture(self.0.data.clone()).into_py(py)
+                PyAttributeDataMappedTexture(self.0.data.clone()).into_py_any(py)
             }
             AttributeData::ProjectedTexture { .. } => {
-                PyAttributeDataProjectedTexture(self.0.data.clone()).into_py(py)
+                PyAttributeDataProjectedTexture(self.0.data.clone()).into_py_any(py)
             }
-            AttributeData::Number { .. } => PyAttributeDataNumber(self.0.data.clone()).into_py(py),
-            AttributeData::Vector { .. } => PyAttributeDataVector(self.0.data.clone()).into_py(py),
+            AttributeData::Number { .. } => {
+                PyAttributeDataNumber(self.0.data.clone()).into_py_any(py)
+            }
+            AttributeData::Vector { .. } => {
+                PyAttributeDataVector(self.0.data.clone()).into_py_any(py)
+            }
             AttributeData::Boolean { .. } => {
-                PyAttributeDataBoolean(self.0.data.clone()).into_py(py)
+                PyAttributeDataBoolean(self.0.data.clone()).into_py_any(py)
             }
-            AttributeData::Text { .. } => PyAttributeDataText(self.0.data.clone()).into_py(py),
+            AttributeData::Text { .. } => PyAttributeDataText(self.0.data.clone()).into_py_any(py),
         }
     }
 }
@@ -282,15 +288,18 @@ impl PyAttributeDataNumber {
     /// Optional colormap. If absent then the importing application should invent one.
     ///
     /// Make sure the colormap uses the same number type as `values`.
-    fn colormap(&self, py: Python) -> Option<PyObject> {
-        attribute_data_field!(self, Number::colormap)
-            .clone()
-            .map(|colormap| match colormap {
+    fn colormap(&self, py: Python) -> PyResult<Option<PyObject>> {
+        match attribute_data_field!(self, Number::colormap).clone() {
+            None => Ok(None),
+            Some(colormap) => Ok(Some(match colormap {
                 NumberColormap::Continuous { .. } => {
-                    PyNumberColormapContinuous(colormap).into_py(py)
+                    PyNumberColormapContinuous(colormap).into_py_any(py)?
                 }
-                NumberColormap::Discrete { .. } => PyNumberColormapDiscrete(colormap).into_py(py),
-            })
+                NumberColormap::Discrete { .. } => {
+                    PyNumberColormapDiscrete(colormap).into_py_any(py)?
+                }
+            })),
+        }
     }
 }
 

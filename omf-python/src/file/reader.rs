@@ -11,13 +11,16 @@ use itertools::Itertools as _;
 use numpy::datetime::{units, Datetime};
 use numpy::ndarray::Array;
 use numpy::{Element, IntoPyArray as _, PyArray, PyArray1, PyArray2};
-use omf::data::{Boundaries, Boundary, NumberType, Numbers, Scalars, Texcoords, Vectors, Vertices};
+use omf::data::{
+    Boundaries, Boundary, GenericBoundaries, NumberType, Numbers, Scalars, Texcoords, Vectors,
+    Vertices,
+};
 use omf::date_time;
 use omf::error::Error::{self, IoError};
 use omf::file::{Limits, Reader};
 use pyo3::exceptions::PyRuntimeError;
-use pyo3::prelude::*;
 use pyo3::types::PyBytes;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use pyo3_stub_gen::derive::*;
 use std::fs::File;
 
@@ -516,31 +519,18 @@ impl PyReader {
         &self,
         py: Python<'_>,
         array: &PyBoundaryArray,
-    ) -> PyResult<Vec<(Py<PyAny>, PyBoundaryType)>> {
-        fn map_boundary<T: IntoPy<Py<PyAny>> + NumberType>(
-            py: Python<'_>,
-            b: Boundary<T>,
-        ) -> (Py<PyAny>, PyBoundaryType) {
-            match b {
-                Boundary::Less(v) => (v.into_py(py), PyBoundaryType::Less),
-                Boundary::LessEqual(v) => (v.into_py(py), PyBoundaryType::LessEqual),
-            }
-        }
-
-        let boundaries: Result<Vec<_>, _> = match self
+    ) -> PyResult<Vec<(PyObject, PyBoundaryType)>> {
+        match self
             .0
             .array_boundaries(&array.0)
             .map_err(OmfException::py_err)?
         {
-            Boundaries::F32(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
-            Boundaries::F64(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
-            Boundaries::I64(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
-            Boundaries::Date(boundaries) => boundaries.map_ok(|b| map_boundary(py, b)).collect(),
-            Boundaries::DateTime(boundaries) => {
-                boundaries.map_ok(|b| map_boundary(py, b)).collect()
-            }
-        };
-        boundaries.map_err(OmfException::py_err)
+            Boundaries::F32(b) => convert_boundaries(py, b),
+            Boundaries::F64(b) => convert_boundaries(py, b),
+            Boundaries::I64(b) => convert_boundaries(py, b),
+            Boundaries::Date(b) => convert_boundaries(py, b),
+            Boundaries::DateTime(b) => convert_boundaries(py, b),
+        }
     }
 
     /// Read a RegularSubblock array and return a tuple of two numpy arrays, the
@@ -584,4 +574,23 @@ impl PyReader {
             }
         }
     }
+}
+
+fn convert_boundaries<'py, T>(
+    py: Python<'py>,
+    boundaries: GenericBoundaries<T>,
+) -> PyResult<Vec<(PyObject, PyBoundaryType)>>
+where
+    T: NumberType,
+    T: IntoPyObject<'py>,
+    PyErr: From<T::Error>,
+{
+    boundaries
+        .map(|b| {
+            Ok(match b.map_err(OmfException::py_err)? {
+                Boundary::Less(v) => (v.into_py_any(py)?, PyBoundaryType::Less),
+                Boundary::LessEqual(v) => (v.into_py_any(py)?, PyBoundaryType::LessEqual),
+            })
+        })
+        .collect()
 }

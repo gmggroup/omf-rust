@@ -5,7 +5,7 @@ use crate::{
 use numpy::PyArray1;
 use omf::{GridSurface, LineSet, PointSet, Surface};
 
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
@@ -104,10 +104,10 @@ impl PyGridSurface {
 
     #[getter]
     /// 2D grid definition, which can be regular or tensor.
-    fn grid(&self, py: Python<'_>) -> PyObject {
+    fn grid(&self, py: Python<'_>) -> PyResult<PyObject> {
         match self.0.grid {
-            omf::Grid2::Regular { .. } => PyGrid2Regular::from(self.0.grid.clone()).into_py(py),
-            omf::Grid2::Tensor { .. } => PyGrid2Tensor::from(self.0.grid.clone()).into_py(py),
+            omf::Grid2::Regular { .. } => PyGrid2Regular::from(self.0.grid.clone()).into_py_any(py),
+            omf::Grid2::Tensor { .. } => PyGrid2Tensor::from(self.0.grid.clone()).into_py_any(py),
         }
     }
 
