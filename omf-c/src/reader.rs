@@ -1,4 +1,4 @@
-use std::{ffi::c_char, io::Read, path::PathBuf, ptr::null_mut, sync::Mutex};
+use std::{ffi::c_char, fs::File, io::Read, path::PathBuf, ptr::null_mut, sync::Mutex};
 
 use crate::{
     arrays::{array, array_action, Array, ArrayType},
@@ -14,7 +14,7 @@ use crate::{
 };
 
 struct ReaderWrapper {
-    pub inner: omf::file::Reader,
+    pub inner: omf::file::Reader<File>,
     pub storage: FfiStorage,
     pub project_loaded: bool,
 }

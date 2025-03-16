@@ -1,6 +1,6 @@
 //! Utility functions for date and date-time conversion.
 
-use chrono::{DateTime, Duration, NaiveDate, TimeZone, Utc};
+use chrono::{DateTime, Duration, NaiveDate, Utc};
 
 /// Convert a date to the number of days since the epoch.
 pub fn date_to_f64(date: NaiveDate) -> f64 {
@@ -73,11 +73,5 @@ pub fn i64_nano_to_date_time(value: i64) -> DateTime<Utc> {
 
 /// Returns the current date and time in UTC.
 pub fn utc_now() -> DateTime<Utc> {
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .expect("valid system time");
-    let naive = DateTime::from_timestamp(now.as_secs() as i64, now.subsec_nanos())
-        .expect("valid timestamp")
-        .naive_utc();
-    Utc.from_utc_datetime(&naive)
+    chrono::Utc::now()
 }

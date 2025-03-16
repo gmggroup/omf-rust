@@ -1,12 +1,8 @@
-use std::{
-    fs::{File, OpenOptions},
-    io::Read,
-    path::Path,
-};
+use std::io::{Read, Seek, Write};
 
 use crate::{
     error::Error,
-    file::{Compression, Limits},
+    file::{Compression, Limits, ReadAt},
     validate::Problems,
 };
 
@@ -25,8 +21,9 @@ pub fn detect(read: &mut impl Read) -> Result<bool, Error> {
 /// Returns true if the path looks more like OMF1 than OMF2.
 ///
 /// Does not guarantee that the file will load. Returns an error in file open or read fails.
-pub fn detect_open(path: &Path) -> Result<bool, Error> {
-    detect(&mut File::open(path)?)
+#[cfg(not(target_family = "wasm"))]
+pub fn detect_open(path: &std::path::Path) -> Result<bool, Error> {
+    detect(&mut std::fs::File::open(path)?)
 }
 
 /// Converts a OMF1 files to OMF2.
@@ -70,7 +67,11 @@ impl Converter {
     /// On success the validation warnings are returned.
     ///
     /// May be called more than once to convert multiple files with the same parameters.
-    pub fn convert(&self, input: File, output: File) -> Result<Problems, Error> {
+    pub fn convert(
+        &self,
+        input: impl ReadAt + 'static,
+        output: impl Write + Seek + Send,
+    ) -> Result<Problems, Error> {
         let reader = Omf1Reader::new(input, self.limits.json_bytes)?;
         let mut writer = crate::file::Writer::new(output)?;
         writer.set_compression(self.compression);
@@ -84,13 +85,14 @@ impl Converter {
     /// On success the validation warnings are returned.
     ///
     /// May be called more than once to convert multiple files with the same parameters.
+    #[cfg(not(target_family = "wasm"))]
     pub fn convert_open(
         &self,
-        input_path: impl AsRef<Path>,
-        output_path: impl AsRef<Path>,
+        input_path: impl AsRef<std::path::Path>,
+        output_path: impl AsRef<std::path::Path>,
     ) -> Result<Problems, Error> {
-        let input = File::open(input_path)?;
-        let output = OpenOptions::new()
+        let input = std::fs::File::open(input_path)?;
+        let output = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true)
