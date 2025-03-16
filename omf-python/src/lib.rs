@@ -104,10 +104,7 @@ fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
 
     m.add("OmfException", py.get_type::<OmfException>())?;
-    m.add(
-        "OmfFileIoException",
-        py.get_type::<OmfFileIoException>(),
-    )?;
+    m.add("OmfFileIoException", py.get_type::<OmfFileIoException>())?;
     m.add(
         "OmfLimitExceededException",
         py.get_type::<OmfLimitExceededException>(),
