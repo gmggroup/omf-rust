@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::{
-    validate::{Validate, Validator},
     Attribute, Color, Geometry, Location,
+    validate::{Validate, Validator},
 };
 
 /// Defines a single "object" or "shape" within the OMF file.

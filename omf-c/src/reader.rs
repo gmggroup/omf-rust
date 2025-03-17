@@ -1,16 +1,17 @@
 use std::{ffi::c_char, fs::File, io::Read, path::PathBuf, ptr::null_mut, sync::Mutex};
 
 use crate::{
-    arrays::{array, array_action, Array, ArrayType},
+    arrays::{Array, ArrayType, array, array_action},
     elements::{FileVersion, Limits, Project},
     error::Error,
     ffi_tools::{
+        FfiStorage, IntoFfi,
         arg::{not_null, not_null_consume, slice_mut, slice_mut_len, string_not_null},
-        catch, FfiStorage, IntoFfi,
+        catch,
     },
     image_data::ImageData,
     read_iterators::*,
-    validation::{handle_validation, Validation},
+    validation::{Validation, handle_validation},
 };
 
 struct ReaderWrapper {
@@ -786,7 +787,7 @@ pub extern "C" fn omf_reader_array_freeform_subblocks32(
         let iter = match wrapper!(reader).inner.array_freeform_subblocks(&array)? {
             omf::data::FreeformSubblocks::F32(i) => i,
             omf::data::FreeformSubblocks::F64(_) => {
-                return unsafe_cast!("64-bit float" -> "32-bit float")
+                return unsafe_cast!("64-bit float" -> "32-bit float");
             }
         };
         let parents = slice_mut_len!(parents, n_values, array.item_count())?;

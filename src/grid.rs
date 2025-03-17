@@ -2,10 +2,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    Array, Vector3,
     array::Constraint,
     array_type,
     validate::{Validate, Validator},
-    Array, Vector3,
 };
 
 /// Defines a 2D grid spacing and size.

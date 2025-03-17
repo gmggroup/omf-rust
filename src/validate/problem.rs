@@ -1,6 +1,6 @@
 use std::{fmt::Debug, fmt::Display};
 
-use crate::{colormap::NumberRange, error::InvalidData, Location};
+use crate::{Location, colormap::NumberRange, error::InvalidData};
 
 /// Validation failure reason.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]

@@ -15,7 +15,7 @@ use parquet::{
 
 use crate::error::Error;
 
-use super::{array_type::PqArrayType, PqArrayMatcher};
+use super::{PqArrayMatcher, array_type::PqArrayType};
 
 const CHUNK_SIZE: usize = 8192;
 

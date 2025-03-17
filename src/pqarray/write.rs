@@ -3,7 +3,7 @@ use parquet::{
     errors::ParquetError,
     file::{
         properties::{
-            EnabledStatistics, WriterProperties, WriterVersion, DEFAULT_STATISTICS_ENABLED,
+            DEFAULT_STATISTICS_ENABLED, EnabledStatistics, WriterProperties, WriterVersion,
         },
         writer::SerializedFileWriter,
     },

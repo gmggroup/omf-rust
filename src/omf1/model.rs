@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use serde::Deserialize;
 
-use super::{objects::*, Omf1Error};
+use super::{Omf1Error, objects::*};
 
 /// Converts a `&Model` into either a reference to the individual item, or into
 /// a subset enum.

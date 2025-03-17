@@ -1,7 +1,7 @@
 use std::{ffi::c_char, fs::File, ptr::null};
 
 use crate::{
-    error::{set_error, Error},
+    error::{Error, set_error},
     ffi_tools::{arg::not_null_mut, catch},
 };
 

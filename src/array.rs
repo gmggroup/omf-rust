@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "parquet")]
 use crate::data::write_checks::ArrayWriteCheck;
-use crate::{validate::Reason, SubblockMode};
+use crate::{SubblockMode, validate::Reason};
 
 pub trait ArrayType {
     const DATA_TYPE: DataType;

@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::{
+    Array, NumberColormap, Orient2,
     array::Constraint,
     array_type,
     colormap::NumberRange,
     validate::{Validate, Validator},
-    Array, NumberColormap, Orient2,
 };
 
 /// The various types of data that can be attached to an [`Attribute`](crate::Attribute).
@@ -455,7 +455,7 @@ impl Validate for AttributeData {
 
 #[cfg(test)]
 mod tests {
-    use crate::{colormap::NumberRange, Array};
+    use crate::{Array, colormap::NumberRange};
 
     use super::*;
 

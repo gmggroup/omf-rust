@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 
 use crate::{
+    SubblockMode,
     array::{Array, ArrayType, Constraint},
     error::InvalidData,
     validate::Reason,
-    SubblockMode,
 };
 
 use super::NumberType;

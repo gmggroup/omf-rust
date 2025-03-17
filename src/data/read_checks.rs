@@ -1,16 +1,16 @@
 use std::collections::HashSet;
 
 use crate::{
+    SubblockMode,
     array::Constraint,
     error::{Error, InvalidData},
     file::{ReadAt, SubFile},
     pqarray::read::{MultiIter, NullableGroupIter, NullableIter, SimpleIter},
-    SubblockMode,
 };
 
 use super::{
-    write_checks::{subblock_is_octree_compat, valid_subblock_sizes},
     FloatType, NumberType,
+    write_checks::{subblock_is_octree_compat, valid_subblock_sizes},
 };
 
 /// Iterator for reading scalar data, supporting `f32` and `f64` types generically.

@@ -10,11 +10,7 @@ use crate::{
 };
 
 fn option<T>(is_set: bool, value: T) -> Option<T> {
-    if is_set {
-        Some(value)
-    } else {
-        None
-    }
+    if is_set { Some(value) } else { None }
 }
 
 impl Project {

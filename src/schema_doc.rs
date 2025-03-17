@@ -2,7 +2,7 @@
 use core::panic;
 use std::{
     collections::BTreeMap,
-    fs::{create_dir_all, OpenOptions},
+    fs::{OpenOptions, create_dir_all},
     io::Write,
     path::Path,
     sync::OnceLock,
@@ -13,7 +13,7 @@ use schemars::{
         ArrayValidation, InstanceType, Metadata, ObjectValidation, Schema, SchemaObject,
         SingleOrVec, SubschemaValidation,
     },
-    visit::{visit_schema_object, Visitor},
+    visit::{Visitor, visit_schema_object},
 };
 use serde_json::Value;
 

@@ -1,6 +1,6 @@
 use std::{any::Any, cell::RefCell, ffi::c_char, ptr::null_mut};
 
-use crate::ffi_tools::{into_ffi_free, FfiConvert, FfiStorage, IntoFfi};
+use crate::ffi_tools::{FfiConvert, FfiStorage, IntoFfi, into_ffi_free};
 
 use super::Error;
 

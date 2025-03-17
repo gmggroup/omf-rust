@@ -8,7 +8,7 @@ use zip::{
     write::{FullFileOptions, ZipWriter},
 };
 
-use crate::{error::Error, FORMAT_NAME};
+use crate::{FORMAT_NAME, error::Error};
 
 use super::{ReadAt, SubFile};
 

@@ -7,8 +7,8 @@ use std::{
 };
 
 use crate::{
-    array, colormap::NumberRange, Attribute, AttributeData, Geometry, Location, SubblockMode,
-    Vector3,
+    Attribute, AttributeData, Geometry, Location, SubblockMode, Vector3, array,
+    colormap::NumberRange,
 };
 
 use super::{Problems, Reason};
@@ -400,7 +400,7 @@ impl<'n> Validator<'n> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{array_type, Array, PointSet};
+    use crate::{Array, PointSet, array_type};
 
     use super::*;
 

@@ -6,7 +6,7 @@ use crate::{
         arg::{not_null, not_null_mut, string_not_null},
         catch,
     },
-    validation::{handle_validation, Validation},
+    validation::{Validation, handle_validation},
 };
 
 #[derive(Debug, Default)]
