@@ -47,7 +47,11 @@ image = { version = "0.25", default-features = false, features = [
 itertools = "0.14"
 numpy = "0.23"
 parquet = { version = "54.2", default-features = false, features = ["flate2"] }
-pyo3 = { version = "0.23", features = ["extension-module", "chrono", "abi3"] }
+pyo3 = { version = "0.23", features = [
+    "extension-module",
+    "chrono",
+    "abi3-py39",
+] }
 pyo3-stub-gen = "0.7"
 regex = "1.11"
 schemars = { version = "0.8", features = ["chrono"] }
