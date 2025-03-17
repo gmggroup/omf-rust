@@ -5,7 +5,7 @@ use chrono::{DateTime, NaiveDate, Utc};
 use crate::{
     date_time::{date_time_to_f64, date_time_to_i64, date_to_f64, date_to_i64},
     error::Error,
-    file::SubFile,
+    file::{ReadAt, SubFile},
     pqarray::read::SimpleIter,
 };
 
@@ -70,12 +70,12 @@ impl<T: NumberType + Display> Display for Boundary<T> {
 ///
 /// Casts to `f64` by default or you can access the variants directly.
 #[derive(Debug)]
-pub enum Scalars {
-    F32(GenericScalars<f32>),
-    F64(GenericScalars<f64>),
+pub enum Scalars<R: ReadAt> {
+    F32(GenericScalars<f32, R>),
+    F64(GenericScalars<f64, R>),
 }
 
-impl Iterator for Scalars {
+impl<R: ReadAt> Iterator for Scalars<R> {
     type Item = Result<f64, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -90,12 +90,12 @@ impl Iterator for Scalars {
 ///
 /// Can be used as an iterator that casts to `[f64; 3]` or you can access the variants directly.
 #[derive(Debug)]
-pub enum Vertices {
-    F32(GenericArrays<f32, 3>),
-    F64(GenericArrays<f64, 3>),
+pub enum Vertices<R: ReadAt> {
+    F32(GenericArrays<f32, 3, R>),
+    F64(GenericArrays<f64, 3, R>),
 }
 
-impl Iterator for Vertices {
+impl<R: ReadAt> Iterator for Vertices<R> {
     type Item = Result<[f64; 3], Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -116,12 +116,12 @@ fn array_item_cast<T, U: From<T>, const N: usize>(
 ///
 /// Can be used as an iterator that casts to `[f64; 2]` or you can access the variants directly.
 #[derive(Debug)]
-pub enum Texcoords {
-    F32(GenericArrays<f32, 2>),
-    F64(GenericArrays<f64, 2>),
+pub enum Texcoords<R: ReadAt> {
+    F32(GenericArrays<f32, 2, R>),
+    F64(GenericArrays<f64, 2, R>),
 }
 
-impl Iterator for Texcoords {
+impl<R: ReadAt> Iterator for Texcoords<R> {
     type Item = Result<[f64; 2], Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -137,15 +137,15 @@ impl Iterator for Texcoords {
 /// You can access the variants directly or use the `try_into_f64` and `try_into_i64` methods.
 /// These methods can both fail so aren't automatic.
 #[derive(Debug)]
-pub enum Numbers {
-    F32(GenericNumbers<f32>),
-    F64(GenericNumbers<f64>),
-    I64(GenericNumbers<i64>),
-    Date(GenericNumbers<NaiveDate>),
-    DateTime(GenericNumbers<DateTime<Utc>>),
+pub enum Numbers<R: ReadAt> {
+    F32(GenericNumbers<f32, R>),
+    F64(GenericNumbers<f64, R>),
+    I64(GenericNumbers<i64, R>),
+    Date(GenericNumbers<NaiveDate, R>),
+    DateTime(GenericNumbers<DateTime<Utc>, R>),
 }
 
-impl Numbers {
+impl<R: ReadAt> Numbers<R> {
     /// Turns this into an `f64` iterator, casting values.
     ///
     /// If the numbers use type `i64` this will fail with `Error::UnsafeCast`. Dates will become
@@ -153,7 +153,7 @@ impl Numbers {
     /// '1970-01-01T00:00:00Z' epoch with a small loss of precision.
     ///
     /// Currently can't fail but future number types might yield `Error::UnsafeCast`.
-    pub fn try_into_f64(self) -> Result<NumbersF64, Error> {
+    pub fn try_into_f64(self) -> Result<NumbersF64<R>, Error> {
         match &self {
             Numbers::I64(_) => Err(Error::UnsafeCast("64-bit integer", "64-bit float")),
             Numbers::F32(_) | Numbers::F64(_) | Numbers::Date(_) | Numbers::DateTime(_) => {
@@ -167,7 +167,7 @@ impl Numbers {
     /// Floating-point types will be rejected with `Error::UnsafeCast`. Dates will become
     /// days since the '1970-01-01' epoch. Date-times will become microseconds since the
     /// '1970-01-01T00:00:00Z' epoch.
-    pub fn try_into_i64(self) -> Result<NumbersI64, Error> {
+    pub fn try_into_i64(self) -> Result<NumbersI64<R>, Error> {
         match self {
             Numbers::F32(_) => Err(Error::UnsafeCast("32-bit float", "64-bit integer")),
             Numbers::F64(_) => Err(Error::UnsafeCast("64-bit float", "64-bit integer")),
@@ -176,9 +176,9 @@ impl Numbers {
     }
 }
 
-pub struct NumbersF64(Numbers);
+pub struct NumbersF64<R: ReadAt>(Numbers<R>);
 
-impl Iterator for NumbersF64 {
+impl<R: ReadAt> Iterator for NumbersF64<R> {
     type Item = Result<Option<f64>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -192,9 +192,9 @@ impl Iterator for NumbersF64 {
     }
 }
 
-pub struct NumbersI64(Numbers);
+pub struct NumbersI64<R: ReadAt>(Numbers<R>);
 
-impl Iterator for NumbersI64 {
+impl<R: ReadAt> Iterator for NumbersI64<R> {
     type Item = Result<Option<i64>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -212,14 +212,14 @@ impl Iterator for NumbersI64 {
 /// Casts to `Option<[f64; 3]>` by default or you can access the variants directly.
 /// 2D vectors are cast to a 3D vector with zero in the Z component.
 #[derive(Debug)]
-pub enum Vectors {
-    F32x2(GenericOptionalArrays<f32, 2>),
-    F64x2(GenericOptionalArrays<f64, 2>),
-    F32x3(GenericOptionalArrays<f32, 3>),
-    F64x3(GenericOptionalArrays<f64, 3>),
+pub enum Vectors<R: ReadAt> {
+    F32x2(GenericOptionalArrays<f32, 2, R>),
+    F64x2(GenericOptionalArrays<f64, 2, R>),
+    F32x3(GenericOptionalArrays<f32, 3, R>),
+    F64x3(GenericOptionalArrays<f64, 3, R>),
 }
 
-impl Iterator for Vectors {
+impl<R: ReadAt> Iterator for Vectors<R> {
     type Item = Result<Option<[f64; 3]>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -238,14 +238,24 @@ impl Iterator for Vectors {
 }
 
 /// Generic iterator for boundary data.
-#[derive(Debug)]
-pub struct GenericBoundaries<T: NumberType> {
-    value: BoundaryValues<T>,
-    inclusive: SimpleIter<bool, SubFile>,
+pub struct GenericBoundaries<T: NumberType, R: ReadAt> {
+    value: BoundaryValues<T, R>,
+    inclusive: SimpleIter<bool, SubFile<R>>,
 }
 
-impl<T: NumberType> GenericBoundaries<T> {
-    pub fn new(value: SimpleIter<T, SubFile>, inclusive: SimpleIter<bool, SubFile>) -> Self {
+impl<T: NumberType + std::fmt::Debug, R: ReadAt + std::fmt::Debug> std::fmt::Debug
+    for GenericBoundaries<T, R>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GenericBoundaries")
+            .field("value", &self.value)
+            .field("inclusive", &"...")
+            .finish()
+    }
+}
+
+impl<T: NumberType, R: ReadAt> GenericBoundaries<T, R> {
+    pub fn new(value: SimpleIter<T, SubFile<R>>, inclusive: SimpleIter<bool, SubFile<R>>) -> Self {
         Self {
             value: BoundaryValues::new(value),
             inclusive,
@@ -253,7 +263,7 @@ impl<T: NumberType> GenericBoundaries<T> {
     }
 }
 
-impl<T: NumberType> Iterator for GenericBoundaries<T> {
+impl<T: NumberType, R: ReadAt> Iterator for GenericBoundaries<T, R> {
     type Item = Result<Boundary<T>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -270,15 +280,15 @@ impl<T: NumberType> Iterator for GenericBoundaries<T> {
 ///
 /// Casting is the same as [`Numbers`](Numbers).
 #[derive(Debug)]
-pub enum Boundaries {
-    F32(GenericBoundaries<f32>),
-    F64(GenericBoundaries<f64>),
-    I64(GenericBoundaries<i64>),
-    Date(GenericBoundaries<NaiveDate>),
-    DateTime(GenericBoundaries<DateTime<Utc>>),
+pub enum Boundaries<R: ReadAt> {
+    F32(GenericBoundaries<f32, R>),
+    F64(GenericBoundaries<f64, R>),
+    I64(GenericBoundaries<i64, R>),
+    Date(GenericBoundaries<NaiveDate, R>),
+    DateTime(GenericBoundaries<DateTime<Utc>, R>),
 }
 
-impl Boundaries {
+impl<R: ReadAt> Boundaries<R> {
     /// Turns this into an `f64` boundary iterator, casting values.
     ///
     /// If the numbers use type `i64` this will fail with `Error::UnsafeCast`. Dates will become
@@ -286,7 +296,7 @@ impl Boundaries {
     /// '1970-01-01T00:00:00Z' epoch with a small loss of precision.
     ///
     /// Currently can't fail but future number types might yield `Error::UnsafeCast`.
-    pub fn try_into_f64(self) -> Result<BoundariesF64, Error> {
+    pub fn try_into_f64(self) -> Result<BoundariesF64<R>, Error> {
         match &self {
             Boundaries::I64(_) => Err(Error::UnsafeCast("64-bit integer", "64-bit float")),
             Boundaries::F32(_)
@@ -301,7 +311,7 @@ impl Boundaries {
     /// Floating-point types will be rejected with `Error::UnsafeCast`. Dates will become
     /// days since the '1970-01-01' epoch. Date-times will become microseconds since the
     /// '1970-01-01T00:00:00Z' epoch.
-    pub fn try_into_i64(self) -> Result<BoundariesI64, Error> {
+    pub fn try_into_i64(self) -> Result<BoundariesI64<R>, Error> {
         match self {
             Boundaries::F32(_) => Err(Error::UnsafeCast("32-bit float", "64-bit integer")),
             Boundaries::F64(_) => Err(Error::UnsafeCast("64-bit float", "64-bit integer")),
@@ -312,9 +322,9 @@ impl Boundaries {
     }
 }
 
-pub struct BoundariesF64(Boundaries);
+pub struct BoundariesF64<R: ReadAt>(Boundaries<R>);
 
-impl Iterator for BoundariesF64 {
+impl<R: ReadAt> Iterator for BoundariesF64<R> {
     type Item = Result<Boundary<f64>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -328,9 +338,9 @@ impl Iterator for BoundariesF64 {
     }
 }
 
-pub struct BoundariesI64(Boundaries);
+pub struct BoundariesI64<R: ReadAt>(Boundaries<R>);
 
-impl Iterator for BoundariesI64 {
+impl<R: ReadAt> Iterator for BoundariesI64<R> {
     type Item = Result<Boundary<i64>, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -348,12 +358,12 @@ impl Iterator for BoundariesI64 {
 /// Casts to `[f64; 6]` by default or you can access the variants directly.
 /// Each item is `[min_x, min_y, min_z, max_x, max_y, max_z]`.
 #[derive(Debug)]
-pub enum FreeformSubblocks {
-    F32(GenericFreeformSubblocks<f32>),
-    F64(GenericFreeformSubblocks<f64>),
+pub enum FreeformSubblocks<R: ReadAt> {
+    F32(GenericFreeformSubblocks<f32, R>),
+    F64(GenericFreeformSubblocks<f64, R>),
 }
 
-impl Iterator for FreeformSubblocks {
+impl<R: ReadAt> Iterator for FreeformSubblocks<R> {
     type Item = Result<([u32; 3], [f64; 6]), Error>;
 
     fn next(&mut self) -> Option<Self::Item> {

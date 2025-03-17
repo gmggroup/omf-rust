@@ -1,6 +1,11 @@
-use chrono::SecondsFormat;
+use std::io::{Seek, Write};
 
-use crate::{crate_full_name, date_time::utc_now, error::Error, file::Writer};
+use crate::{
+    crate_full_name,
+    date_time::utc_now,
+    error::Error,
+    file::{ReadAt, Writer},
+};
 
 use super::{
     array::{scalars_array, segments_array, triangles_array, vertices_array},
@@ -19,14 +24,18 @@ impl UidModel {
 }
 
 impl Project {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Project, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Project, Error> {
         let mut conversion_details = serde_json::Map::new();
         conversion_details.insert("from".to_owned(), r.version().into());
         conversion_details.insert("by".to_owned(), crate_full_name().into());
         conversion_details.insert(
             "on".to_owned(),
-            crate::date_time::utc_now()
-                .to_rfc3339_opts(SecondsFormat::Secs, true)
+            utc_now()
+                .to_rfc3339_opts(chrono::SecondsFormat::Secs, true)
                 .into(),
         );
         let mut metadata = self.content.uid.metadata();
@@ -39,7 +48,12 @@ impl Project {
             origin: self.origin,
             author: self.author.clone(),
             application: Default::default(),
-            date: self.content.uid.date_created.parse().unwrap_or(utc_now()),
+            date: self
+                .content
+                .uid
+                .date_created
+                .parse()
+                .unwrap_or_else(|_| utc_now()),
             metadata,
             elements: self
                 .elements
@@ -54,7 +68,11 @@ impl Project {
 }
 
 impl ElementModel<'_> {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Element, Error> {
         match *self {
             Self::PointSetElement(x) => x.convert(r, w),
             Self::LineSetElement(x) => x.convert(r, w),
@@ -65,7 +83,11 @@ impl ElementModel<'_> {
 }
 
 impl PointSetElement {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Element, Error> {
         let geometry = r.model(&self.geometry)?;
         let mut e = element(
             &self.content,
@@ -90,7 +112,11 @@ impl PointSetElement {
 }
 
 impl LineSetElement {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Element, Error> {
         let geometry = r.model(&self.geometry)?;
         let mut e = element(
             &self.content,
@@ -115,7 +141,11 @@ impl LineSetElement {
 }
 
 impl SurfaceElement {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Element, Error> {
         match r.model(&self.geometry)? {
             SurfaceGeometryModel::SurfaceGeometry(geometry) => element(
                 &self.content,
@@ -153,7 +183,11 @@ impl SurfaceElement {
 }
 
 impl VolumeElement {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Element, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Element, Error> {
         let geometry = r.model(&self.geometry)?;
         element(
             &self.content,
@@ -178,7 +212,11 @@ impl VolumeElement {
 }
 
 impl DataModel<'_> {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         match *self {
             DataModel::ScalarData(x) => x.convert(r, w),
             DataModel::DateTimeData(x) => x.convert(r, w),
@@ -207,9 +245,9 @@ fn element(
     })
 }
 
-fn attributes(
-    r: &Omf1Reader,
-    w: &mut Writer,
+fn attributes<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     data: &[Key<Data>],
 ) -> Result<Vec<crate::Attribute>, Error> {
     data.iter()
@@ -217,9 +255,9 @@ fn attributes(
         .collect::<Result<Vec<_>, _>>()
 }
 
-fn attributes_and_textures(
-    r: &Omf1Reader,
-    w: &mut Writer,
+fn attributes_and_textures<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     data: &[Key<Data>],
     textures: &[Key<ImageTexture>],
 ) -> Result<Vec<crate::Attribute>, Error> {

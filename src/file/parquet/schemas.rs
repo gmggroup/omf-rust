@@ -1,7 +1,7 @@
 use std::sync::OnceLock;
 
 use crate::{
-    file::SubFile,
+    file::{ReadAt, SubFile},
     pqarray::{schema_match, PqArrayMatcher, PqArrayReader},
 };
 
@@ -22,8 +22,8 @@ macro_rules! declare_schema {
                 })
             }
 
-            pub fn check(
-                reader: &PqArrayReader<SubFile>,
+            pub fn check<R: ReadAt>(
+                reader: &PqArrayReader<SubFile<R>>,
             ) -> Result<$name, crate::error::Error> {
                 reader.matches(Self::matcher())
             }
