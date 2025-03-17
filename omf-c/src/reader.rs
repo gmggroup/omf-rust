@@ -91,7 +91,7 @@ impl ReaderWrapper {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_open(path: *const c_char) -> *mut Reader {
     catch::error(|| {
         let path = PathBuf::from(string_not_null!(path)?);
@@ -105,7 +105,7 @@ pub extern "C" fn omf_reader_open(path: *const c_char) -> *mut Reader {
     .unwrap_or(null_mut())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_close(reader: *mut Reader) -> bool {
     catch::panic_bool(|| {
         _ = not_null_consume!(reader);
@@ -118,7 +118,7 @@ macro_rules! wrapper {
     };
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_project(
     reader: *mut Reader,
     validation: *mut *mut Validation,
@@ -145,7 +145,7 @@ pub extern "C" fn omf_reader_project(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_version(reader: *mut Reader) -> FileVersion {
     catch::error(|| {
         let wrapper = wrapper!(reader);
@@ -154,7 +154,7 @@ pub extern "C" fn omf_reader_version(reader: *mut Reader) -> FileVersion {
     .unwrap_or_default()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_limits(reader: *mut Reader) -> Limits {
     catch::error(|| {
         let limits = if reader.is_null() {
@@ -167,7 +167,7 @@ pub extern "C" fn omf_reader_limits(reader: *mut Reader) -> Limits {
     .unwrap_or_default()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_set_limits(reader: *mut Reader, limits: *const Limits) -> bool {
     catch::error(|| {
         let limits = not_null!(limits)?;
@@ -185,7 +185,7 @@ pub struct ArrayInfo {
     pub compressed_size: u64,
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_info(reader: *mut Reader, array: *const Array) -> ArrayInfo {
     catch::error(|| {
         let array = not_null!(array)?;
@@ -194,7 +194,7 @@ pub extern "C" fn omf_reader_array_info(reader: *mut Reader, array: *const Array
     .unwrap_or_default()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_bytes(
     reader: *mut Reader,
     array: *const Array,
@@ -220,7 +220,7 @@ pub extern "C" fn omf_reader_array_bytes(
 
 // Image
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_image(reader: *mut Reader, array: *const Array) -> *mut ImageData {
     catch::error(|| Ok(wrapper!(reader).inner.image(&array!(array)?)?.into_ffi()))
         .unwrap_or_else(null_mut)
@@ -228,7 +228,7 @@ pub extern "C" fn omf_reader_image(reader: *mut Reader, array: *const Array) -> 
 
 // Scalars
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_scalars32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -242,7 +242,7 @@ pub extern "C" fn omf_reader_array_scalars32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_scalars64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -317,7 +317,7 @@ fn into_slice_nullable_convert<T, U: Default + 'static>(
     Ok(())
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_scalars64(
     reader: *mut Reader,
     array: *const Array,
@@ -332,7 +332,7 @@ pub extern "C" fn omf_reader_array_scalars64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_scalars32(
     reader: *mut Reader,
     array: *const Array,
@@ -352,7 +352,7 @@ pub extern "C" fn omf_reader_array_scalars32(
 
 // Vertices
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vertices32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -366,7 +366,7 @@ pub extern "C" fn omf_reader_array_vertices32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vertices64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -379,7 +379,7 @@ pub extern "C" fn omf_reader_array_vertices64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vertices64(
     reader: *mut Reader,
     array: *const Array,
@@ -394,7 +394,7 @@ pub extern "C" fn omf_reader_array_vertices64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vertices32(
     reader: *mut Reader,
     array: *const Array,
@@ -414,7 +414,7 @@ pub extern "C" fn omf_reader_array_vertices32(
 
 // Segments
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_segments_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -427,7 +427,7 @@ pub extern "C" fn omf_reader_array_segments_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_segments(
     reader: *mut Reader,
     array: *const Array,
@@ -444,7 +444,7 @@ pub extern "C" fn omf_reader_array_segments(
 
 // Triangles
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_triangles_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -457,7 +457,7 @@ pub extern "C" fn omf_reader_array_triangles_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_triangles(
     reader: *mut Reader,
     array: *const Array,
@@ -474,7 +474,7 @@ pub extern "C" fn omf_reader_array_triangles(
 
 // Names
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_names_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -489,7 +489,7 @@ pub extern "C" fn omf_reader_array_names_iter(
 
 // Gradient
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_gradient_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -502,7 +502,7 @@ pub extern "C" fn omf_reader_array_gradient_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_gradient(
     reader: *mut Reader,
     array: *const Array,
@@ -519,7 +519,7 @@ pub extern "C" fn omf_reader_array_gradient(
 
 // Texture coordinates
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_texcoords32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -533,7 +533,7 @@ pub extern "C" fn omf_reader_array_texcoords32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_texcoords64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -546,7 +546,7 @@ pub extern "C" fn omf_reader_array_texcoords64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_texcoords64(
     reader: *mut Reader,
     array: *const Array,
@@ -561,7 +561,7 @@ pub extern "C" fn omf_reader_array_texcoords64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_texcoords32(
     reader: *mut Reader,
     array: *const Array,
@@ -581,7 +581,7 @@ pub extern "C" fn omf_reader_array_texcoords32(
 
 // Boundaries
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_boundaries_float32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -598,7 +598,7 @@ pub extern "C" fn omf_reader_array_boundaries_float32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_boundaries_float64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -614,7 +614,7 @@ pub extern "C" fn omf_reader_array_boundaries_float64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_boundaries_int64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -630,7 +630,7 @@ pub extern "C" fn omf_reader_array_boundaries_int64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_boundaries_float64(
     reader: *mut Reader,
     array: *const Array,
@@ -656,7 +656,7 @@ pub extern "C" fn omf_reader_array_boundaries_float64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_boundaries_int64(
     reader: *mut Reader,
     array: *const Array,
@@ -684,7 +684,7 @@ pub extern "C" fn omf_reader_array_boundaries_int64(
 
 // Regular sub-blocks
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_regular_subblocks_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -699,7 +699,7 @@ pub extern "C" fn omf_reader_array_regular_subblocks_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_regular_subblocks(
     reader: *mut Reader,
     array: *const Array,
@@ -722,7 +722,7 @@ pub extern "C" fn omf_reader_array_regular_subblocks(
 
 // Freeform sub-blocks
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_freeform_subblocks32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -737,7 +737,7 @@ pub extern "C" fn omf_reader_array_freeform_subblocks32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_freeform_subblocks64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -752,7 +752,7 @@ pub extern "C" fn omf_reader_array_freeform_subblocks64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_freeform_subblocks64(
     reader: *mut Reader,
     array: *const Array,
@@ -773,7 +773,7 @@ pub extern "C" fn omf_reader_array_freeform_subblocks64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_freeform_subblocks32(
     reader: *mut Reader,
     array: *const Array,
@@ -801,7 +801,7 @@ pub extern "C" fn omf_reader_array_freeform_subblocks32(
 
 // Numbers
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_numbers_float32_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -818,7 +818,7 @@ pub extern "C" fn omf_reader_array_numbers_float32_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_numbers_float64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -834,7 +834,7 @@ pub extern "C" fn omf_reader_array_numbers_float64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_numbers_int64_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -850,7 +850,7 @@ pub extern "C" fn omf_reader_array_numbers_int64_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_numbers_float64(
     reader: *mut Reader,
     array: *const Array,
@@ -869,7 +869,7 @@ pub extern "C" fn omf_reader_array_numbers_float64(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_numbers_float32(
     reader: *mut Reader,
     array: *const Array,
@@ -894,7 +894,7 @@ pub extern "C" fn omf_reader_array_numbers_float32(
 
 // Indices
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_indices_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -907,7 +907,7 @@ pub extern "C" fn omf_reader_array_indices_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_indices(
     reader: *mut Reader,
     array: *const Array,
@@ -925,7 +925,7 @@ pub extern "C" fn omf_reader_array_indices(
 
 // Vectors
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors32x2_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -942,7 +942,7 @@ pub extern "C" fn omf_reader_array_vectors32x2_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors64x2_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -961,7 +961,7 @@ pub extern "C" fn omf_reader_array_vectors64x2_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors32x3_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -980,7 +980,7 @@ pub extern "C" fn omf_reader_array_vectors32x3_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors64x3_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -993,7 +993,7 @@ pub extern "C" fn omf_reader_array_vectors64x3_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors32x2(
     reader: *mut Reader,
     array: *const Array,
@@ -1016,7 +1016,7 @@ pub extern "C" fn omf_reader_array_vectors32x2(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors64x2(
     reader: *mut Reader,
     array: *const Array,
@@ -1044,7 +1044,7 @@ pub extern "C" fn omf_reader_array_vectors64x2(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors32x3(
     reader: *mut Reader,
     array: *const Array,
@@ -1068,7 +1068,7 @@ pub extern "C" fn omf_reader_array_vectors32x3(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_vectors64x3(
     reader: *mut Reader,
     array: *const Array,
@@ -1101,7 +1101,7 @@ pub extern "C" fn omf_reader_array_vectors64x3(
 
 // Text
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_text_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -1116,7 +1116,7 @@ pub extern "C" fn omf_reader_array_text_iter(
 
 // Booleans
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_booleans_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -1129,7 +1129,7 @@ pub extern "C" fn omf_reader_array_booleans_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_booleans(
     reader: *mut Reader,
     array: *const Array,
@@ -1147,7 +1147,7 @@ pub extern "C" fn omf_reader_array_booleans(
 
 // Colors
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_colors_iter(
     reader: *mut Reader,
     array: *const Array,
@@ -1160,7 +1160,7 @@ pub extern "C" fn omf_reader_array_colors_iter(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_reader_array_colors(
     reader: *mut Reader,
     array: *const Array,

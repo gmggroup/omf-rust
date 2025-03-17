@@ -35,10 +35,11 @@ omf1 = ["parquet"]
 members = ["omf-c", "omf-python"]
 
 [workspace.package]
-edition = "2021"
+edition = "2024"
 version = "0.1.0-beta.1"
 authors = ["Tim Evans <tim.evans@seequent.com>"]
 license = "MIT"
+rust-version = "1.85.0"
 
 [workspace.dependencies]
 bytes = "1.10"

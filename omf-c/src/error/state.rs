@@ -48,7 +48,7 @@ impl FfiConvert<Error> for CError {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_error() -> *mut CError {
     match ERROR_STATE.with(|cell| cell.take()) {
         Some(error) => error.into_ffi(),
@@ -56,19 +56,19 @@ pub extern "C" fn omf_error() -> *mut CError {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_error_clear() {
     ERROR_STATE.with(|cell| cell.take());
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_error_peek() -> i32 {
     ERROR_STATE
         .with(|cell| cell.borrow().as_ref().map(Error::code))
         .unwrap_or(0)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_error_free(error: *mut CError) {
     unsafe { into_ffi_free(error) };
 }

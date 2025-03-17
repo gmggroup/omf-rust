@@ -1,6 +1,6 @@
 use std::{ffi::c_char, io::Write, ptr::null};
 
-use crate::ffi_tools::{into_ffi_free, FfiConvert, FfiStorage, IntoFfi};
+use crate::ffi_tools::{FfiConvert, FfiStorage, IntoFfi, into_ffi_free};
 
 pub fn handle_validation(problems: &omf::validate::Problems, validation: *mut *mut Validation) {
     if !problems.is_empty() {
@@ -37,7 +37,7 @@ impl FfiConvert<Vec<String>> for Validation {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_validation_free(ptr: *mut Validation) -> bool {
     unsafe { into_ffi_free(ptr) }
 }

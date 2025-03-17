@@ -18,7 +18,7 @@ macro_rules! inner {
     };
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_detect(path: *const c_char) -> bool {
     catch::error(|| {
         let path = PathBuf::from(string_not_null!(path)?);
@@ -28,12 +28,12 @@ pub extern "C" fn omf_omf1_detect(path: *const c_char) -> bool {
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_new() -> *mut Omf1Converter {
     catch::error(|| Ok(Box::into_raw(Default::default()))).unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_free(converter: *mut Omf1Converter) -> bool {
     catch::error(|| {
         if !converter.is_null() {
@@ -46,12 +46,12 @@ pub extern "C" fn omf_omf1_converter_free(converter: *mut Omf1Converter) -> bool
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_compression(converter: *mut Omf1Converter) -> i32 {
     catch::error(|| Ok(inner!(converter).compression().level() as i32)).unwrap_or(-1)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_set_compression(
     converter: *mut Omf1Converter,
     compression: i32,
@@ -67,7 +67,7 @@ pub extern "C" fn omf_omf1_converter_set_compression(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_limits(converter: *mut Omf1Converter) -> Limits {
     catch::error(|| {
         let limits = if converter.is_null() {
@@ -80,7 +80,7 @@ pub extern "C" fn omf_omf1_converter_limits(converter: *mut Omf1Converter) -> Li
     .unwrap_or_default()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_set_limits(
     converter: *mut Omf1Converter,
     limits: *const Limits,
@@ -93,7 +93,7 @@ pub extern "C" fn omf_omf1_converter_set_limits(
     .is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf1_converter_convert(
     converter: *mut Omf1Converter,
     input_path: *const c_char,

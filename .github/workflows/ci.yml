@@ -38,12 +38,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { rust: stable, os: ubuntu-latest }
-          - { rust: stable, os: windows-latest }
-          - { rust: stable, os: macos-latest }
-          - { rust: beta, os: ubuntu-latest }
-          # Turn this on once we have a MSRV (minimum supported rust version)
-          # - { rust: 1.70.0, os: ubuntu-latest }
+          - { rust: 1.85.0, os: ubuntu-latest }
+          - { rust: 1.85.0, os: windows-latest }
+          - { rust: 1.85.0, os: macos-latest }
     name: Test Rust ${{ matrix.rust }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
