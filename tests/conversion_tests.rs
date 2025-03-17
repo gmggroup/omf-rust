@@ -1,6 +1,6 @@
 #![cfg(feature = "omf1")]
 
-use std::{fs::read_dir, path::Path, time::Instant};
+use std::{fs::read_dir, io::Cursor, path::Path, time::Instant};
 
 use omf::{error::Error, file::Reader, omf1::Converter, AttributeData};
 
@@ -17,6 +17,44 @@ fn convert_omf1() {
         vec!["Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''"]
     );
     let project = Reader::open(&output_path).unwrap().project().unwrap().0;
+    let metadata = serde_json::to_string_pretty(&project.metadata).unwrap();
+    dbg!(&metadata);
+    assert!(metadata.starts_with(
+        r#"{
+  "OMF1 conversion": {
+    "by": "omf 0.1.0-beta.1",
+    "from": "OMF-v0.9.0",
+    "on": "#
+    ));
+    assert!(metadata.ends_with(
+        r#"Z"
+  },
+  "date_created": "2017-10-04T21:46:17Z",
+  "date_modified": "2017-10-04T21:46:17Z"
+}"#
+    ));
+}
+
+#[test]
+fn convert_omf1_bytes() {
+    let converter = Converter::new();
+    let mut output = Cursor::new(Vec::new());
+    let warnings = converter
+        .convert(
+            std::fs::File::open("tests/omf1/test_proj.omf").unwrap(),
+            &mut output,
+        )
+        .unwrap();
+    let warning_strings: Vec<_> = warnings.into_iter().map(|p| p.to_string()).collect();
+    assert_eq!(
+        warning_strings,
+        vec!["Warning: 'Project::elements[..]::name' contains duplicate of \"\", inside ''"]
+    );
+    let project = Reader::new(output.into_inner())
+        .unwrap()
+        .project()
+        .unwrap()
+        .0;
     let metadata = serde_json::to_string_pretty(&project.metadata).unwrap();
     dbg!(&metadata);
     assert!(metadata.starts_with(

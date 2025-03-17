@@ -1,8 +1,8 @@
-use std::io::{BufReader, Cursor};
+use std::io::{BufReader, Cursor, Seek, Write};
 
 use crate::{array_type, error::Error, Array};
 
-use super::{Limits, Reader, Writer};
+use super::{Limits, ReadAt, Reader, Writer};
 
 impl From<Limits> for image::Limits {
     fn from(value: Limits) -> Self {
@@ -14,7 +14,7 @@ impl From<Limits> for image::Limits {
     }
 }
 
-impl Reader {
+impl<R: ReadAt> Reader<R> {
     /// Read and decode an image.
     pub fn image(&self, image: &Array<array_type::Image>) -> Result<image::DynamicImage, Error> {
         let f = BufReader::new(self.array_bytes_reader(image)?);
@@ -24,7 +24,7 @@ impl Reader {
     }
 }
 
-impl Writer {
+impl<W: Write + Seek> Writer<W> {
     /// Write an image in PNG encoding.
     ///
     /// This supports grayscale, grayscale + alpha, RGB, and RGBA, in 8 or 16 bits per channel.

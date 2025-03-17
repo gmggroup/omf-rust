@@ -1,4 +1,7 @@
-use std::{collections::HashMap, fs::File, sync::Arc};
+use std::{
+    collections::HashMap,
+    io::{Seek, Write},
+};
 
 use zip::{
     read::{ZipArchive, ZipFile},
@@ -7,7 +10,7 @@ use zip::{
 
 use crate::{error::Error, FORMAT_NAME};
 
-use super::SubFile;
+use super::{ReadAt, SubFile};
 
 pub(crate) const INDEX_NAME: &str = "index.json.gz";
 pub(crate) const PARQUET_EXT: &str = ".parquet";
@@ -21,16 +24,16 @@ pub(crate) enum FileType {
     Jpeg,
 }
 
-pub(crate) struct Builder {
-    zip_writer: ZipWriter<File>,
+pub(crate) struct Builder<W: Write + Seek> {
+    zip_writer: ZipWriter<W>,
     next_id: u64,
     filenames: Vec<String>,
 }
 
-impl Builder {
-    pub fn new(file: File) -> Result<Self, Error> {
+impl<W: Write + Seek> Builder<W> {
+    pub fn new(write: W) -> Result<Self, Error> {
         Ok(Self {
-            zip_writer: ZipWriter::new(file),
+            zip_writer: ZipWriter::new(write),
             next_id: 1,
             filenames: Vec::new(),
         })
@@ -42,7 +45,7 @@ impl Builder {
         i
     }
 
-    pub fn open(&mut self, file_type: FileType) -> Result<SubFileWrite<'_>, Error> {
+    pub fn open(&mut self, file_type: FileType) -> Result<SubFileWrite<'_, W>, Error> {
         let name = match file_type {
             FileType::Index => INDEX_NAME.to_owned(),
             FileType::Parquet => format!("{}{PARQUET_EXT}", self.id()),
@@ -66,12 +69,7 @@ impl Builder {
         self.filenames.iter().map(|s| &**s)
     }
 
-    pub fn finish(
-        mut self,
-        major: u32,
-        minor: u32,
-        pre_release: Option<&str>,
-    ) -> Result<File, Error> {
+    pub fn finish(mut self, major: u32, minor: u32, pre_release: Option<&str>) -> Result<W, Error> {
         use std::fmt::Write;
         let mut comment = format!("{FORMAT_NAME} {major}.{minor}");
         if let Some(pre) = pre_release {
@@ -82,18 +80,18 @@ impl Builder {
     }
 }
 
-pub(crate) struct SubFileWrite<'a> {
+pub(crate) struct SubFileWrite<'a, W: Write + Seek> {
     name: String,
-    inner: &'a mut ZipWriter<File>,
+    inner: &'a mut ZipWriter<W>,
 }
 
-impl SubFileWrite<'_> {
+impl<W: Write + Seek> SubFileWrite<'_, W> {
     pub fn name(&self) -> &str {
         &self.name
     }
 }
 
-impl std::io::Write for SubFileWrite<'_> {
+impl<W: Write + Seek> std::io::Write for SubFileWrite<'_, W> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         self.inner.write(buf)
     }
@@ -118,15 +116,15 @@ impl<'a> From<ZipFile<'a>> for FileSpan {
     }
 }
 
-pub(crate) struct Archive {
-    file: Arc<File>,
+pub(crate) struct Archive<R> {
+    file: SubFile<R>,
     members: HashMap<String, FileSpan>,
     version: [u32; 2],
     pre_release: Option<String>,
 }
 
-impl Archive {
-    pub fn new(file: File) -> Result<Self, Error> {
+impl<R: ReadAt> Archive<R> {
+    pub fn new(file: SubFile<R>) -> Result<Self, Error> {
         let mut zip_archive = ZipArchive::new(file)?;
         let mut members = HashMap::new();
         let mut index_found = false;
@@ -147,7 +145,7 @@ impl Archive {
             ));
         };
         Ok(Self {
-            file: zip_archive.into_inner().into(),
+            file: zip_archive.into_inner(),
             members,
             version,
             pre_release,
@@ -169,12 +167,12 @@ impl Archive {
             .copied()
     }
 
-    pub fn open(&self, name: &str) -> Result<SubFile, Error> {
+    pub fn open(&self, name: &str) -> Result<SubFile<R>, Error> {
         let span = self
             .members
             .get(name)
             .ok_or_else(|| Error::ZipMemberMissing(name.to_owned()))?;
-        Ok(SubFile::new(self.file.clone(), span.offset, span.size)?)
+        Ok(self.file.sub_file(span.offset, span.size)?)
     }
 }
 

@@ -1,12 +1,14 @@
 use std::{
-    fs::File,
     io::{Read, Seek, SeekFrom},
     sync::Arc,
 };
 
+use super::ReadAt;
+
 /// A seek-able sub-file with a start and end point within a larger file.
-pub struct SubFile {
-    inner: Arc<File>,
+#[derive(Clone)]
+pub struct SubFile<R> {
+    inner: Arc<R>,
     /// Start of the sub-file within `inner`.
     start: u64,
     /// The current file cursor position within the sub-file.
@@ -15,12 +17,23 @@ pub struct SubFile {
     len: u64,
 }
 
-impl SubFile {
+impl<R> std::fmt::Debug for SubFile<R> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SubFile")
+            .field("inner", &"...")
+            .field("start", &self.start)
+            .field("position", &self.position)
+            .field("len", &self.len)
+            .finish()
+    }
+}
+
+impl<R: ReadAt> SubFile<R> {
     /// Creates a sub-file from seek-able object.
     ///
     /// This new file will its start and zero position at the current position of `inner` and
     /// extend up to `len` bytes.
-    pub fn new(inner: Arc<File>, start: u64, len: u64) -> std::io::Result<Self> {
+    pub fn new(inner: Arc<R>, start: u64, len: u64) -> std::io::Result<Self> {
         start
             .checked_add(len)
             .expect("start + len should not overflow");
@@ -43,28 +56,31 @@ impl SubFile {
     }
 
     /// Returns the number of bytes remaining in the sub-file.
-    fn remaining(&self) -> u64 {
+    pub fn remaining(&self) -> u64 {
         self.len.saturating_sub(self.position)
+    }
+
+    /// Returns a new sub-file that is a sub-range of this one.
+    pub fn sub_file(&self, start: u64, len: u64) -> std::io::Result<Self> {
+        Self::new(self.inner.clone(), self.start.saturating_add(start), len)
     }
 }
 
-impl Read for SubFile {
+impl<R: ReadAt> Read for SubFile<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         if self.position >= self.len {
             return Ok(0);
         }
         let limit = usize::try_from((buf.len() as u64).min(self.remaining())).expect("valid limit");
-        let n = read_at(
-            self.inner.as_ref(),
-            &mut buf[..limit],
-            self.start + self.position,
-        )?;
+        let n = self
+            .inner
+            .read_at(&mut buf[..limit], self.start + self.position)?;
         self.position += n as u64;
         Ok(n)
     }
 }
 
-impl Seek for SubFile {
+impl<R: ReadAt> Seek for SubFile<R> {
     fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
         let new_position = match pos {
             SeekFrom::Start(pos) => pos as i64,
@@ -82,41 +98,30 @@ impl Seek for SubFile {
 }
 
 #[cfg(feature = "parquet")]
-impl parquet::file::reader::Length for SubFile {
+impl<R: ReadAt> parquet::file::reader::Length for SubFile<R> {
     fn len(&self) -> u64 {
         self.len
     }
 }
 
 #[cfg(feature = "parquet")]
-impl parquet::file::reader::ChunkReader for SubFile {
-    type T = <std::fs::File as parquet::file::reader::ChunkReader>::T;
+impl<R: ReadAt> parquet::file::reader::ChunkReader for SubFile<R> {
+    type T = SubFile<R>;
 
     fn get_read(&self, start: u64) -> parquet::errors::Result<Self::T> {
-        self.inner.get_read(self.start.saturating_add(start))
+        Ok(Self {
+            inner: self.inner.clone(),
+            start: self.start.saturating_add(start),
+            position: 0,
+            len: self.len.saturating_sub(start),
+        })
     }
 
     fn get_bytes(&self, start: u64, length: usize) -> parquet::errors::Result<bytes::Bytes> {
-        self.inner
-            .get_bytes(self.start.saturating_add(start), length)
+        let mut buf = Vec::with_capacity(length);
+        self.get_read(start)?.read_to_end(&mut buf)?;
+        Ok(buf.into())
     }
-}
-
-/// Reads from a file at a specific offset
-///
-/// The Windows implementation moves the file cursor, which the Unix one doesn't,
-/// so this should only be used from code that doesn't care about the file cursor.
-#[cfg(windows)]
-fn read_at(file: &std::fs::File, buf: &mut [u8], offset: u64) -> std::io::Result<usize> {
-    use std::os::windows::fs::FileExt;
-    file.seek_read(buf, offset)
-}
-
-/// Reads from a file at a specific offset
-#[cfg(unix)]
-fn read_at(file: &std::fs::File, buf: &mut [u8], offset: u64) -> std::io::Result<usize> {
-    use std::os::unix::fs::FileExt;
-    file.read_at(buf, offset)
 }
 
 #[cfg(test)]
@@ -129,7 +134,7 @@ mod tests {
     fn subfile() {
         let path = Path::new("./target/tmp/subfile.txt");
         std::fs::write(path, b"0123456789").unwrap();
-        let base = Arc::new(File::open(path).unwrap());
+        let base = Arc::new(std::fs::File::open(path).unwrap());
         let mut t = SubFile::new(base.clone(), 2, 6).unwrap();
         let mut buf = [0; 5];
         t.read_exact(&mut buf).unwrap();

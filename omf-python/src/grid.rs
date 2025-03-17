@@ -241,17 +241,17 @@ pub struct PyOrient2(pub Orient2);
 impl PyOrient2 {
     #[getter]
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]
     fn u<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.u)
+        PyArray1::from_slice(py, &self.0.u)
     }
 
     #[getter]
     fn v<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.v)
+        PyArray1::from_slice(py, &self.0.v)
     }
 }
 
@@ -265,21 +265,21 @@ pub struct PyOrient3(pub Orient3);
 impl PyOrient3 {
     #[getter]
     fn origin<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.origin)
+        PyArray1::from_slice(py, &self.0.origin)
     }
 
     #[getter]
     fn u<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.u)
+        PyArray1::from_slice(py, &self.0.u)
     }
 
     #[getter]
     fn v<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.v)
+        PyArray1::from_slice(py, &self.0.v)
     }
 
     #[getter]
     fn w<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
-        PyArray1::from_slice_bound(py, &self.0.w)
+        PyArray1::from_slice(py, &self.0.w)
     }
 }

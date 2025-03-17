@@ -29,7 +29,7 @@ use crate::{
 
 pub(crate) struct WriterWrapper {
     pub path: PathBuf,
-    pub inner: omf::file::Writer,
+    pub inner: omf::file::Writer<File>,
     pub project: Option<omf::Project>,
     pub storage: FfiStorage,
 }

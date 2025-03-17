@@ -2,15 +2,18 @@ use crate::{
     array_type,
     data::*,
     error::{Error, InvalidData},
-    file::SubFile,
+    file::{ReadAt, SubFile},
     pqarray::PqArrayReader,
     Array, ArrayType,
 };
 
 use super::{super::Reader, schemas};
 
-impl Reader {
-    fn array_reader(&self, array: &Array<impl ArrayType>) -> Result<PqArrayReader<SubFile>, Error> {
+impl<R: ReadAt> Reader<R> {
+    fn array_reader(
+        &self,
+        array: &Array<impl ArrayType>,
+    ) -> Result<PqArrayReader<SubFile<R>>, Error> {
         let f = self.array_bytes_reader(array)?;
         let reader = PqArrayReader::new(f)?;
         if array.item_count() != reader.len() {
@@ -25,7 +28,7 @@ impl Reader {
     }
 
     /// Read an [`array_type::Scalar`](crate::array_type::Scalar) array.
-    pub fn array_scalars(&self, array: &Array<array_type::Scalar>) -> Result<Scalars, Error> {
+    pub fn array_scalars(&self, array: &Array<array_type::Scalar>) -> Result<Scalars<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Scalar::check(&reader)? {
             schemas::Scalar::F32 => {
@@ -40,7 +43,7 @@ impl Reader {
     }
 
     /// Read an [`array_type::Vertex`](crate::array_type::Vertex) array.
-    pub fn array_vertices(&self, array: &Array<array_type::Vertex>) -> Result<Vertices, Error> {
+    pub fn array_vertices(&self, array: &Array<array_type::Vertex>) -> Result<Vertices<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Vertex::check(&reader)? {
             schemas::Vertex::F32 => {
@@ -56,7 +59,7 @@ impl Reader {
     pub fn array_segments(
         &self,
         array: &Array<array_type::Segment>,
-    ) -> Result<GenericPrimitives<2>, Error> {
+    ) -> Result<GenericPrimitives<2, R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Segment::check(&reader)? {
             schemas::Segment::U32 => {
@@ -69,7 +72,7 @@ impl Reader {
     pub fn array_triangles(
         &self,
         array: &Array<array_type::Triangle>,
-    ) -> Result<GenericPrimitives<3>, Error> {
+    ) -> Result<GenericPrimitives<3, R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Triangle::check(&reader)? {
             schemas::Triangle::U32 => GenericPrimitives::new(
@@ -80,14 +83,17 @@ impl Reader {
     }
 
     /// Read an [`array_type::Name`](crate::array_type::Name) array.
-    pub fn array_names(&self, array: &Array<array_type::Name>) -> Result<Names, Error> {
+    pub fn array_names(&self, array: &Array<array_type::Name>) -> Result<Names<R>, Error> {
         let reader = self.array_reader(array)?;
         schemas::Name::check(&reader)?;
         reader.iter_column("name").map(Names)
     }
 
     /// Read an [`array_type::Gradient`](crate::array_type::Gradient) array.
-    pub fn array_gradient(&self, array: &Array<array_type::Gradient>) -> Result<Gradient, Error> {
+    pub fn array_gradient(
+        &self,
+        array: &Array<array_type::Gradient>,
+    ) -> Result<Gradient<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Gradient::check(&reader)? {
             schemas::Gradient::Rgba8 => Gradient(reader.iter_multi_column(["r", "g", "b", "a"])?),
@@ -95,7 +101,10 @@ impl Reader {
     }
 
     /// Read an [`array_type::Texcoord`](crate::array_type::Texcoord) array.
-    pub fn array_texcoords(&self, array: &Array<array_type::Texcoord>) -> Result<Texcoords, Error> {
+    pub fn array_texcoords(
+        &self,
+        array: &Array<array_type::Texcoord>,
+    ) -> Result<Texcoords<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Texcoord::check(&reader)? {
             schemas::Texcoord::F32 => {
@@ -111,7 +120,7 @@ impl Reader {
     pub fn array_boundaries(
         &self,
         array: &Array<array_type::Boundary>,
-    ) -> Result<Boundaries, Error> {
+    ) -> Result<Boundaries<R>, Error> {
         let reader = self.array_reader(array)?;
         let m = schemas::Boundary::check(&reader)?;
         let inclusive = reader.iter_column("inclusive")?;
@@ -143,7 +152,7 @@ impl Reader {
     pub fn array_regular_subblocks(
         &self,
         array: &Array<array_type::RegularSubblock>,
-    ) -> Result<RegularSubblocks, Error> {
+    ) -> Result<RegularSubblocks<R>, Error> {
         let reader = self.array_reader(array)?;
         schemas::RegularSubblock::check(&reader)?;
         let parents = reader.iter_multi_column(["parent_u", "parent_v", "parent_w"])?;
@@ -162,7 +171,7 @@ impl Reader {
     pub fn array_freeform_subblocks(
         &self,
         array: &Array<array_type::FreeformSubblock>,
-    ) -> Result<FreeformSubblocks, Error> {
+    ) -> Result<FreeformSubblocks<R>, Error> {
         let reader = self.array_reader(array)?;
         let m = schemas::FreeformSubblock::check(&reader)?;
         let parents = reader.iter_multi_column(["parent_u", "parent_v", "parent_w"])?;
@@ -199,7 +208,7 @@ impl Reader {
     }
 
     /// Read an [`array_type::Number`](crate::array_type::Number) array.
-    pub fn array_numbers(&self, array: &Array<array_type::Number>) -> Result<Numbers, Error> {
+    pub fn array_numbers(&self, array: &Array<array_type::Number>) -> Result<Numbers<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Number::check(&reader)? {
             schemas::Number::F32 => {
@@ -221,7 +230,7 @@ impl Reader {
     }
 
     /// Read an [`array_type::Index`](crate::array_type::Index) array.
-    pub fn array_indices(&self, array: &Array<array_type::Index>) -> Result<Indices, Error> {
+    pub fn array_indices(&self, array: &Array<array_type::Index>) -> Result<Indices<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Index::check(&reader)? {
             schemas::Index::U32 => {
@@ -231,7 +240,7 @@ impl Reader {
     }
 
     /// Read an [`array_type::Vector`](crate::array_type::Vector) array.
-    pub fn array_vectors(&self, array: &Array<array_type::Vector>) -> Result<Vectors, Error> {
+    pub fn array_vectors(&self, array: &Array<array_type::Vector>) -> Result<Vectors<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Vector::check(&reader)? {
             schemas::Vector::F32x2 => Vectors::F32x2(GenericOptionalArrays(
@@ -250,21 +259,21 @@ impl Reader {
     }
 
     /// Read a [`array_type::Text](crate::array_type::Text) array.
-    pub fn array_text(&self, array: &Array<array_type::Text>) -> Result<Text, Error> {
+    pub fn array_text(&self, array: &Array<array_type::Text>) -> Result<Text<R>, Error> {
         let reader = self.array_reader(array)?;
         schemas::Text::check(&reader)?;
         reader.iter_nullable_column("text").map(Text)
     }
 
     /// Read an [`array_type::Boolean`](crate::array_type::Boolean) array.
-    pub fn array_booleans(&self, array: &Array<array_type::Boolean>) -> Result<Booleans, Error> {
+    pub fn array_booleans(&self, array: &Array<array_type::Boolean>) -> Result<Booleans<R>, Error> {
         let reader = self.array_reader(array)?;
         schemas::Boolean::check(&reader)?;
         reader.iter_nullable_column("bool").map(Booleans)
     }
 
     /// Read an [`array_type::Color`](crate::array_type::Color) array.
-    pub fn array_colors(&self, array: &Array<array_type::Color>) -> Result<Colors, Error> {
+    pub fn array_colors(&self, array: &Array<array_type::Color>) -> Result<Colors<R>, Error> {
         let reader = self.array_reader(array)?;
         Ok(match schemas::Color::check(&reader)? {
             schemas::Color::Rgba8 => {

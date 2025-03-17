@@ -1,4 +1,9 @@
-use crate::{error::Error, file::Writer};
+use std::io::{Seek, Write};
+
+use crate::{
+    error::Error,
+    file::{ReadAt, Writer},
+};
 
 use super::{
     objects::{
@@ -8,9 +13,9 @@ use super::{
     Omf1Error,
 };
 
-pub fn vertices_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn vertices_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Key<Vector3Array>,
 ) -> Result<crate::Array<crate::array_type::Vertex>, Error> {
     let mut iter = HoldError::new(
@@ -22,9 +27,9 @@ pub fn vertices_array(
     Ok(array)
 }
 
-pub fn scalars_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn scalars_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array_key: &Key<ScalarArray>,
 ) -> Result<crate::Array<crate::array_type::Scalar>, Error> {
     let array = &r.model(array_key)?.array;
@@ -47,7 +52,10 @@ pub enum ScalarValues {
     Int(Vec<i64>),
 }
 
-pub fn load_scalars(r: &Omf1Reader, array: &ScalarArray) -> Result<ScalarValues, Error> {
+pub fn load_scalars<R: ReadAt>(
+    r: &Omf1Reader<R>,
+    array: &ScalarArray,
+) -> Result<ScalarValues, Error> {
     if array.array.dtype == DataType::Float {
         let mut iter = items(r, &array.array, |b| Ok(f64::from_le_bytes(b)))?;
         let out = iter.by_ref().collect();
@@ -61,9 +69,9 @@ pub fn load_scalars(r: &Omf1Reader, array: &ScalarArray) -> Result<ScalarValues,
     }
 }
 
-pub fn numbers_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn numbers_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array_key: &Key<ScalarArray>,
 ) -> Result<crate::Array<crate::array_type::Number>, Error> {
     let array = &r.model(array_key)?.array;
@@ -80,9 +88,9 @@ pub fn numbers_array(
     }
 }
 
-pub fn segments_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn segments_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Key<Int2Array>,
 ) -> Result<crate::Array<crate::array_type::Segment>, Error> {
     let mut iter = items(r, &r.model(array)?.array, segment_from_le_bytes)?;
@@ -91,9 +99,9 @@ pub fn segments_array(
     Ok(array)
 }
 
-pub fn triangles_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn triangles_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Key<Int3Array>,
 ) -> Result<crate::Array<crate::array_type::Triangle>, Error> {
     let mut iter = items(r, &r.model(array)?.array, triangle_from_le_bytes)?;
@@ -102,9 +110,9 @@ pub fn triangles_array(
     Ok(array)
 }
 
-pub fn color_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn color_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Int3Array,
 ) -> Result<crate::Array<crate::array_type::Color>, Error> {
     let mut iter = items(r, &array.array, color_from_le_bytes)?;
@@ -113,9 +121,9 @@ pub fn color_array(
     Ok(array)
 }
 
-pub fn vectors2_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn vectors2_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Key<Vector2Array>,
 ) -> Result<crate::Array<crate::array_type::Vector>, Error> {
     let mut iter = items(r, &r.model(array)?.array, |b| {
@@ -126,9 +134,9 @@ pub fn vectors2_array(
     Ok(array)
 }
 
-pub fn vectors3_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn vectors3_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array: &Key<Vector3Array>,
 ) -> Result<crate::Array<crate::array_type::Vector>, Error> {
     let mut iter = items(r, &r.model(array)?.array, |b| {
@@ -139,9 +147,9 @@ pub fn vectors3_array(
     Ok(array)
 }
 
-pub fn index_array(
-    r: &Omf1Reader,
-    w: &mut Writer,
+pub fn index_array<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     array_key: &Key<ScalarArray>,
 ) -> Result<(u32, crate::Array<crate::array_type::Index>), Error> {
     let array = &r.model(array_key)?.array;
@@ -171,8 +179,8 @@ pub fn index_array(
     Ok((maximum, array))
 }
 
-fn items<T, const N: usize>(
-    r: &Omf1Reader,
+fn items<T, const N: usize, R: ReadAt>(
+    r: &Omf1Reader<R>,
     array: &Array,
     mut func: impl FnMut([u8; N]) -> Result<T, Error>,
 ) -> Result<HoldError<impl Iterator<Item = Result<T, Error>>, Error>, Error>

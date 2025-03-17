@@ -1,4 +1,9 @@
-use crate::{error::Error, file::Writer};
+use std::io::{Seek, Write};
+
+use crate::{
+    error::Error,
+    file::{ReadAt, Writer},
+};
 
 use super::{
     array::{color_array, index_array, numbers_array, vectors2_array, vectors3_array},
@@ -9,7 +14,11 @@ use super::{
 };
 
 impl ScalarData {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         attribute(
             &self.content,
             self.location,
@@ -26,7 +35,11 @@ impl ScalarData {
 }
 
 impl DateTimeData {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         attribute(
             &self.content,
             self.location,
@@ -43,7 +56,11 @@ impl DateTimeData {
 }
 
 impl Vector2Data {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         attribute(
             &self.content,
             self.location,
@@ -55,7 +72,11 @@ impl Vector2Data {
 }
 
 impl Vector3Data {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         attribute(
             &self.content,
             self.location,
@@ -67,7 +88,11 @@ impl Vector3Data {
 }
 
 impl ColorData {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         match r.model(&self.array)? {
             ColorArrayModel::Int3Array(array) => attribute(
                 &self.content,
@@ -89,7 +114,11 @@ impl ColorData {
 }
 
 impl StringData {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         let strings = &r.model(&self.array)?.array;
         attribute(
             &self.content,
@@ -108,7 +137,11 @@ impl StringData {
 }
 
 impl MappedData {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         let (max_index, values) = index_array(r, w, &self.array)?;
         let mut handler = CategoryHandler::new(max_index);
         for key in &self.legends {
@@ -125,7 +158,11 @@ impl MappedData {
 }
 
 impl ImageTexture {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::Attribute, Error> {
+    pub fn convert<W: Write + Seek, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::Attribute, Error> {
         let (u, width) = projection_axis(self.axis_u);
         let (v, height) = projection_axis(self.axis_v);
         Ok(crate::Attribute {
@@ -149,7 +186,11 @@ impl ImageTexture {
 }
 
 impl ScalarColormap {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::NumberColormap, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::NumberColormap, Error> {
         let [min, max] = self.limits;
         Ok(crate::NumberColormap::Continuous {
             range: (min, max).into(),
@@ -159,7 +200,11 @@ impl ScalarColormap {
 }
 
 impl DateTimeColormap {
-    pub fn convert(&self, r: &Omf1Reader, w: &mut Writer) -> Result<crate::NumberColormap, Error> {
+    pub fn convert<W: Write + Seek + Send, R: ReadAt>(
+        &self,
+        r: &Omf1Reader<R>,
+        w: &mut Writer<W>,
+    ) -> Result<crate::NumberColormap, Error> {
         let [min, max] = self.limits;
         Ok(crate::NumberColormap::Continuous {
             range: (min, max).into(),
@@ -168,9 +213,9 @@ impl DateTimeColormap {
     }
 }
 
-fn gradient(
-    r: &Omf1Reader,
-    w: &mut Writer,
+fn gradient<W: Write + Seek + Send, R: ReadAt>(
+    r: &Omf1Reader<R>,
+    w: &mut Writer<W>,
     colors: &Key<ColorArray>,
 ) -> Result<crate::Array<crate::array_type::Gradient>, Error> {
     w.array_gradient(
