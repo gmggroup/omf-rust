@@ -106,3 +106,4 @@ nav:
     - 'Rust': 'rust/omf/index.html'
     - 'Python':
         - 'python/index.md'
+        - 'python/full_api.md'
