@@ -68,4 +68,4 @@ class TestGeometrySurface(TestCase):
         surface = project.elements()[0]
 
         # Then
-        self.assertEqual([255, 255, 0, 255], surface.color)
+        self.assertEqual((255, 255, 0, 255), surface.color)

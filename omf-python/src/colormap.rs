@@ -1,6 +1,6 @@
 use crate::array::{PyBoundaryArray, PyGradientArray};
 use omf::{NumberColormap, NumberRange};
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use pyo3_stub_gen::derive::*;
 
 macro_rules! number_colormap_field {
@@ -28,12 +28,12 @@ pub struct PyNumberColormapContinuous(pub NumberColormap);
 #[pymethods]
 impl PyNumberColormapContinuous {
     /// Value range.
-    fn range(&self, py: Python<'_>) -> PyObject {
+    fn range(&self, py: Python<'_>) -> PyResult<PyObject> {
         match *number_colormap_field!(self, Continuous::range) {
-            NumberRange::Float { min, max, .. } => (min, max).into_py(py),
-            NumberRange::Integer { min, max, .. } => (min, max).into_py(py),
-            NumberRange::Date { min, max, .. } => (min, max).into_py(py),
-            NumberRange::DateTime { min, max, .. } => (min, max).into_py(py),
+            NumberRange::Float { min, max, .. } => (min, max).into_py_any(py),
+            NumberRange::Integer { min, max, .. } => (min, max).into_py_any(py),
+            NumberRange::Date { min, max, .. } => (min, max).into_py_any(py),
+            NumberRange::DateTime { min, max, .. } => (min, max).into_py_any(py),
         }
     }
 
