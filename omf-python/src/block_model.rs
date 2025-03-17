@@ -126,7 +126,7 @@ pub struct PyBlockModel(pub BlockModel);
 impl PyBlockModel {
     #[getter]
     /// Orientation of the block model.
-    const fn orient(&self) -> PyOrient3 {
+    fn orient(&self) -> PyOrient3 {
         PyOrient3(self.0.orient)
     }
 

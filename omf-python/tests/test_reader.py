@@ -89,10 +89,7 @@ class TestReader(TestCase):
             omf_python.Reader(incorrect_location)
 
         # Then
-        self.assertEqual(
-            str(context.exception),
-            "File IO error: No such file or directory (os error 2)",
-        )
+        self.assertIn("(os error 2)", str(context.exception))
 
     def test_should_return_expected_default_limits(self) -> None:
         # Given

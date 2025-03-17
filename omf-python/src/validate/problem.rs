@@ -25,7 +25,7 @@ impl PyProblem {
     }
 
     #[getter]
-    const fn field(&self) -> Option<&str> {
+    fn field(&self) -> Option<&str> {
         self.0.field
     }
 
