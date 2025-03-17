@@ -1,5 +1,5 @@
 use omf::{BlockModel, SubblockMode, Subblocks};
-use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
 
 use crate::{

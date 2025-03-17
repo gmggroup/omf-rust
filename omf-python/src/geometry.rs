@@ -1,6 +1,6 @@
 use numpy::PyArray1;
 use omf::{GridSurface, LineSet, PointSet, Surface};
-use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
 
 use crate::{

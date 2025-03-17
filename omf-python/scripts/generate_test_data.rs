@@ -1,14 +1,14 @@
 use chrono::{DateTime, NaiveDate};
-use flate2::{read::GzDecoder, Compression, GzBuilder};
+use flate2::{Compression, GzBuilder, read::GzDecoder};
 use omf::{file::Writer, *};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::{
-    fs::{remove_file, File, OpenOptions},
+    fs::{File, OpenOptions, remove_file},
     io::{Read, Write},
     path::Path,
     str::FromStr,
 };
-use zip::{read::ZipArchive, write::SimpleFileOptions, ZipWriter};
+use zip::{ZipWriter, read::ZipArchive, write::SimpleFileOptions};
 
 fn continuous_colormap() {
     let mut writer = Writer::new(create_file("tests/data/continuous_colormap.omf", b"")).unwrap();

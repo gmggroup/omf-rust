@@ -2,7 +2,7 @@ use std::path::Path;
 
 use omf::{
     file::Compression,
-    omf1::{detect_open as omf1_detect_open, Converter},
+    omf1::{Converter, detect_open as omf1_detect_open},
 };
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;

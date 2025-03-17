@@ -1,4 +1,4 @@
-use omf::{array_type, Array};
+use omf::{Array, array_type};
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 

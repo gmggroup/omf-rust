@@ -3,9 +3,9 @@ use std::fs::File;
 use chrono::{DateTime, NaiveDate, Utc};
 use itertools::Itertools as _;
 use numpy::{
-    datetime::{units, Datetime},
-    ndarray::Array,
     Element, IntoPyArray as _, PyArray, PyArray1, PyArray2,
+    datetime::{Datetime, units},
+    ndarray::Array,
 };
 use omf::{
     data::{
@@ -16,7 +16,7 @@ use omf::{
     error::Error::{self, IoError},
     file::{Limits, ReadAt, Reader},
 };
-use pyo3::{exceptions::PyRuntimeError, prelude::*, types::PyBytes, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, exceptions::PyRuntimeError, prelude::*, types::PyBytes};
 use pyo3_stub_gen::derive::*;
 
 use crate::{

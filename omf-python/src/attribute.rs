@@ -1,5 +1,5 @@
 use omf::{Attribute, AttributeData, Location, NumberColormap};
-use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
 use serde_pyobject::to_pyobject;
 

@@ -1,5 +1,5 @@
 use omf::error::Error;
-use pyo3::{create_exception, exceptions::PyException, PyErr};
+use pyo3::{PyErr, create_exception, exceptions::PyException};
 use pyo3_stub_gen::{inventory, type_info::PyClassInfo};
 
 // Because pyo3-stub-gen doesn't generate doc strings for exceptions
