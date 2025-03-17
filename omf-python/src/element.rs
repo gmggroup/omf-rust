@@ -2,7 +2,6 @@ use crate::attribute::PyAttribute;
 use crate::block_model::PyBlockModel;
 use crate::errors::{OmfJsonException, OmfNotSupportedException};
 use crate::geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
-use omf::Color;
 use omf::Element;
 use omf::Geometry;
 use pyo3::{prelude::*, IntoPyObjectExt};
@@ -65,7 +64,7 @@ impl PyElement {
 
     #[getter]
     /// Optional solid color.
-    const fn color(&self) -> Option<Color> {
-        self.0.color
+    fn color(&self) -> Option<(u8, u8, u8, u8)> {
+        self.0.color.as_ref().map(|&[r, g, b, a]| (r, g, b, a))
     }
 }
