@@ -17,7 +17,7 @@ use omf::data::{
 };
 use omf::date_time;
 use omf::error::Error::{self, IoError};
-use omf::file::{Limits, Reader};
+use omf::file::{Limits, ReadAt, Reader};
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::types::PyBytes;
 use pyo3::{prelude::*, IntoPyObjectExt};
@@ -576,9 +576,9 @@ impl PyReader {
     }
 }
 
-fn convert_boundaries<'py, T>(
+fn convert_boundaries<'py, T, R: ReadAt>(
     py: Python<'py>,
-    boundaries: GenericBoundaries<T>,
+    boundaries: GenericBoundaries<T, R>,
 ) -> PyResult<Vec<(PyObject, PyBoundaryType)>>
 where
     T: NumberType,
