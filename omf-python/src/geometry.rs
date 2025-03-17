@@ -1,12 +1,12 @@
+use numpy::PyArray1;
+use omf::{GridSurface, LineSet, PointSet, Surface};
+use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3_stub_gen::derive::*;
+
 use crate::{
     array::{PyScalarArray, PySegmentArray, PyTriangleArray, PyVertexArray},
     grid::{PyGrid2Regular, PyGrid2Tensor, PyOrient2},
 };
-use numpy::PyArray1;
-use omf::{GridSurface, LineSet, PointSet, Surface};
-
-use pyo3::{prelude::*, IntoPyObjectExt};
-use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass]
 #[pyclass(name = "PointSet")]

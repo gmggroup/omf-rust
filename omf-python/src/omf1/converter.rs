@@ -1,13 +1,13 @@
-use crate::errors::OmfException;
-use crate::file::reader::PyLimits;
-use crate::validate::PyProblem;
-use omf::file::Compression;
-use omf::omf1::detect_open as omf1_detect_open;
-use omf::omf1::Converter;
+use std::path::Path;
+
+use omf::{
+    file::Compression,
+    omf1::{detect_open as omf1_detect_open, Converter},
+};
 use pyo3::prelude::*;
 use pyo3_stub_gen::derive::*;
 
-use std::path::Path;
+use crate::{errors::OmfException, file::reader::PyLimits, validate::PyProblem};
 
 #[gen_stub_pyfunction()]
 #[pyfunction]

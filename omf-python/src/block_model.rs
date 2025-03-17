@@ -1,12 +1,11 @@
 use omf::{BlockModel, SubblockMode, Subblocks};
+use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3_stub_gen::derive::*;
 
 use crate::{
     array::{PyFreeformSubblockArray, PyRegularSubblockArray},
     grid::{PyGrid3Regular, PyGrid3Tensor, PyOrient3},
 };
-
-use pyo3::{prelude::*, IntoPyObjectExt};
-use pyo3_stub_gen::derive::*;
 
 #[gen_stub_pyclass_enum]
 #[pyclass(eq, eq_int, name = "SubblockMode")]
