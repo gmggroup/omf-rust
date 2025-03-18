@@ -104,6 +104,4 @@ nav:
             - 'c/examples/attributes.md'
             - 'c/examples/textures.md'
     - 'Rust': 'rust/omf/index.html'
-    - 'Python':
-        - 'python/index.md'
-        - 'python/full_api.md'
+    - 'Python': 'python/index.md'

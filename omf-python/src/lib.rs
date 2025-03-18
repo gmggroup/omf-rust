@@ -2,7 +2,7 @@
 //! a standard for mining data interchange backed by the
 //! [Global Mining Guidelines Group](https://gmggroup.org).
 //!
-//! > **The Python bindings are incomplete:**
+//! > **Python bindings are incomplete:**
 //! > The ability to read OMF2 files is present, and to convert OMF1 files to OMF2,
 //! > but not the ability to write files. The composite element is also not yet supported.
 //!
