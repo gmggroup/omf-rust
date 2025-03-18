@@ -84,7 +84,7 @@ mod schema_doc;
 pub mod validate;
 mod version;
 
-pub use array::{array_type, Array, ArrayType, DataType};
+pub use array::{Array, ArrayType, DataType, array_type};
 pub use attribute::{Attribute, AttributeData, Location};
 pub use block_model::{BlockModel, SubblockMode, Subblocks};
 pub use colormap::{NumberColormap, NumberRange};
@@ -94,8 +94,9 @@ pub use grid::{Grid2, Grid3, Orient2, Orient3};
 pub use project::Project;
 pub use schema::json_schema;
 pub use version::{
-    crate_full_name, format_full_name, format_version, CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION,
-    FORMAT_NAME, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
+    CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION, FORMAT_NAME, FORMAT_VERSION_MAJOR,
+    FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE, crate_full_name, format_full_name,
+    format_version,
 };
 
 /// A 3D vector with `f64` components.

@@ -1,7 +1,7 @@
 use std::{ffi::c_char, fs::File, ptr::null};
 
 use crate::{
-    error::{set_error, Error},
+    error::{Error, set_error},
     ffi_tools::{arg::not_null_mut, catch},
 };
 
@@ -154,12 +154,12 @@ pub(crate) fn scalars32_new(iter: omf::data::GenericScalars<f32, File>) -> *mut 
     alloc(Scalars32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_scalars32_free(iter: *mut Scalars32) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_scalars32_next(iter: *mut Scalars32, value: *mut f32) -> bool {
     catch::error_only(|| next_simple(inner!(iter), value)).unwrap_or(false)
 }
@@ -172,12 +172,12 @@ pub(crate) fn scalars64_new(iter: omf::data::Scalars<File>) -> *mut Scalars64 {
     alloc(Scalars64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_scalars64_free(iter: *mut Scalars64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_scalars64_next(iter: *mut Scalars64, value: *mut f64) -> bool {
     catch::error_only(|| next_simple(inner!(iter), value)).unwrap_or(false)
 }
@@ -190,11 +190,11 @@ pub(crate) fn vertices32_new(iter: omf::data::GenericArrays<f32, 3, File>) -> *m
     alloc(Vertices32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vertices32_free(iter: *mut Vertices32) {
     free(iter);
 }
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vertices32_next(iter: *mut Vertices32, value: *mut f32) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -207,12 +207,12 @@ pub(crate) fn vertices64_new(iter: omf::data::Vertices<File>) -> *mut Vertices64
     alloc(Vertices64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vertices64_free(iter: *mut Vertices64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vertices64_next(iter: *mut Vertices64, value: *mut f64) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -225,12 +225,12 @@ pub(crate) fn segments_new(iter: omf::data::GenericPrimitives<2, File>) -> *mut 
     alloc(Segments(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_segments_free(iter: *mut Segments) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_segments_next(iter: *mut Segments, value: *mut u32) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -242,12 +242,12 @@ pub(crate) fn triangles_new(iter: omf::data::GenericPrimitives<3, File>) -> *mut
     alloc(Triangles(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_triangles_free(iter: *mut Triangles) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_triangles_next(iter: *mut Triangles, value: *mut u32) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -259,12 +259,12 @@ pub(crate) fn gradient_new(iter: omf::data::Gradient<File>) -> *mut Gradient {
     alloc(Gradient(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_gradient_free(iter: *mut Gradient) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_gradient_next(iter: *mut Gradient, value: *mut u8) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -277,12 +277,12 @@ pub(crate) fn texcoords32_new(iter: omf::data::GenericArrays<f32, 2, File>) -> *
     alloc(Texcoords32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_texcoords32_free(iter: *mut Texcoords32) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_texcoords32_next(iter: *mut Texcoords32, value: *mut f32) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -295,12 +295,12 @@ pub(crate) fn texcoords64_new(iter: omf::data::Texcoords<File>) -> *mut Texcoord
     alloc(Texcoords64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_texcoords64_free(iter: *mut Texcoords64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_texcoords64_next(iter: *mut Texcoords64, value: *mut f64) -> bool {
     catch::error_only(|| next_wide(inner!(iter), value)).unwrap_or(false)
 }
@@ -315,12 +315,12 @@ pub(crate) fn boundaries_float64_new(
     alloc(BoundariesFloat64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_float64_free(iter: *mut BoundariesFloat64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_float64_next(
     iter: *mut BoundariesFloat64,
     value: *mut f64,
@@ -339,12 +339,12 @@ pub(crate) fn boundaries_float32_new(
     alloc(BoundariesFloat32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_float32_free(iter: *mut BoundariesFloat32) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_float32_next(
     iter: *mut BoundariesFloat32,
     value: *mut f32,
@@ -361,12 +361,12 @@ pub(crate) fn boundaries_int64_new(iter: omf::data::BoundariesI64<File>) -> *mut
     alloc(BoundariesInt64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_int64_free(iter: *mut BoundariesInt64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_boundaries_int64_next(
     iter: *mut BoundariesInt64,
     value: *mut i64,
@@ -385,12 +385,12 @@ pub(crate) fn numbers_float32_new(
     alloc(NumbersFloat32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_float32_free(iter: *mut NumbersFloat32) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_float32_next(
     iter: *mut NumbersFloat32,
     value: *mut f32,
@@ -407,12 +407,12 @@ pub(crate) fn numbers_float64_new(iter: omf::data::NumbersF64<File>) -> *mut Num
     alloc(NumbersFloat64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_float64_free(iter: *mut NumbersFloat64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_float64_next(
     iter: *mut NumbersFloat64,
     value: *mut f64,
@@ -429,12 +429,12 @@ pub(crate) fn numbers_int64_new(iter: omf::data::NumbersI64<File>) -> *mut Numbe
     alloc(NumbersInt64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_int64_free(iter: *mut NumbersInt64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_numbers_int64_next(
     iter: *mut NumbersInt64,
     value: *mut i64,
@@ -451,12 +451,12 @@ pub(crate) fn indices_new(iter: omf::data::Indices<File>) -> *mut Indices {
     alloc(Indices(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_indices_free(iter: *mut Indices) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_indices_next(
     iter: *mut Indices,
     value: *mut u32,
@@ -473,12 +473,12 @@ pub(crate) fn booleans_new(iter: omf::data::Booleans<File>) -> *mut Booleans {
     alloc(Booleans(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_booleans_free(iter: *mut Booleans) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_booleans_next(
     iter: *mut Booleans,
     value: *mut bool,
@@ -494,12 +494,12 @@ pub(crate) fn colors_new(iter: omf::data::Colors<File>) -> *mut Colors {
     alloc(Colors(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_colors_free(iter: *mut Colors) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_omf_colors_next(
     iter: *mut Colors,
     value: *mut u8,
@@ -522,12 +522,12 @@ pub(crate) fn names_new(iter: omf::data::Names<File>) -> *mut Names {
     }))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_names_free(iter: *mut Names) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_names_next(
     iter: *mut Names,
     value: *mut *const c_char,
@@ -564,12 +564,12 @@ pub(crate) fn text_new(iter: omf::data::Text<File>) -> *mut Text {
     }))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_text_free(iter: *mut Text) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_text_next(
     iter: *mut Text,
     value: *mut *const c_char,
@@ -607,12 +607,12 @@ pub(crate) fn regular_subblocks_new(
     alloc(RegularSubblocks(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_regular_subblocks_free(iter: *mut RegularSubblocks) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_regular_subblocks_next(
     iter: *mut RegularSubblocks,
     parent_index: *mut u32,
@@ -646,12 +646,12 @@ pub(crate) fn freeform_subblocks32_new(
     alloc(FreeformSubblocks32(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_freeform_subblocks32_free(iter: *mut FreeformSubblocks32) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_freeform_subblocks32_next(
     iter: *mut FreeformSubblocks32,
     parent_index: *mut u32,
@@ -685,12 +685,12 @@ pub(crate) fn freeform_subblocks64_new(
     alloc(FreeformSubblocks64(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_freeform_subblocks64_free(iter: *mut FreeformSubblocks64) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_freeform_subblocks64_next(
     iter: *mut FreeformSubblocks64,
     parent_index: *mut u32,
@@ -722,12 +722,12 @@ pub(crate) fn vectors64x3_new(iter: omf::data::Vectors<File>) -> *mut Vectors64x
     alloc(Vectors64x3(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors64x3_free(iter: *mut Vectors64x3) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors64x3_next(
     iter: *mut Vectors64x3,
     value: *mut f64,
@@ -754,12 +754,12 @@ pub(crate) fn vectors32x3_new(iter: omf::data::Vectors<File>) -> *mut Vectors32x
     alloc(Vectors32x3(vec32_iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors32x3_free(iter: *mut Vectors32x3) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors32x3_next(
     iter: *mut Vectors32x3,
     value: *mut f32,
@@ -797,12 +797,12 @@ pub(crate) fn vectors64x2_new(iter: omf::data::Vectors<File>) -> *mut Vectors64x
     alloc(Vectors64x2(vec32_iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors64x2_free(iter: *mut Vectors64x2) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors64x2_next(
     iter: *mut Vectors64x2,
     value: *mut f64,
@@ -830,12 +830,12 @@ pub(crate) fn vectors32x2_new(
     alloc(Vectors32x2(iter))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors32x2_free(iter: *mut Vectors32x2) {
     free(iter);
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_vectors32x2_next(
     iter: *mut Vectors32x2,
     value: *mut f32,

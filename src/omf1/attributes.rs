@@ -124,13 +124,12 @@ impl StringData {
             &self.content,
             self.location,
             crate::AttributeData::Text {
-                values: w.array_text(strings.iter().cloned().map(|s| {
-                    if s.is_empty() {
-                        None
-                    } else {
-                        Some(s)
-                    }
-                }))?,
+                values: w.array_text(
+                    strings
+                        .iter()
+                        .cloned()
+                        .map(|s| if s.is_empty() { None } else { Some(s) }),
+                )?,
             },
         )
     }

@@ -1,28 +1,35 @@
-use crate::array::{
-    PyBooleanArray, PyBoundaryArray, PyColorArray, PyFreeformSubblockArray, PyGradientArray,
-    PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PyRegularSubblockArray, PyScalarArray,
-    PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
-};
-use crate::errors::OmfException;
-use crate::validate::PyProblem;
-use crate::PyProject;
+use std::fs::File;
+
 use chrono::{DateTime, NaiveDate, Utc};
 use itertools::Itertools as _;
-use numpy::datetime::{units, Datetime};
-use numpy::ndarray::Array;
-use numpy::{Element, IntoPyArray as _, PyArray, PyArray1, PyArray2};
-use omf::data::{
-    Boundaries, Boundary, GenericBoundaries, NumberType, Numbers, Scalars, Texcoords, Vectors,
-    Vertices,
+use numpy::{
+    Element, IntoPyArray as _, PyArray, PyArray1, PyArray2,
+    datetime::{Datetime, units},
+    ndarray::Array,
 };
-use omf::date_time;
-use omf::error::Error::{self, IoError};
-use omf::file::{Limits, ReadAt, Reader};
-use pyo3::exceptions::PyRuntimeError;
-use pyo3::types::PyBytes;
-use pyo3::{prelude::*, IntoPyObjectExt};
+use omf::{
+    data::{
+        Boundaries, Boundary, GenericBoundaries, NumberType, Numbers, Scalars, Texcoords, Vectors,
+        Vertices,
+    },
+    date_time,
+    error::Error::{self, IoError},
+    file::{Limits, ReadAt, Reader},
+};
+use pyo3::{IntoPyObjectExt, exceptions::PyRuntimeError, prelude::*, types::PyBytes};
 use pyo3_stub_gen::derive::*;
-use std::fs::File;
+
+use crate::{
+    array::{
+        PyBooleanArray, PyBoundaryArray, PyColorArray, PyFreeformSubblockArray, PyGradientArray,
+        PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PyRegularSubblockArray,
+        PyScalarArray, PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray,
+        PyVectorArray, PyVertexArray,
+    },
+    errors::OmfException,
+    project::PyProject,
+    validate::PyProblem,
+};
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Limits")]

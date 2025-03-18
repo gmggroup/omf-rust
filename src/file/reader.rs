@@ -6,15 +6,14 @@ use std::{
 use flate2::read::GzDecoder;
 
 use crate::{
-    array,
+    FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE, Project, array,
     error::{Error, Limit},
     validate::{Problems, Validate, Validator},
-    Project, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
 };
 
 use super::{
-    zip_container::{Archive, INDEX_NAME},
     ReadAt, SubFile,
+    zip_container::{Archive, INDEX_NAME},
 };
 
 pub const DEFAULT_VALIDATION_LIMIT: u32 = 100;

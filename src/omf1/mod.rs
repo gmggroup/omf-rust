@@ -47,6 +47,6 @@ mod reader;
 
 #[cfg(not(target_family = "wasm"))]
 pub use converter::detect_open;
-pub use converter::{detect, Converter};
+pub use converter::{Converter, detect};
 pub use error::Omf1Error;
 pub use model::ModelType;

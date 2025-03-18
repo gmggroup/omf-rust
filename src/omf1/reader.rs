@@ -12,9 +12,9 @@ use crate::{
 };
 
 use super::{
+    Omf1Error,
     model::{FromModel, Model},
     objects::{Array, Image, Key, Project},
-    Omf1Error,
 };
 
 /// The OMF1 file loader.
@@ -94,7 +94,7 @@ fn read_header(read: &mut impl Read) -> Result<(Key<Project>, u64, String), Erro
     match read.read_exact(&mut header) {
         Ok(_) => (),
         Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => {
-            return Err(Omf1Error::NotOmf1.into())
+            return Err(Omf1Error::NotOmf1.into());
         }
         Err(e) => return Err(e.into()),
     };

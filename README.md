@@ -1,5 +1,4 @@
 [![CI](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml)
-[![Audit](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml)
 
 # OMF
 
@@ -59,6 +58,8 @@ or the parent blocks vs. sub-blocks of a block model.
 ## Compiling
 
 First [install Rust](https://www.rust-lang.org/tools/install).
+The minimum supported Rust version is 1.85.
+
 Run `cargo build --all --release` in the root directory to build the release version of the Rust
 crate and C wrapper.
 The C wrapper build will place `omf.h` and the platform-specific shared library files

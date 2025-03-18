@@ -1,10 +1,9 @@
 use crate::{
-    array_type,
+    Array, ArrayType, array_type,
     data::*,
     error::{Error, InvalidData},
     file::{ReadAt, SubFile},
     pqarray::PqArrayReader,
-    Array, ArrayType,
 };
 
 use super::{super::Reader, schemas};

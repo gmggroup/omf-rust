@@ -62,8 +62,6 @@
 //! such as the vertices vs. faces of a surface,
 //! or the parent blocks vs. sub-blocks of a block model.
 
-use block_model::{PyBlockModel, PyFreeformSubblocks, PyRegularSubblocks, PySubblockMode};
-use grid::{PyGrid2Regular, PyGrid2Tensor, PyGrid3Regular, PyGrid3Tensor, PyOrient2, PyOrient3};
 use pyo3::prelude::*;
 use pyo3_stub_gen::{define_stub_info_gatherer, derive::*};
 
@@ -80,28 +78,6 @@ mod omf1;
 mod project;
 mod validate;
 
-use array::{
-    PyBooleanArray, PyBoundaryArray, PyColorArray, PyFreeformSubblockArray, PyGradientArray,
-    PyImageArray, PyIndexArray, PyNameArray, PyNumberArray, PyRegularSubblockArray, PyScalarArray,
-    PySegmentArray, PyTexcoordArray, PyTextArray, PyTriangleArray, PyVectorArray, PyVertexArray,
-};
-use attribute::{
-    PyAttribute, PyAttributeDataBoolean, PyAttributeDataCategory, PyAttributeDataColor,
-    PyAttributeDataMappedTexture, PyAttributeDataNumber, PyAttributeDataProjectedTexture,
-    PyAttributeDataText, PyAttributeDataVector, PyLocation,
-};
-use colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
-use element::PyElement;
-use errors::{
-    OmfException, OmfFileIoException, OmfInvalidDataException, OmfJsonException,
-    OmfLimitExceededException, OmfNotSupportedException, OmfValidationFailedException,
-};
-use file::reader::{PyBoundaryType, PyLimits, PyReader};
-use geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
-use omf1::converter::{detect_omf1, PyOmf1Converter};
-use project::PyProject;
-use validate::PyProblem;
-
 /// Returns the version of the library
 #[gen_stub_pyfunction]
 #[pyfunction]
@@ -112,78 +88,84 @@ fn version() -> String {
 /// This module provides python bindings for omf-rust.
 #[pymodule]
 fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<PyAttribute>()?;
-    m.add_class::<PyAttributeDataBoolean>()?;
-    m.add_class::<PyAttributeDataCategory>()?;
-    m.add_class::<PyAttributeDataColor>()?;
-    m.add_class::<PyAttributeDataMappedTexture>()?;
-    m.add_class::<PyAttributeDataNumber>()?;
-    m.add_class::<PyAttributeDataProjectedTexture>()?;
-    m.add_class::<PyAttributeDataText>()?;
-    m.add_class::<PyAttributeDataVector>()?;
-    m.add_class::<PyBooleanArray>()?;
-    m.add_class::<PyBoundaryArray>()?;
-    m.add_class::<PyColorArray>()?;
-    m.add_class::<PyImageArray>()?;
-    m.add_class::<PyIndexArray>()?;
-    m.add_class::<PyGradientArray>()?;
-    m.add_class::<PyLocation>()?;
-    m.add_class::<PyNumberArray>()?;
-    m.add_class::<PyNumberColormapContinuous>()?;
-    m.add_class::<PyNumberColormapDiscrete>()?;
-    m.add_class::<PyTextArray>()?;
-    m.add_class::<PyVectorArray>()?;
-    m.add_class::<PyScalarArray>()?;
-    m.add_class::<PySegmentArray>()?;
-    m.add_class::<PyVertexArray>()?;
-    m.add_class::<PyTexcoordArray>()?;
-    m.add_class::<PyTriangleArray>()?;
-    m.add_class::<PyRegularSubblockArray>()?;
-    m.add_class::<PyFreeformSubblockArray>()?;
-    m.add_class::<PyRegularSubblocks>()?;
-    m.add_class::<PyFreeformSubblocks>()?;
-    m.add_class::<PySubblockMode>()?;
-    m.add_class::<PyNameArray>()?;
-    m.add_class::<PyElement>()?;
-    m.add_class::<PyGrid2Regular>()?;
-    m.add_class::<PyGrid2Tensor>()?;
-    m.add_class::<PyGrid3Regular>()?;
-    m.add_class::<PyGrid3Tensor>()?;
-    m.add_class::<PyOrient2>()?;
-    m.add_class::<PyOrient3>()?;
-    m.add_class::<PyBlockModel>()?;
-    m.add_class::<PyGridSurface>()?;
-    m.add_class::<PyPointSet>()?;
-    m.add_class::<PyLineSet>()?;
-    m.add_class::<PyProject>()?;
-    m.add_class::<PyProblem>()?;
-    m.add_class::<PyReader>()?;
-    m.add_class::<PySurface>()?;
-    m.add_class::<PyLimits>()?;
-    m.add_class::<PyBoundaryType>()?;
-    m.add_class::<PyOmf1Converter>()?;
+    m.add_class::<array::PyBooleanArray>()?;
+    m.add_class::<array::PyBoundaryArray>()?;
+    m.add_class::<array::PyColorArray>()?;
+    m.add_class::<array::PyFreeformSubblockArray>()?;
+    m.add_class::<array::PyGradientArray>()?;
+    m.add_class::<array::PyImageArray>()?;
+    m.add_class::<array::PyIndexArray>()?;
+    m.add_class::<array::PyNameArray>()?;
+    m.add_class::<array::PyNumberArray>()?;
+    m.add_class::<array::PyRegularSubblockArray>()?;
+    m.add_class::<array::PyScalarArray>()?;
+    m.add_class::<array::PySegmentArray>()?;
+    m.add_class::<array::PyTexcoordArray>()?;
+    m.add_class::<array::PyTextArray>()?;
+    m.add_class::<array::PyTriangleArray>()?;
+    m.add_class::<array::PyVectorArray>()?;
+    m.add_class::<array::PyVertexArray>()?;
+    m.add_class::<attribute::PyAttribute>()?;
+    m.add_class::<attribute::PyAttributeDataBoolean>()?;
+    m.add_class::<attribute::PyAttributeDataCategory>()?;
+    m.add_class::<attribute::PyAttributeDataColor>()?;
+    m.add_class::<attribute::PyAttributeDataMappedTexture>()?;
+    m.add_class::<attribute::PyAttributeDataNumber>()?;
+    m.add_class::<attribute::PyAttributeDataProjectedTexture>()?;
+    m.add_class::<attribute::PyAttributeDataText>()?;
+    m.add_class::<attribute::PyAttributeDataVector>()?;
+    m.add_class::<attribute::PyLocation>()?;
+    m.add_class::<block_model::PyBlockModel>()?;
+    m.add_class::<block_model::PyFreeformSubblocks>()?;
+    m.add_class::<block_model::PyRegularSubblocks>()?;
+    m.add_class::<block_model::PySubblockMode>()?;
+    m.add_class::<colormap::PyNumberColormapContinuous>()?;
+    m.add_class::<colormap::PyNumberColormapDiscrete>()?;
+    m.add_class::<element::PyElement>()?;
+    m.add_class::<file::reader::PyBoundaryType>()?;
+    m.add_class::<file::reader::PyLimits>()?;
+    m.add_class::<file::reader::PyReader>()?;
+    m.add_class::<geometry::PyGridSurface>()?;
+    m.add_class::<geometry::PyLineSet>()?;
+    m.add_class::<geometry::PyPointSet>()?;
+    m.add_class::<geometry::PySurface>()?;
+    m.add_class::<grid::PyGrid2Regular>()?;
+    m.add_class::<grid::PyGrid2Tensor>()?;
+    m.add_class::<grid::PyGrid3Regular>()?;
+    m.add_class::<grid::PyGrid3Tensor>()?;
+    m.add_class::<grid::PyOrient2>()?;
+    m.add_class::<grid::PyOrient3>()?;
+    m.add_class::<omf1::converter::PyOmf1Converter>()?;
+    m.add_class::<project::PyProject>()?;
+    m.add_class::<validate::PyProblem>()?;
 
+    m.add_function(wrap_pyfunction!(omf1::converter::detect_omf1, m)?)?;
     m.add_function(wrap_pyfunction!(version, m)?)?;
-    m.add_function(wrap_pyfunction!(detect_omf1, m)?)?;
 
-    m.add("OmfException", py.get_type::<OmfException>())?;
-    m.add("OmfFileIoException", py.get_type::<OmfFileIoException>())?;
+    m.add("OmfException", py.get_type::<errors::OmfException>())?;
     m.add(
-        "OmfLimitExceededException",
-        py.get_type::<OmfLimitExceededException>(),
+        "OmfFileIoException",
+        py.get_type::<errors::OmfFileIoException>(),
     )?;
-    m.add("OmfJsonException", py.get_type::<OmfJsonException>())?;
     m.add(
         "OmfInvalidDataException",
-        py.get_type::<OmfInvalidDataException>(),
+        py.get_type::<errors::OmfInvalidDataException>(),
     )?;
     m.add(
-        "OmfValidationFailedException",
-        py.get_type::<OmfValidationFailedException>(),
+        "OmfJsonException",
+        py.get_type::<errors::OmfJsonException>(),
+    )?;
+    m.add(
+        "OmfLimitExceededException",
+        py.get_type::<errors::OmfLimitExceededException>(),
     )?;
     m.add(
         "OmfNotSupportedException",
-        py.get_type::<OmfNotSupportedException>(),
+        py.get_type::<errors::OmfNotSupportedException>(),
+    )?;
+    m.add(
+        "OmfValidationFailedException",
+        py.get_type::<errors::OmfValidationFailedException>(),
     )?;
 
     Ok(())

@@ -1,11 +1,11 @@
 [package]
 name = "omfc"
-version = "0.1.0-beta.1"
 description = "C bindings for `omf`."
-authors = ["Tim Evans <tim.evans@seequent.com>"]
-license = "MIT"
-edition = "2021"
 publish = false
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [lib]
 name = "omfc"

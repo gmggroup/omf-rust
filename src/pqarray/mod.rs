@@ -9,7 +9,7 @@ mod write;
 pub(crate) use array_type::PqArrayType;
 pub(crate) use read::PqArrayReader;
 pub(crate) use schema::{
-    schema, schema_field, schema_fields, schema_logical_type, schema_match, schema_physical_type,
-    schema_repetition, PqArrayMatcher,
+    PqArrayMatcher, schema, schema_field, schema_fields, schema_logical_type, schema_match,
+    schema_physical_type, schema_repetition,
 };
 pub(crate) use write::{PqArrayWriter, PqWriteOptions};

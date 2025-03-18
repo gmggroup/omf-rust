@@ -1,12 +1,11 @@
 use std::io::{Seek, Write};
 
 use crate::{
-    array_type,
+    Array, ArrayType, array_type,
     data::{write_checks::*, *},
     error::Error,
     file::zip_container::FileType,
     pqarray::{PqArrayWriter, PqWriteOptions},
-    Array, ArrayType,
 };
 
 use super::super::{Compression, Writer};

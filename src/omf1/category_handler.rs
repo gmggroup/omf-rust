@@ -12,7 +12,7 @@ use crate::{
 };
 
 use super::{
-    array::{load_scalars, ScalarValues},
+    array::{ScalarValues, load_scalars},
     model::{LegendArrayModel, LegendArrays},
     objects::{ColorArray, DateTimeArray, Key, ScalarArray, StringArray},
     reader::Omf1Reader,

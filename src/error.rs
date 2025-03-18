@@ -4,7 +4,7 @@ use std::{collections::TryReserveError, fmt::Display};
 
 use zip::result::ZipError;
 
-use crate::{validate, SubblockMode};
+use crate::{SubblockMode, validate};
 
 /// The types of limit that may be exceeded.
 ///
@@ -87,7 +87,9 @@ pub enum Error {
     #[error("Error: the zip comment does not identify this as an OMF file: '{0}'")]
     NotOmf(String),
     /// When the file version is newer than the library.
-    #[error("Version error: the file uses OMF v{0}.{1} but this version library can only read 0.9 and 2.0")]
+    #[error(
+        "Version error: the file uses OMF v{0}.{1} but this version library can only read 0.9 and 2.0"
+    )]
     NewerVersion(u32, u32),
     /// The file version is pre-release and can't be loaded by release versions.
     #[error("Version error: the file uses pre-release OMF v{0}.{1}-{2} and can't be loaded")]

@@ -6,11 +6,11 @@ use crate::{
 };
 
 use super::{
+    Omf1Error,
     objects::{
         Array, DataType, Int2Array, Int3Array, Key, ScalarArray, Vector2Array, Vector3Array,
     },
     reader::Omf1Reader,
-    Omf1Error,
 };
 
 pub fn vertices_array<W: Write + Seek + Send, R: ReadAt>(
@@ -235,11 +235,7 @@ fn vector3_from_le_bytes(bytes: [u8; 24]) -> [f64; 3] {
 }
 
 fn none_if_nan(input: f64) -> Option<f64> {
-    if input.is_nan() {
-        None
-    } else {
-        Some(input)
-    }
+    if input.is_nan() { None } else { Some(input) }
 }
 
 fn none_if_any_nan<const N: usize>(input: [f64; N]) -> Option<[f64; N]> {

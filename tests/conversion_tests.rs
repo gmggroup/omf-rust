@@ -2,7 +2,7 @@
 
 use std::{fs::read_dir, io::Cursor, path::Path, time::Instant};
 
-use omf::{error::Error, file::Reader, omf1::Converter, AttributeData};
+use omf::{AttributeData, error::Error, file::Reader, omf1::Converter};
 
 #[test]
 fn convert_omf1() {

@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::{
+    Element, Vector3,
     date_time::utc_now,
     geometry::zero_origin,
     validate::{Validate, Validator},
-    Element, Vector3,
 };
 
 /// Root object of an OMF file.
