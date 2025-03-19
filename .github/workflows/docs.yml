@@ -27,6 +27,8 @@ jobs:
       - name: Build docs
         run: |
           cd docs
+          python -m venv venv
+          source ./venv/bin/activate
           sh build.sh
 
       - name: Fix permissions
