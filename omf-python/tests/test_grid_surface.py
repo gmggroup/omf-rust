@@ -2,7 +2,7 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
+import omf2
 
 
 class TestGridSurface(TestCase):
@@ -11,10 +11,10 @@ class TestGridSurface(TestCase):
         self.one_of_everything = path.join(self.omf_dir, "one_of_everything.omf")
 
     def test_should_contain_grid_surface_geometry(self) -> None:
-        reader = omf_python.Reader(self.one_of_everything)
+        reader = omf2.Reader(self.one_of_everything)
         project, _ = reader.project()
         grid_surface = project.elements()[3].geometry()
-        self.assertIsInstance(grid_surface, omf_python.GridSurface)
+        self.assertIsInstance(grid_surface, omf2.GridSurface)
 
         orientation = grid_surface.orient
         self.assertTrue(numpy.array_equal([-1.5, -1.5, 0], orientation.origin))
@@ -33,18 +33,18 @@ class TestGridSurface(TestCase):
         )
 
         grid = grid_surface.grid
-        self.assertIsInstance(grid, omf_python.Grid2Tensor)
+        self.assertIsInstance(grid, omf2.Grid2Tensor)
         self.assertEqual([2, 2], grid.count())
 
         u = grid.u
-        self.assertIsInstance(u, omf_python.ScalarArray)
+        self.assertIsInstance(u, omf2.ScalarArray)
         self.assertEqual(2, u.item_count())
         u_scalars = reader.array_scalars(u)
         self.assertEqual(numpy.float64, u_scalars.dtype)
         self.assertTrue(numpy.array_equal([1, 2], u_scalars))
 
         v = grid.v
-        self.assertIsInstance(v, omf_python.ScalarArray)
+        self.assertIsInstance(v, omf2.ScalarArray)
         self.assertEqual(2, v.item_count())
         v_scalars = reader.array_scalars(v)
         self.assertEqual(numpy.float64, v_scalars.dtype)

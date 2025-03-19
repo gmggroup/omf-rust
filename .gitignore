@@ -27,4 +27,4 @@ Cargo.lock
 /omf-python/venv
 /omf-python/docs/build
 /omf-python/tests/__pycache__/
-/omf-python/omf_python.pyi
+/omf-python/omf2.pyi

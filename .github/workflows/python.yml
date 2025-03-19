@@ -16,24 +16,24 @@ permissions:
 
 jobs:
   python-stub-file:
-    name: Generate and upload omf_python.pyi
+    name: Generate and upload omf2.pyi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: 1.85.0
-      - name: Build omf_python for stub information
+      - name: Build omf2 for stub information
         working-directory: ./omf-python
         run: cargo build
-      - name: Generate omf_python.pyi
+      - name: Generate omf2.pyi
         working-directory: ./omf-python
         run: cargo run --bin stub_gen
-      - name: Upload omf_python.pyi
+      - name: Upload omf2.pyi
         uses: actions/upload-artifact@v4
         with:
           name: omf-python-stub
-          path: omf-python/omf_python.pyi
+          path: omf-python/omf2.pyi
 
   linux:
     runs-on: ${{ matrix.platform.runner }}
@@ -73,7 +73,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install omf_python --find-links dist --force-reinstall
+          pip install omf2 --find-links dist --force-reinstall
           pip install numpy
           pip install pytest
           pytest

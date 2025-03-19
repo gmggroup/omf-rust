@@ -1,21 +1,21 @@
 from os import path
 from unittest import TestCase
 
-import omf_python
+import omf2
 
 
 class TestTextAttribute(TestCase):
     def setUp(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
-        self.reader = omf_python.Reader(one_of_everything)
+        self.reader = omf2.Reader(one_of_everything)
         self.project, _ = self.reader.project()
 
         # Get the "Pyramid Lines" element, and its "Strings" attribute.
         self.attribute = self.project.elements()[2].attributes()[0]
 
     def test_should_return_text_attribute_instance(self) -> None:
-        self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataText)
+        self.assertIsInstance(self.attribute.get_data(), omf2.AttributeDataText)
 
     def test_should_return_text_attribute_values_item_count(self) -> None:
         actual_count = self.attribute.get_data().values.item_count()

@@ -2,14 +2,14 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
+import omf2
 
 
 class TestProject(TestCase):
     def setUp(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "../../examples")
         pyramid = path.join(omf_dir, "pyramid/pyramid.omf")
-        self.reader = omf_python.Reader(pyramid)
+        self.reader = omf2.Reader(pyramid)
 
     def test_should_return_expected_project_details(self) -> None:
         # Given I have loaded a project
@@ -34,6 +34,6 @@ class TestProject(TestCase):
         # Then I should have two elements
         self.assertEqual(len(elements), 2)
 
-        # And those elements should be of type omf_python.Element
+        # And those elements should be of type omf2.Element
         for element in elements:
-            self.assertIsInstance(element, omf_python.Element)
+            self.assertIsInstance(element, omf2.Element)

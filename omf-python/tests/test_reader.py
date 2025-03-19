@@ -1,7 +1,7 @@
 from os import path
 from unittest import TestCase
 
-import omf_python
+import omf2
 
 
 class TestReader(TestCase):
@@ -13,7 +13,7 @@ class TestReader(TestCase):
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
 
         # When
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
 
         # Then
         self.assertEqual(reader.version(), [2, 0])
@@ -26,9 +26,9 @@ class TestReader(TestCase):
         onf_file_with_error = path.join(
             path.dirname(__file__), "data/missing_parquet.omf"
         )
-        reader = omf_python.Reader(onf_file_with_error)
+        reader = omf2.Reader(onf_file_with_error)
 
-        with self.assertRaises(omf_python.OmfValidationFailedException) as context:
+        with self.assertRaises(omf2.OmfValidationFailedException) as context:
             reader.project()
 
         self.assertEqual(
@@ -42,7 +42,7 @@ class TestReader(TestCase):
         onf_file_with_problem = path.join(
             path.dirname(__file__), "data/duplicate_element_name.omf"
         )
-        reader = omf_python.Reader(onf_file_with_problem)
+        reader = omf2.Reader(onf_file_with_problem)
         _, problems = reader.project()
 
         # Then
@@ -66,12 +66,12 @@ class TestReader(TestCase):
             path.dirname(__file__), "data/array_length_mismatch.omf"
         )
 
-        reader = omf_python.Reader(onf_file_with_array_length_mismatch)
+        reader = omf2.Reader(onf_file_with_array_length_mismatch)
         project, _ = reader.project()
         vertices_array = project.elements()[0].geometry().vertices
 
         # When
-        with self.assertRaises(omf_python.OmfInvalidDataException) as context:
+        with self.assertRaises(omf2.OmfInvalidDataException) as context:
             reader.array_vertices(vertices_array)
 
         # Then
@@ -85,8 +85,8 @@ class TestReader(TestCase):
         incorrect_location = path.join(self.examples_dir, "testfilenotfound.omf")
 
         # When
-        with self.assertRaises(omf_python.OmfFileIoException) as context:
-            omf_python.Reader(incorrect_location)
+        with self.assertRaises(omf2.OmfFileIoException) as context:
+            omf2.Reader(incorrect_location)
 
         # Then
         self.assertIn("(os error 2)", str(context.exception))
@@ -94,7 +94,7 @@ class TestReader(TestCase):
     def test_should_return_expected_default_limits(self) -> None:
         # Given
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
 
         # When
         limits = reader.limits()
@@ -108,9 +108,9 @@ class TestReader(TestCase):
     def test_should_set_limits(self) -> None:
         # Given
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
 
-        limits = omf_python.Limits()
+        limits = omf2.Limits()
         limits.json_bytes = 1
         limits.image_bytes = 2
         limits.image_dim = 3
@@ -129,14 +129,14 @@ class TestReader(TestCase):
     def test_should_raise_exception_if_json_bytes_limit_reached(self) -> None:
         # Given
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
 
         limits = reader.limits()
         limits.json_bytes = 0
 
         # When
         reader.set_limits(limits)
-        with self.assertRaises(omf_python.OmfJsonException) as context:
+        with self.assertRaises(omf2.OmfJsonException) as context:
             reader.project()
 
         # Then

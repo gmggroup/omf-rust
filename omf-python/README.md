@@ -19,8 +19,8 @@ $ python
 
 Python 3.12.5 (main, Aug  6 2024, 19:08:49) [GCC 11.4.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> import omf_python
->>> reader = omf_python.Reader("../target/tmp/one_of_everything.omf")
+>>> import omf2
+>>> reader = omf2.Reader("../target/tmp/one_of_everything.omf")
 >>> for element in reader.project.elements:
 ...     print(element.geometry.get_type())
 ...
@@ -53,8 +53,8 @@ cd omf-python
 cargo run --bin stub_gen
 ```
 
-This will create a file `omf_python.pyi` which will get included automatically the next time you run `maturin develop`.
-Afterwards you should be able to see comments and typing information about omf_python in your editor.
+This will create a file `omf2.pyi` which will get included automatically the next time you run `maturin develop`.
+Afterwards you should be able to see comments and typing information about omf2 in your editor.
 
 Some test OMF files need to be generated so that all features can be tested via `pytest`. If you need to make more test
 files, or modify existing ones:

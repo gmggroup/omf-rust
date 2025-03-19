@@ -1,14 +1,14 @@
 from os import path
 from unittest import TestCase
 
-import omf_python
+import omf2
 
 
 class TestElement(TestCase):
     def test_should_return_expected_element_metadata(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "data")
 
-        reader = omf_python.Reader(path.join(omf_dir, "element_metadata.omf"))
+        reader = omf2.Reader(path.join(omf_dir, "element_metadata.omf"))
         project, _ = reader.project()
 
         element = project.elements()[0]

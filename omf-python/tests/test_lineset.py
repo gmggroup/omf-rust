@@ -2,19 +2,19 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
+import omf2
 
 
 class TestLineSet(TestCase):
     def setUp(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
-        self.reader = omf_python.Reader(one_of_everything)
+        self.reader = omf2.Reader(one_of_everything)
         self.project, _ = self.reader.project()
         self.lineset = self.project.elements()[2]
 
     def test_should_return_expected_geometry_type(self) -> None:
-        self.assertIsInstance(self.lineset.geometry(), omf_python.LineSet)
+        self.assertIsInstance(self.lineset.geometry(), omf2.LineSet)
 
     def test_should_return_expected_origin(self) -> None:
         lineset_origin = self.lineset.geometry().origin
