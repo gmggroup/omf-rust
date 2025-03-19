@@ -3,6 +3,7 @@ name: Docs
 on:
   push:
     branches: ["main"]
+  pull_request:
 
 permissions:
   contents: read
@@ -41,6 +42,7 @@ jobs:
 
   deploy:
     needs: docs
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
