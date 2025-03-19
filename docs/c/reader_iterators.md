@@ -6,7 +6,7 @@ Each array type has a matching iterator type.
 These can be used to iterate over the values of an array without allocating temporary buffers.
 
 Note that these objects are **not thread safe**.
-You must create it, iterator over it, and free it all on the same thread.
+You must create it, iterate over it, and free it all on the same thread.
 Iterators may outlast the reader object; they have their own copy of the open file handle.
 
 ### Methods

@@ -16,6 +16,33 @@ markdown_extensions:
     - callouts
     - pymdownx.snippets
 
+plugins:
+    - mkdocstrings:
+        enable_inventory: true
+        default_handler: python
+        handlers:
+            python:
+                import:
+                    - https://docs.python.org/3/objects.inv
+                options:
+                    # We set allow_inspection: false to ensure that all docstrings come
+                    # from the pyi files, not the Rust-facing doc comments.
+                    allow_inspection: false
+                    heading_level: 2
+                    show_category_heading: true
+                    show_signature_annotations: true
+                    show_source: false
+                    # Members
+                    inherited_members: true
+                    filters:
+                    - "!^__?" # Hide protected and private members
+                    merge_init_into_class: true
+                    show_if_no_docstring: true
+
+theme:
+    name: mkdocs
+    navigation_depth: 3
+
 extra_css:
     - stylesheets/extra.css
 
@@ -77,3 +104,4 @@ nav:
             - 'c/examples/attributes.md'
             - 'c/examples/textures.md'
     - 'Rust': 'rust/omf/index.html'
+    - 'Python': 'python/index.md'
