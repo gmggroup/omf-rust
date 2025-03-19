@@ -1,14 +1,17 @@
-use crate::array::{
-    PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
-    PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
-};
-use crate::colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete};
-use crate::errors::OmfJsonException;
-use crate::grid::PyOrient2;
 use omf::{Attribute, AttributeData, Location, NumberColormap};
-use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
 use serde_pyobject::to_pyobject;
+
+use crate::{
+    array::{
+        PyBooleanArray, PyColorArray, PyGradientArray, PyImageArray, PyIndexArray, PyNameArray,
+        PyNumberArray, PyTexcoordArray, PyTextArray, PyVectorArray,
+    },
+    colormap::{PyNumberColormapContinuous, PyNumberColormapDiscrete},
+    errors::OmfJsonException,
+    grid::PyOrient2,
+};
 
 #[gen_stub_pyclass_enum]
 #[pyclass(eq, eq_int, name = "Location")]

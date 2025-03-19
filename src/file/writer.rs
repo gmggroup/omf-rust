@@ -8,13 +8,13 @@ use std::{
 use flate2::write::GzEncoder;
 
 use crate::{
+    Array, ArrayType, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
+    Project,
     array::DataType,
     array_type,
     error::Error,
     file::zip_container::FileType,
     validate::{Problems, Validate, Validator},
-    Array, ArrayType, Project, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR,
-    FORMAT_VERSION_PRERELEASE,
 };
 
 use super::zip_container::Builder;

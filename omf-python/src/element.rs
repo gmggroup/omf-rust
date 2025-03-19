@@ -1,12 +1,14 @@
-use crate::attribute::PyAttribute;
-use crate::block_model::PyBlockModel;
-use crate::errors::{OmfJsonException, OmfNotSupportedException};
-use crate::geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface};
-use omf::Element;
-use omf::Geometry;
-use pyo3::{prelude::*, IntoPyObjectExt};
+use omf::{Element, Geometry};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
 use serde_pyobject::to_pyobject;
+
+use crate::{
+    attribute::PyAttribute,
+    block_model::PyBlockModel,
+    errors::{OmfJsonException, OmfNotSupportedException},
+    geometry::{PyGridSurface, PyLineSet, PyPointSet, PySurface},
+};
 
 #[gen_stub_pyclass]
 #[pyclass(name = "Element")]

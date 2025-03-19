@@ -2,7 +2,7 @@ use std::sync::OnceLock;
 
 use crate::{
     file::{ReadAt, SubFile},
-    pqarray::{schema_match, PqArrayMatcher, PqArrayReader},
+    pqarray::{PqArrayMatcher, PqArrayReader, schema_match},
 };
 
 macro_rules! declare_schema {
@@ -267,7 +267,7 @@ declare_schema! {
 #[cfg(test)]
 pub(crate) fn dump_parquet_schemas() {
     use std::{
-        fs::{create_dir_all, OpenOptions},
+        fs::{OpenOptions, create_dir_all},
         io::Write,
         path::Path,
     };

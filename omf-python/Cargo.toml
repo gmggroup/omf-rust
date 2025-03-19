@@ -1,9 +1,11 @@
 [package]
 name = "omf_python"
-version = "0.2.0"
 description = "Python bindings for the Rust OMF package."
-edition = "2021"
-license = "MIT"
+publish = false
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
 omf = { path = ".." }

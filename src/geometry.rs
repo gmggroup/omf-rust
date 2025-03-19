@@ -2,10 +2,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    Array, BlockModel, Element, Grid2, Location, Orient2, Vector3,
     array::Constraint,
     array_type,
     validate::{Validate, Validator},
-    Array, BlockModel, Element, Grid2, Location, Orient2, Vector3,
 };
 
 pub(crate) fn zero_origin(v: &Vector3) -> bool {

@@ -1,6 +1,6 @@
 use std::{fmt::Debug, ptr::null};
 
-use crate::ffi_tools::{into_ffi_free, FfiWrapper};
+use crate::ffi_tools::{FfiWrapper, into_ffi_free};
 
 #[repr(C)]
 pub struct ImageData {
@@ -36,7 +36,7 @@ impl FfiWrapper<image::DynamicImage> for ImageData {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_image_data_free(data: *mut ImageData) -> bool {
     unsafe { into_ffi_free(data) }
 }

@@ -1,6 +1,6 @@
 use std::io::{BufReader, Cursor, Seek, Write};
 
-use crate::{array_type, error::Error, Array};
+use crate::{Array, array_type, error::Error};
 
 use super::{Limits, ReadAt, Reader, Writer};
 

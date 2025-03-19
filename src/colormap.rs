@@ -5,10 +5,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    Array,
     array::Constraint,
     array_type,
     validate::{Validate, Validator},
-    Array,
 };
 
 /// Specifies the minimum and maximum values of a number colormap.

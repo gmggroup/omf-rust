@@ -1,18 +1,16 @@
 use std::fmt::Write;
 
 use schemars::{
-    gen::SchemaSettings,
+    JsonSchema,
+    r#gen::SchemaSettings,
     schema::{
         InstanceType, Metadata, RootSchema, Schema, SchemaObject, SingleOrVec, SubschemaValidation,
     },
-    visit::visit_schema_object,
-    JsonSchema,
+    visit::{Visitor, visit_schema_object},
 };
 use serde_json::Value;
 
-use crate::{format_full_name, Project};
-
-use schemars::visit::Visitor;
+use crate::{Project, format_full_name};
 
 fn simple_enum_variant(outer_schema: &Schema) -> Option<(String, String)> {
     if let Schema::Object(schema) = outer_schema {

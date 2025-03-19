@@ -15,67 +15,67 @@ macro_rules! create (
     };
 );
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_project_init(name: *const c_char) -> Project {
     create!(Project, name)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_element_init(name: *const c_char) -> Element {
     create!(Element, name)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_attribute_init(name: *const c_char, location: omf::Location) -> Attribute {
     create!(Attribute, name, location)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_point_set_init(vertices: *const Array) -> PointSet {
     create!(PointSet, vertices)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_line_set_init(vertices: *const Array, segments: *const Array) -> LineSet {
     create!(LineSet, vertices, segments)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_surface_init(vertices: *const Array, triangles: *const Array) -> Surface {
     create!(Surface, vertices, triangles)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_grid_surface_init() -> GridSurface {
     create!(GridSurface)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_block_model_init() -> BlockModel {
     create!(BlockModel)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_composite_init() -> Composite {
     create!(Composite)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_number_data_init() -> NumberData {
     create!(NumberData)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_category_data_init() -> CategoryData {
     create!(CategoryData)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_discrete_colormap_init() -> DiscreteColormap {
     create!(DiscreteColormap)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_continuous_colormap_init(
     min: f64,
     max: f64,
@@ -84,12 +84,12 @@ pub extern "C" fn omf_continuous_colormap_init(
     create!(ContinuousColormap, min, max, gradient)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_tensor_grid2_init(u: *const Array, v: *const Array) -> TensorGrid2 {
     create!(TensorGrid2, u, v)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_tensor_grid3_init(
     u: *const Array,
     v: *const Array,
@@ -98,7 +98,7 @@ pub extern "C" fn omf_tensor_grid3_init(
     create!(TensorGrid3, u, v, w)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_regular_grid2_init(du: f64, dv: f64, nu: u32, nv: u32) -> RegularGrid2 {
     RegularGrid2 {
         size: [du, dv],
@@ -106,7 +106,7 @@ pub extern "C" fn omf_regular_grid2_init(du: f64, dv: f64, nu: u32, nv: u32) -> 
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_regular_grid3_init(
     du: f64,
     dv: f64,
@@ -121,7 +121,7 @@ pub extern "C" fn omf_regular_grid3_init(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_regular_subblocks_init(
     nu: u32,
     nv: u32,
@@ -135,12 +135,12 @@ pub extern "C" fn omf_regular_subblocks_init(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_freeform_subblocks_init(subblocks: *const Array) -> FreeformSubblocks {
     FreeformSubblocks { subblocks }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_mapped_texture_init(
     image: *const Array,
     texcoords: *const Array,
@@ -148,7 +148,7 @@ pub extern "C" fn omf_mapped_texture_init(
     MappedTexture { image, texcoords }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_projected_texture_init(image: *const Array) -> ProjectedTexture {
     create!(ProjectedTexture, image)
 }

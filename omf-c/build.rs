@@ -19,8 +19,8 @@ fn main() {
 
 fn defines() -> String {
     use omf::{
-        format_full_name, CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION, FORMAT_NAME,
-        FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
+        CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION, FORMAT_NAME, FORMAT_VERSION_MAJOR,
+        FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE, format_full_name,
     };
     let mut defines = format!(
         "

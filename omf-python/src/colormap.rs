@@ -1,7 +1,8 @@
-use crate::array::{PyBoundaryArray, PyGradientArray};
 use omf::{NumberColormap, NumberRange};
-use pyo3::{prelude::*, IntoPyObjectExt};
+use pyo3::{IntoPyObjectExt, prelude::*};
 use pyo3_stub_gen::derive::*;
+
+use crate::array::{PyBoundaryArray, PyGradientArray};
 
 macro_rules! number_colormap_field {
     ($self:ident, $variant:ident :: $field:ident) => {
