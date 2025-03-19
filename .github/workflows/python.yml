@@ -109,6 +109,38 @@ jobs:
           name: wheels-windows-${{ matrix.platform.target }}
           path: omf-python/dist
 
+  mac:
+    runs-on: ${{ matrix.platform.runner }}
+    needs: [ python-stub-file ]
+    strategy:
+      matrix:
+        platform:
+          - runner: macos-latest
+            target: arm64
+            cargo_target: aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+          architecture: ${{ matrix.platform.target }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.cargo_target }}
+          args: --release --out dist --find-interpreter
+          working-directory: ./omf-python
+          sccache: 'true'
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-macos-${{ matrix.platform.target }}
+          path: omf-python/dist
+
   # release:
   #   name: Release
   #   runs-on: ubuntu-latest
