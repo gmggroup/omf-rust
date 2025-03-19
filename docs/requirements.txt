@@ -3,3 +3,5 @@ mkdocstrings-python>=1.15.0
 markdown-callouts
 python-markdown-math
 pymdown-extensions
+maturin>=1,<2
+numpy
