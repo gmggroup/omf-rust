@@ -116,14 +116,12 @@ jobs:
       matrix:
         platform:
           - runner: macos-latest
-            # Assume M1+ chips going forwards for Mac, do not build for Intel
-            target: arm64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-          architecture: ${{ matrix.platform.target }}
+          architecture: arm64
       - uses: actions/download-artifact@v4
         with:
           name: omf-python-stub
@@ -131,7 +129,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          target: ${{ matrix.platform.target }}
+          target: aarch64-apple-darwin
           args: --release --out dist --find-interpreter
           working-directory: ./omf-python
           sccache: 'true'
