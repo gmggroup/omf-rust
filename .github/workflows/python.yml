@@ -116,12 +116,14 @@ jobs:
       matrix:
         platform:
           - runner: macos-latest
+            target: arm64
+            cargo_target: aarch64-apple-darwin
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-          architecture: arm64
+          architecture: ${{ matrix.platform.target }}
       - uses: actions/download-artifact@v4
         with:
           name: omf-python-stub
@@ -129,7 +131,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          target: aarch64-apple-darwin
+          target: ${{ matrix.platform.cargo_target }}
           args: --release --out dist --find-interpreter
           working-directory: ./omf-python
           sccache: 'true'
