@@ -1,5 +1,5 @@
 [package]
-name = "omf_python"
+name = "omf2"
 description = "Python bindings for the Rust OMF package."
 publish = false
 version.workspace = true
@@ -26,7 +26,7 @@ itertools.workspace = true
 omf = { path = ".." }
 
 [lib]
-name = "omf_python"
+name = "omf2"
 path = "src/lib.rs"
 crate-type = ["cdylib", "rlib"]
 

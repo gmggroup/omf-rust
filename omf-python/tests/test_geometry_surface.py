@@ -2,7 +2,7 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
+import omf2
 
 
 class TestGeometrySurface(TestCase):
@@ -14,12 +14,12 @@ class TestGeometrySurface(TestCase):
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
 
         # When
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
         project, _ = reader.project()
 
-        # Geometry is an instance of omf_python.Surface
+        # Geometry is an instance of omf2.Surface
         surface = project.elements()[0].geometry()
-        self.assertIsInstance(surface, omf_python.Surface)
+        self.assertIsInstance(surface, omf2.Surface)
 
         # And it contains 6 triangles
         triangles_array = surface.triangles
@@ -62,7 +62,7 @@ class TestGeometrySurface(TestCase):
         omf_file = path.join(self.examples_dir, "pyramid/pyramid.omf")
 
         # When
-        reader = omf_python.Reader(omf_file)
+        reader = omf2.Reader(omf_file)
         project, _ = reader.project()
 
         surface = project.elements()[0]

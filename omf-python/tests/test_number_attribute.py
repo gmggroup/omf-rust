@@ -3,8 +3,8 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
-from omf_python import BoundaryType
+import omf2
+from omf2 import BoundaryType
 
 
 class TestNumberAttribute(TestCase):
@@ -13,15 +13,15 @@ class TestNumberAttribute(TestCase):
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
         continuous_colormap = path.join(omf_dir, "continuous_colormap.omf")
 
-        self.reader = omf_python.Reader(one_of_everything)
+        self.reader = omf2.Reader(one_of_everything)
         self.project, _ = self.reader.project()
         self.attribute = self.project.elements()[0].attributes()[2]
 
-        self.ccmap_reader = omf_python.Reader(continuous_colormap)
+        self.ccmap_reader = omf2.Reader(continuous_colormap)
         self.ccmap_project, _ = self.ccmap_reader.project()
 
     def test_should_return_number_attribute_instance(self) -> None:
-        self.assertIsInstance(self.attribute.get_data(), omf_python.AttributeDataNumber)
+        self.assertIsInstance(self.attribute.get_data(), omf2.AttributeDataNumber)
 
     def test_should_return_number_attribute_values(self) -> None:
         attribute_data = self.attribute.get_data()
@@ -53,9 +53,9 @@ class TestNumberAttribute(TestCase):
     def test_should_return_discrete_colormap(self) -> None:
         colormap = self.attribute.get_data().colormap
 
-        self.assertIsInstance(colormap, omf_python.NumberColormapDiscrete)
-        self.assertIsInstance(colormap.boundaries, omf_python.BoundaryArray)
-        self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
+        self.assertIsInstance(colormap, omf2.NumberColormapDiscrete)
+        self.assertIsInstance(colormap.boundaries, omf2.BoundaryArray)
+        self.assertIsInstance(colormap.gradient, omf2.GradientArray)
 
     def test_should_return_discrete_colormap_boundaries(self) -> None:
         boundary_array = self.attribute.get_data().colormap.boundaries
@@ -94,8 +94,8 @@ class TestNumberAttribute(TestCase):
     def test_should_return_continuous_colormap(self) -> None:
         colormap = self.ccmap_project.elements()[0].attributes()[0].get_data().colormap
 
-        self.assertIsInstance(colormap, omf_python.NumberColormapContinuous)
-        self.assertIsInstance(colormap.gradient, omf_python.GradientArray)
+        self.assertIsInstance(colormap, omf2.NumberColormapContinuous)
+        self.assertIsInstance(colormap.gradient, omf2.GradientArray)
 
     def test_should_return_continuous_colormap_float_range(self) -> None:
         min, max = (

@@ -3,8 +3,8 @@ requires = ["maturin>=1,<2"]
 build-backend = "maturin"
 
 [project]
-name = "omf_python"
-requires-python = ">=3.7"
+name = "omf2"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 [tool.maturin]

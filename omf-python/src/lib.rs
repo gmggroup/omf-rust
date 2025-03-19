@@ -87,7 +87,7 @@ fn version() -> String {
 
 /// This module provides python bindings for omf-rust.
 #[pymodule]
-fn omf_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn omf2(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<array::PyBooleanArray>()?;
     m.add_class::<array::PyBoundaryArray>()?;
     m.add_class::<array::PyColorArray>()?;

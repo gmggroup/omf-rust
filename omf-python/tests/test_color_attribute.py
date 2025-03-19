@@ -2,14 +2,14 @@ from os import path
 from unittest import TestCase
 
 import numpy
-import omf_python
+import omf2
 
 
 class TestColorAttribute(TestCase):
     def setUp(self) -> None:
         omf_dir = path.join(path.dirname(__file__), "data")
         one_of_everything = path.join(omf_dir, "one_of_everything.omf")
-        self.reader = omf_python.Reader(one_of_everything)
+        self.reader = omf2.Reader(one_of_everything)
         self.project, _ = self.reader.project()
         self.attribute = self.project.elements()[0].attributes()[1]
 

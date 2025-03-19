@@ -22,10 +22,10 @@ macro_rules! create_exception_impl {
 }
 
 // NOTE: OmfException needs to be first alphabetically for the exceptions show correctly
-// in the Sphinx documentation as that is the order they get added into omf_python.pyi.
+// in the Sphinx documentation as that is the order they get added into omf2.pyi.
 
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfException,
     PyException,
     "Exception",
@@ -33,28 +33,28 @@ create_exception_impl!(
 );
 
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfFileIoException,
     OmfException,
     "OmfException",
     "Exception raised when a file IO error occurs."
 );
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfJsonException,
     OmfException,
     "OmfException",
     "Exception raised when a JSON error occurs. Can also be triggered by exceeding the `json_bytes` safety limit."
 );
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfLimitExceededException,
     OmfException,
     "OmfException",
     "Exception raised when a safety limit was exceeded."
 );
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfInvalidDataException,
     OmfException,
     "OmfException",
@@ -62,14 +62,14 @@ create_exception_impl!(
 );
 
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfValidationFailedException,
     OmfException,
     "OmfException",
     "Exception raised when an OMF validation error occurs."
 );
 create_exception_impl!(
-    omf_python,
+    omf2,
     OmfNotSupportedException,
     OmfException,
     "OmfException",
