@@ -1,3 +1,20 @@
-dd {
-    margin-left: 2em;
+/* Indent all content underneath h2 slightly. h1 and description should remain unindented. */
+.md-content__inner > dl,
+.md-content__inner dd,
+.md-content__inner > .admonition,
+[dir=ltr] .md-content__inner > ol,
+[dir=ltr] .md-content__inner > ul,
+.md-content__inner > *:not(h1):not(h2):not(h3):not(.doc) {
+    margin-left: 1.875em;
+}
+
+.md-content__inner > h3 {
+    margin-left: 1.4em;
+}
+
+/* Python docs */
+.doc-class >.doc-contents,
+.doc-class .doc-object,
+.doc-function > .doc-contents {
+    margin-left: 1.875em;
 }
