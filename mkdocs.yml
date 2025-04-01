@@ -40,7 +40,7 @@ plugins:
                     show_if_no_docstring: true
 
 theme:
-    name: mkdocs
+    name: material
     navigation_depth: 3
 
 extra_css:
