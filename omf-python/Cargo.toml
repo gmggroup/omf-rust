@@ -1,0 +1,40 @@
+[package]
+name = "omf2"
+description = "Python bindings for the Rust OMF package."
+publish = false
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+omf = { path = ".." }
+
+pyo3.workspace = true
+pyo3-stub-gen.workspace = true
+env_logger.workspace = true
+serde-pyobject.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+zip.workspace = true
+serde.workspace = true
+flate2.workspace = true
+numpy.workspace = true
+itertools.workspace = true
+regex.workspace = true
+
+[build-dependencies]
+omf = { path = ".." }
+
+[lib]
+name = "omf2"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "stub_gen"
+doc = false
+
+[[bin]]
+name = "generate_test_data"
+path = "scripts/generate_test_data.rs"

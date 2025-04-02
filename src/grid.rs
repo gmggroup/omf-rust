@@ -2,10 +2,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    Array, Vector3,
     array::Constraint,
     array_type,
     validate::{Validate, Validator},
-    Array, Vector3,
 };
 
 /// Defines a 2D grid spacing and size.
@@ -14,7 +14,8 @@ use crate::{
 pub enum Grid2 {
     /// Regularly spaced cells.
     ///
-    /// ![Diagram of a 2D regular grid](../images/grid2_regular.svg "A 2D regular grid")
+    /// <!--grid2_regular.svg-->
+    #[doc = include_str!("../docs/images/grid2_regular.svg")]
     Regular {
         /// The cell size in the U and V axes. Both must be greater than zero.
         size: [f64; 2],
@@ -23,7 +24,8 @@ pub enum Grid2 {
     },
     /// Tensor cells, where each row and column can have a different size.
     ///
-    /// ![Diagram of a 3D tensor grid](../images/grid2_tensor.svg "A 2D tensor grid")
+    /// <!--grid2_tensor.svg-->
+    #[doc = include_str!("../docs/images/grid2_tensor.svg")]
     Tensor {
         /// Array with `Scalar` type storing the size of each cell along the U axis.
         /// These sizes must be greater than zero.
@@ -81,7 +83,8 @@ impl Default for Grid2 {
 pub enum Grid3 {
     /// Regularly spaced cells.
     ///
-    /// ![Diagram of a 3D regular grid](../images/grid3_regular.svg "A 3D regular grid")
+    /// <!--grid3_regular.svg-->
+    #[doc = include_str!("../docs/images/grid3_regular.svg")]
     Regular {
         /// The block size in the U and V axes. All must be greater than zero.
         size: Vector3,
@@ -91,7 +94,8 @@ pub enum Grid3 {
     /// Tensor cells, where each row, column, and layer can have a different size. All sizes
     /// must be greater than zero.
     ///
-    /// ![Diagram of a 3D tensor grid](../images/grid3_tensor.svg "A 3D tensor grid")
+    /// <!--grid3_tensor.svg-->
+    #[doc = include_str!("../docs/images/grid3_tensor.svg")]
     Tensor {
         /// Array with `Scalar` type storing the size of each cell along the U axis.
         /// These sizes must be greater than zero.

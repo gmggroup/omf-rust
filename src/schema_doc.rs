@@ -2,7 +2,7 @@
 use core::panic;
 use std::{
     collections::BTreeMap,
-    fs::{create_dir_all, OpenOptions},
+    fs::{OpenOptions, create_dir_all},
     io::Write,
     path::Path,
     sync::OnceLock,
@@ -13,7 +13,7 @@ use schemars::{
         ArrayValidation, InstanceType, Metadata, ObjectValidation, Schema, SchemaObject,
         SingleOrVec, SubschemaValidation,
     },
-    visit::{visit_schema_object, Visitor},
+    visit::{Visitor, visit_schema_object},
 };
 use serde_json::Value;
 
@@ -146,13 +146,18 @@ fn number_colormap_range(
     schema_object_code(&mut f, schema)
 }
 
+macro_rules! re {
+    ($text:literal) => {{
+        static RE: OnceLock<Regex> = OnceLock::new();
+        RE.get_or_init(|| Regex::new($text).unwrap())
+    }};
+}
+
 fn description(schema: &SchemaObject) -> String {
     use regex::{Captures, Regex};
 
-    static RE: OnceLock<Regex> = OnceLock::new();
-    let re =
-        RE.get_or_init(|| Regex::new(r#"\]\(crate::(?<page>\w+)(::(?<anchor>\w+))?\)"#).unwrap());
-
+    let link = re!(r#"\]\(crate::(?<page>\w+)(::(?<anchor>\w+))?\)"#);
+    let svg = re!(r#"<!--\s*(.*?\.svg)\s*-->"#);
     let Some(Metadata {
         description: Some(descr),
         ..
@@ -160,13 +165,19 @@ fn description(schema: &SchemaObject) -> String {
     else {
         return String::new();
     };
-    re.replace_all(descr, |caps: &Captures| {
+    let s = link.replace_all(descr, |caps: &Captures| {
         let page = caps.name("page").unwrap().as_str();
         if let Some(anchor) = caps.name("anchor") {
             format!("]({page}.md#{anchor})", anchor = anchor.as_str())
         } else {
             format!("]({page}.md)")
         }
+    });
+    svg.replace_all(&s, |caps: &Captures| {
+        format!(
+            "![{svg}](../images/{svg})",
+            svg = caps.get(1).unwrap().as_str()
+        )
     })
     .into_owned()
 }

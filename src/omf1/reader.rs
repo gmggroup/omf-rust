@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    fs::File,
     io::{BufReader, Read, Seek, SeekFrom},
     sync::Arc,
 };
@@ -9,27 +8,28 @@ use flate2::bufread::ZlibDecoder;
 
 use crate::{
     error::{Error, Limit},
-    file::SubFile,
+    file::{ReadAt, SubFile},
 };
 
 use super::{
+    Omf1Error,
     model::{FromModel, Model},
     objects::{Array, Image, Key, Project},
-    Omf1Error,
 };
 
 /// The OMF1 file loader.
 #[derive(Debug)]
-pub struct Omf1Reader {
-    file: Arc<File>,
+pub struct Omf1Reader<R> {
+    file: SubFile<R>,
     project: Key<Project>,
     models: HashMap<String, Model>,
     version: String,
 }
 
-impl Omf1Reader {
-    pub fn new(mut file: File, limit: Option<u64>) -> Result<Self, Error> {
-        file.rewind()?;
+impl<R: ReadAt> Omf1Reader<R> {
+    pub fn new(data: R, limit: Option<u64>) -> Result<Self, Error> {
+        let size = data.size()?;
+        let mut file = SubFile::new(Arc::new(data), 0, size)?;
         let (project, json_start, version) = read_header(&mut file)?;
         let stream_len = file.seek(SeekFrom::End(0))?;
         if let Some(lim) = limit {
@@ -41,7 +41,7 @@ impl Omf1Reader {
         let models: HashMap<String, Model> =
             serde_json::from_reader(&mut file).map_err(Omf1Error::DeserializationFailed)?;
         Ok(Self {
-            file: file.into(),
+            file,
             project,
             models,
             version,
@@ -70,22 +70,18 @@ impl Omf1Reader {
     }
 
     pub fn image(&self, array: &Image) -> Result<impl Read, Error> {
-        Ok(ZlibDecoder::new(BufReader::new(SubFile::new(
-            self.file.clone(),
-            array.start,
-            array.length,
-        )?)))
+        Ok(ZlibDecoder::new(BufReader::new(
+            self.file.sub_file(array.start, array.length)?,
+        )))
     }
 
     pub fn array_decompressed_bytes(
         &self,
         array: &Array,
     ) -> Result<impl Iterator<Item = Result<u8, std::io::Error>>, Error> {
-        Ok(ZlibDecoder::new(BufReader::new(SubFile::new(
-            self.file.clone(),
-            array.start,
-            array.length,
-        )?))
+        Ok(ZlibDecoder::new(BufReader::new(
+            self.file.sub_file(array.start, array.length)?,
+        ))
         .bytes())
     }
 }
@@ -98,7 +94,7 @@ fn read_header(read: &mut impl Read) -> Result<(Key<Project>, u64, String), Erro
     match read.read_exact(&mut header) {
         Ok(_) => (),
         Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => {
-            return Err(Omf1Error::NotOmf1.into())
+            return Err(Omf1Error::NotOmf1.into());
         }
         Err(e) => return Err(e.into()),
     };

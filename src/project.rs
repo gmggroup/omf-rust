@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::{
+    Element, Vector3,
     date_time::utc_now,
     geometry::zero_origin,
     validate::{Validate, Validator},
-    Element, Vector3,
 };
 
 /// Root object of an OMF file.
@@ -46,7 +46,7 @@ pub struct Project {
     /// Optional name and version of the application that created the file, default empty.
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub application: String,
-    /// Optional file or data creation date, default empty.
+    /// File or data creation date. Defaults to the current date and time on creation.
     pub date: DateTime<Utc>,
     /// Arbitrary metadata.
     ///

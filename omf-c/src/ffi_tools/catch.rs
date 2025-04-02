@@ -2,7 +2,7 @@
 
 use std::panic::UnwindSafe;
 
-use crate::error::{set_error, set_panic, Error};
+use crate::error::{Error, set_error, set_panic};
 
 /// Catches both panics and `Result<T, omf::Error>` results in a function.
 ///

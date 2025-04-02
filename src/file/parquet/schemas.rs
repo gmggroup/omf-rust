@@ -1,8 +1,8 @@
 use std::sync::OnceLock;
 
 use crate::{
-    file::SubFile,
-    pqarray::{schema_match, PqArrayMatcher, PqArrayReader},
+    file::{ReadAt, SubFile},
+    pqarray::{PqArrayMatcher, PqArrayReader, schema_match},
 };
 
 macro_rules! declare_schema {
@@ -22,8 +22,8 @@ macro_rules! declare_schema {
                 })
             }
 
-            pub fn check(
-                reader: &PqArrayReader<SubFile>,
+            pub fn check<R: ReadAt>(
+                reader: &PqArrayReader<SubFile<R>>,
             ) -> Result<$name, crate::error::Error> {
                 reader.matches(Self::matcher())
             }
@@ -267,7 +267,7 @@ declare_schema! {
 #[cfg(test)]
 pub(crate) fn dump_parquet_schemas() {
     use std::{
-        fs::{create_dir_all, OpenOptions},
+        fs::{OpenOptions, create_dir_all},
         io::Write,
         path::Path,
     };

@@ -1,12 +1,18 @@
 use core::panic;
-use std::collections::HashSet;
+use std::{
+    collections::HashSet,
+    io::{Seek, Write},
+};
 
 use chrono::{DateTime, Utc};
 
-use crate::{error::Error, file::Writer};
+use crate::{
+    error::Error,
+    file::{ReadAt, Writer},
+};
 
 use super::{
-    array::{load_scalars, ScalarValues},
+    array::{ScalarValues, load_scalars},
     model::{LegendArrayModel, LegendArrays},
     objects::{ColorArray, DateTimeArray, Key, ScalarArray, StringArray},
     reader::Omf1Reader,
@@ -61,7 +67,11 @@ impl Data {
 }
 
 impl Legend {
-    fn write(self, w: &mut Writer, len: usize) -> Result<crate::Attribute, Error> {
+    fn write<W: Write + Seek + Send>(
+        self,
+        w: &mut Writer<W>,
+        len: usize,
+    ) -> Result<crate::Attribute, Error> {
         let data = match self.data {
             Data::Color(colors) => crate::AttributeData::Color {
                 values: w.array_colors(iter_to_len(
@@ -128,9 +138,9 @@ impl CategoryHandler {
         }
     }
 
-    pub fn add(
+    pub fn add<R: ReadAt>(
         &mut self,
-        r: &Omf1Reader,
+        r: &Omf1Reader<R>,
         name: &str,
         description: &str,
         key: &Key<LegendArrays>,
@@ -198,9 +208,9 @@ impl CategoryHandler {
         }
     }
 
-    pub fn write(
+    pub fn write<W: Write + Seek + Send>(
         mut self,
-        w: &mut Writer,
+        w: &mut Writer<W>,
         values: crate::Array<crate::array_type::Index>,
     ) -> Result<crate::AttributeData, Error> {
         self.process();

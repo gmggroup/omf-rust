@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          components: rustfmt
+          components: rustfmt, clippy
+          toolchain: 1.85.0
 
       - name: Check
         run: cargo check --all
@@ -38,28 +39,41 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { rust: stable, os: ubuntu-latest }
-          - { rust: stable, os: windows-latest }
-          - { rust: stable, os: macos-latest }
-          - { rust: beta, os: ubuntu-latest }
-          # Turn this on once we have a MSRV (minimum supported rust version)
-          # - { rust: 1.70.0, os: ubuntu-latest }
+          - { rust: 1.85.1, os: ubuntu-latest }
+          - { rust: 1.85.1, os: windows-latest }
+          - { rust: 1.85.1, os: macos-latest }
     name: Test Rust ${{ matrix.rust }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
 
-      - name: Test
+      - name: Build for Windows/Linux
+        if: runner.os != 'macOS'
+        run: cargo build --all --release
+
+      - name: Build for Mac
+        if: runner.os == 'macOS'
+        env:
+          # Required for linking on macOS
+          RUSTFLAGS: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
+        run: cargo build --all --release
+
+      - name: Test for Windows/Linux
+        if: runner.os != 'macOS'
         run: cargo test --all
 
-      - name: Build
-        run: cargo build --all --release
+      - name: Test for Mac
+        if: runner.os == 'macOS'
+        env:
+          # Required for linking on macOS
+          RUSTFLAGS: "-C link-arg=-undefined -C link-arg=dynamic_lookup"
+        run: cargo test --all
 
       - name: C Examples
         if: runner.os != 'Windows'

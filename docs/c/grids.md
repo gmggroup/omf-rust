@@ -63,6 +63,8 @@ typedef struct {
 
 Defines a regularly spaced 2D grid.
 
+![Diagram of a regular 2D grid](../images/grid2_regular.svg)
+
 ### Fields
 
 size: `double[2]`
@@ -94,6 +96,10 @@ typedef struct {
 } OmfTensorGrid2;
 ```
 
+Defines a tensor spaced 2D grid.
+
+![Diagram of a tensor 2D grid](../images/grid2_tensor.svg)
+
 ### Fields
 
 u: [`const OmfArray *`](arrays.md#omfarray)
@@ -123,6 +129,8 @@ typedef struct {
 ```
 
 Defines a regularly spaced 3D grid.
+
+![Diagram of a regular 3D grid](../images/grid3_regular.svg)
 
 ### Fields
 
@@ -154,6 +162,10 @@ typedef struct {
     const OmfArray *w;
 } OmfTensorGrid3;
 ```
+
+Defines a tensor spaced 3D grid.
+
+![Diagram of a tensor 3D grid](../images/grid3_tensor.svg)
 
 ### Fields
 

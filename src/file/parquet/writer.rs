@@ -1,10 +1,11 @@
+use std::io::{Seek, Write};
+
 use crate::{
-    array_type,
+    Array, ArrayType, array_type,
     data::{write_checks::*, *},
     error::Error,
     file::zip_container::FileType,
     pqarray::{PqArrayWriter, PqWriteOptions},
-    Array, ArrayType,
 };
 
 use super::super::{Compression, Writer};
@@ -18,7 +19,7 @@ impl From<Compression> for PqWriteOptions {
     }
 }
 
-impl Writer {
+impl<W: Write + Seek + Send> Writer<W> {
     fn array_writer<'a>(&self) -> PqArrayWriter<'a> {
         PqArrayWriter::new(self.compression().into())
     }

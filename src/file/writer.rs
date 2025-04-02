@@ -1,20 +1,20 @@
 use std::{
     fmt::Debug,
     fs::{File, OpenOptions},
-    io::{Read, Write},
+    io::{Read, Seek, Write},
     path::Path,
 };
 
 use flate2::write::GzEncoder;
 
 use crate::{
+    Array, ArrayType, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
+    Project,
     array::DataType,
     array_type,
     error::Error,
     file::zip_container::FileType,
     validate::{Problems, Validate, Validator},
-    Array, ArrayType, Project, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR,
-    FORMAT_VERSION_PRERELEASE,
 };
 
 use super::zip_container::Builder;
@@ -77,20 +77,12 @@ impl From<Compression> for flate2::Compression {
 ///     1. Fill in the required struct with the array pointers and other details then add it to the project.
 ///     1. Repeat for the attributes, adding them to the newly created element.
 /// 1. Call `writer.finish(project)` to validate everything inside the the project and write it.
-pub struct Writer {
-    pub(crate) builder: Builder,
+pub struct Writer<W: Write + Seek> {
+    pub(crate) builder: Builder<W>,
     compression: Compression,
 }
 
-impl Writer {
-    /// Creates a writer that writes into a file-like object.
-    pub fn new(file: File) -> Result<Self, Error> {
-        Ok(Self {
-            builder: Builder::new(file)?,
-            compression: Default::default(),
-        })
-    }
-
+impl Writer<File> {
     /// Creates a writer by opening a file.
     ///
     /// The file will be created if it doesn't exist, and truncated and replaced if it does.
@@ -102,6 +94,16 @@ impl Writer {
                 .create(true)
                 .open(path)?,
         )
+    }
+}
+
+impl<W: Write + Seek> Writer<W> {
+    /// Creates a writer that writes into a file-like object.
+    pub fn new(write: W) -> Result<Self, Error> {
+        Ok(Self {
+            builder: Builder::new(write)?,
+            compression: Default::default(),
+        })
     }
 
     /// Return the current compression.
@@ -173,7 +175,7 @@ impl Writer {
     ///
     /// Returns validation warnings on success or an [`Error`] on failure, which can be a
     /// validation failure or a file IO error.
-    pub fn finish(mut self, mut project: Project) -> Result<(File, Problems), Error> {
+    pub fn finish(mut self, mut project: Project) -> Result<(W, Problems), Error> {
         let mut val = Validator::new().with_filenames(self.builder.filenames());
         project.validate_inner(&mut val);
         let warnings = val.finish().into_result()?;
@@ -181,12 +183,12 @@ impl Writer {
         serde_json::to_writer(gz, &project).map_err(Error::SerializationFailed)?;
         // In the future we could base the format version on the data, writing backward
         // compatible files if new features weren't used.
-        let file = self.builder.finish(
+        let write = self.builder.finish(
             FORMAT_VERSION_MAJOR,
             FORMAT_VERSION_MINOR,
             FORMAT_VERSION_PRERELEASE,
         )?;
-        Ok((file, warnings))
+        Ok((write, warnings))
     }
 }
 

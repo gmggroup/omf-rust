@@ -3,7 +3,7 @@
 //! [Global Mining Guidelines Group](https://gmggroup.org).
 //!
 //! > **Warning:**
-//! > This is an alpha release of OMF 2. The storage format and libraries might be changed in
+//! > This is a beta release of OMF 2. The storage format and libraries might be changed in
 //! > backward-incompatible ways and are not subject to any SLA or deprecation policy.
 //! > Further, this code is unfinished and may not be secure.
 //! > Don't use it to open files you don't trust, and don't use it in production yet.
@@ -84,7 +84,7 @@ mod schema_doc;
 pub mod validate;
 mod version;
 
-pub use array::{array_type, Array, ArrayType, DataType};
+pub use array::{Array, ArrayType, DataType, array_type};
 pub use attribute::{Attribute, AttributeData, Location};
 pub use block_model::{BlockModel, SubblockMode, Subblocks};
 pub use colormap::{NumberColormap, NumberRange};
@@ -94,8 +94,9 @@ pub use grid::{Grid2, Grid3, Orient2, Orient3};
 pub use project::Project;
 pub use schema::json_schema;
 pub use version::{
-    crate_full_name, format_full_name, format_version, CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION,
-    FORMAT_NAME, FORMAT_VERSION_MAJOR, FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE,
+    CRATE_NAME, CRATE_VERSION, FORMAT_EXTENSION, FORMAT_NAME, FORMAT_VERSION_MAJOR,
+    FORMAT_VERSION_MINOR, FORMAT_VERSION_PRERELEASE, crate_full_name, format_full_name,
+    format_version,
 };
 
 /// A 3D vector with `f64` components.

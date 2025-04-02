@@ -3,6 +3,7 @@ name: Docs
 on:
   push:
     branches: ["main"]
+  pull_request:
 
 permissions:
   contents: read
@@ -25,6 +26,8 @@ jobs:
 
       - name: Build docs
         run: |
+          python -m venv venv
+          source ./venv/bin/activate
           cd docs
           sh build.sh
 
@@ -35,12 +38,13 @@ jobs:
           done
 
       - name: Store artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site/
 
   deploy:
     needs: docs
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -48,4 +52,4 @@ jobs:
     steps:
       - name: Deploy to pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4

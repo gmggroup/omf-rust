@@ -1,5 +1,5 @@
 use std::{
-    ffi::{c_char, CStr},
+    ffi::{CStr, c_char},
     fs::File,
     panic::RefUnwindSafe,
     path::PathBuf,
@@ -13,8 +13,9 @@ use crate::{
     arrays::{Array, ArrayType},
     error::{Error, InvalidArg},
     ffi_tools::{
+        FfiStorage,
         arg::{not_null, not_null_consume, slice, string_not_null},
-        catch, FfiStorage,
+        catch,
     },
     image_data::ImageMode,
     validation::handle_validation,
@@ -29,7 +30,7 @@ use crate::{
 
 pub(crate) struct WriterWrapper {
     pub path: PathBuf,
-    pub inner: omf::file::Writer,
+    pub inner: omf::file::Writer<File>,
     pub project: Option<omf::Project>,
     pub storage: FfiStorage,
 }
@@ -50,7 +51,7 @@ macro_rules! wrapper {
     };
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_open(path: *const c_char) -> *mut Writer {
     catch::error(|| {
         let path = PathBuf::from(string_not_null!(path)?);
@@ -65,12 +66,12 @@ pub extern "C" fn omf_writer_open(path: *const c_char) -> *mut Writer {
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_compression(writer: *mut Writer) -> i32 {
     catch::error(|| Ok(wrapper!(writer).inner.compression().level() as i32)).unwrap_or(-1)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_set_compression(writer: *mut Writer, compression: i32) -> bool {
     catch::error(|| {
         wrapper!(writer)
@@ -81,7 +82,7 @@ pub extern "C" fn omf_writer_set_compression(writer: *mut Writer, compression: i
     .unwrap_or(false)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_finish(writer: *mut Writer, validation: *mut *mut Validation) -> bool {
     catch::error(|| {
         let writer = not_null_consume!(writer)?;
@@ -107,7 +108,7 @@ pub extern "C" fn omf_writer_finish(writer: *mut Writer, validation: *mut *mut V
     .unwrap_or(false)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_cancel(writer: *mut Writer) -> bool {
     catch::error(|| {
         let writer = not_null_consume!(writer)?;
@@ -150,7 +151,7 @@ fn omf_writer_metadata(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_null(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -159,7 +160,7 @@ pub extern "C" fn omf_writer_metadata_null(
     catch::error(|| omf_writer_metadata(writer, handle, name, ())).is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_boolean(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -169,7 +170,7 @@ pub extern "C" fn omf_writer_metadata_boolean(
     catch::error(|| omf_writer_metadata(writer, handle, name, value)).is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_number(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -179,7 +180,7 @@ pub extern "C" fn omf_writer_metadata_number(
     catch::error(|| omf_writer_metadata(writer, handle, name, value)).is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_string(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -189,7 +190,7 @@ pub extern "C" fn omf_writer_metadata_string(
     catch::error(|| omf_writer_metadata(writer, handle, name, string_not_null!(value)?)).is_some()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_list(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -199,7 +200,7 @@ pub extern "C" fn omf_writer_metadata_list(
     catch::error(|| omf_writer_metadata(writer, handle, name, value)).unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_metadata_object(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -209,7 +210,7 @@ pub extern "C" fn omf_writer_metadata_object(
     catch::error(|| omf_writer_metadata(writer, handle, name, value)).unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_project(writer: *mut Writer, project: *const Project) -> *mut Handle {
     catch::error(|| {
         let mut wrapper = not_null!(writer)?.0.lock().expect("intact lock");
@@ -230,7 +231,7 @@ fn push_with_index<T>(vec: &mut Vec<T>, item: T) -> usize {
     index
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_element(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -250,7 +251,7 @@ pub extern "C" fn omf_writer_element(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_attribute(
     writer: *mut Writer,
     handle: *mut Handle,
@@ -270,7 +271,7 @@ pub extern "C" fn omf_writer_attribute(
     .unwrap_or_else(null_mut)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_image_bytes(
     writer: *mut Writer,
     bytes: *const c_char,
@@ -285,7 +286,7 @@ pub extern "C" fn omf_writer_image_bytes(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_bytes(
     writer: *mut Writer,
     array_type: ArrayType,
@@ -359,7 +360,7 @@ fn copy_pixels<T: Copy + 'static>(
     Ok(vec)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_image_file(writer: *mut Writer, path: *const c_char) -> *const Array {
     catch::error(|| {
         let mut wrapper = not_null!(writer)?.0.lock().expect("intact lock");
@@ -370,7 +371,7 @@ pub extern "C" fn omf_writer_image_file(writer: *mut Writer, path: *const c_char
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_image_jpeg(
     writer: *mut Writer,
     width: u32,
@@ -409,7 +410,7 @@ where
     Ok(wrapper.storage.convert_ptr(image))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_image_png8(
     writer: *mut Writer,
     width: u32,
@@ -428,7 +429,7 @@ pub extern "C" fn omf_writer_image_png8(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_image_png16(
     writer: *mut Writer,
     width: u32,
@@ -626,7 +627,7 @@ pub type ColorSource = extern "C" fn(*mut (), *mut u8, *mut bool) -> bool;
 
 // Scalars
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_scalars32_iter(
     writer: *mut Writer,
     source: Scalar32Source,
@@ -635,7 +636,7 @@ pub extern "C" fn omf_writer_array_scalars32_iter(
     write_array!(writer.array_scalars(func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_scalars64_iter(
     writer: *mut Writer,
     source: Scalar64Source,
@@ -644,7 +645,7 @@ pub extern "C" fn omf_writer_array_scalars64_iter(
     write_array!(writer.array_scalars(func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_scalars64(
     writer: *mut Writer,
     values: *const f64,
@@ -653,7 +654,7 @@ pub extern "C" fn omf_writer_array_scalars64(
     write_array_from!(writer, values, length, array_scalars)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_scalars32(
     writer: *mut Writer,
     values: *const f32,
@@ -664,7 +665,7 @@ pub extern "C" fn omf_writer_array_scalars32(
 
 // Vertices
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vertices32_iter(
     writer: *mut Writer,
     source: Vertex32Source,
@@ -673,7 +674,7 @@ pub extern "C" fn omf_writer_array_vertices32_iter(
     write_array!(writer.array_vertices(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vertices64_iter(
     writer: *mut Writer,
     source: Vertex64Source,
@@ -682,7 +683,7 @@ pub extern "C" fn omf_writer_array_vertices64_iter(
     write_array!(writer.array_vertices(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vertices64(
     writer: *mut Writer,
     values: *const [f64; 3],
@@ -691,7 +692,7 @@ pub extern "C" fn omf_writer_array_vertices64(
     write_array_from!(writer, values, length, array_vertices)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vertices32(
     writer: *mut Writer,
     values: *const [f32; 3],
@@ -702,7 +703,7 @@ pub extern "C" fn omf_writer_array_vertices32(
 
 // Segments
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_segments_iter(
     writer: *mut Writer,
     source: SegmentSource,
@@ -711,7 +712,7 @@ pub extern "C" fn omf_writer_array_segments_iter(
     write_array!(writer.array_segments(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_segments(
     writer: *mut Writer,
     values: *const [u32; 2],
@@ -722,7 +723,7 @@ pub extern "C" fn omf_writer_array_segments(
 
 // Triangles
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_triangles_iter(
     writer: *mut Writer,
     source: TriangleSource,
@@ -731,7 +732,7 @@ pub extern "C" fn omf_writer_array_triangles_iter(
     write_array!(writer.array_triangles(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_triangles(
     writer: *mut Writer,
     values: *const [u32; 3],
@@ -742,7 +743,7 @@ pub extern "C" fn omf_writer_array_triangles(
 
 // Names
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_names_iter(
     writer: *mut Writer,
     source: NameSource,
@@ -769,7 +770,7 @@ pub extern "C" fn omf_writer_array_names_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_names(
     writer: *mut Writer,
     values: *const *const c_char,
@@ -818,7 +819,7 @@ fn name_from_ptr(ptr: *const c_char, len: usize, non_utf8: &mut bool) -> Option<
 
 // Gradient
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_gradient_iter(
     writer: *mut Writer,
     source: GradientSource,
@@ -827,7 +828,7 @@ pub extern "C" fn omf_writer_array_gradient_iter(
     write_array!(writer.array_gradient(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_gradient(
     writer: *mut Writer,
     values: *const [u8; 4],
@@ -838,7 +839,7 @@ pub extern "C" fn omf_writer_array_gradient(
 
 // Texcoords
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_texcoords32_iter(
     writer: *mut Writer,
     source: Texcoord32Source,
@@ -847,7 +848,7 @@ pub extern "C" fn omf_writer_array_texcoords32_iter(
     write_array!(writer.array_texcoords(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_texcoords64_iter(
     writer: *mut Writer,
     source: Texcoord64Source,
@@ -856,7 +857,7 @@ pub extern "C" fn omf_writer_array_texcoords64_iter(
     write_array!(writer.array_texcoords(wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_texcoords64(
     writer: *mut Writer,
     values: *const [f64; 2],
@@ -865,7 +866,7 @@ pub extern "C" fn omf_writer_array_texcoords64(
     write_array_from!(writer, values, length, array_texcoords)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_texcoords32(
     writer: *mut Writer,
     values: *const [f32; 2],
@@ -916,7 +917,7 @@ fn boundary_iter_from_inc<T: Copy + 'static, U: omf::data::NumberType + 'static>
         .map(move |(v, i)| omf::data::Boundary::from_value(convert(*v), *i))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_float32_iter(
     writer: *mut Writer,
     source: BoundaryFloat32Source,
@@ -932,7 +933,7 @@ pub extern "C" fn omf_writer_array_boundaries_float32_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_float64_iter(
     writer: *mut Writer,
     source: BoundaryFloat64Source,
@@ -948,7 +949,7 @@ pub extern "C" fn omf_writer_array_boundaries_float64_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_int64_iter(
     writer: *mut Writer,
     source: BoundaryInt64Source,
@@ -964,7 +965,7 @@ pub extern "C" fn omf_writer_array_boundaries_int64_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_date_iter(
     writer: *mut Writer,
     source: BoundaryInt64Source,
@@ -980,7 +981,7 @@ pub extern "C" fn omf_writer_array_boundaries_date_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_date_time_iter(
     writer: *mut Writer,
     source: BoundaryInt64Source,
@@ -997,7 +998,7 @@ pub extern "C" fn omf_writer_array_boundaries_date_time_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_float32(
     writer: *mut Writer,
     values: *const f32,
@@ -1023,7 +1024,7 @@ pub extern "C" fn omf_writer_array_boundaries_float32(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_float64(
     writer: *mut Writer,
     values: *const f64,
@@ -1049,7 +1050,7 @@ pub extern "C" fn omf_writer_array_boundaries_float64(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_int64(
     writer: *mut Writer,
     values: *const i64,
@@ -1075,7 +1076,7 @@ pub extern "C" fn omf_writer_array_boundaries_int64(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_date(
     writer: *mut Writer,
     values: *const i64,
@@ -1100,7 +1101,7 @@ pub extern "C" fn omf_writer_array_boundaries_date(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_boundaries_date_time(
     writer: *mut Writer,
     values: *const i64,
@@ -1127,7 +1128,7 @@ pub extern "C" fn omf_writer_array_boundaries_date_time(
 
 // Regular sub-blocks
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_regular_subblocks_iter(
     writer: *mut Writer,
     source: RegularSubblockSource,
@@ -1151,7 +1152,7 @@ pub extern "C" fn omf_writer_array_regular_subblocks_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_regular_subblocks(
     writer: *mut Writer,
     parents: *const [u32; 3],
@@ -1172,7 +1173,7 @@ pub extern "C" fn omf_writer_array_regular_subblocks(
 
 // Free-form sub-blocks
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_freeform_subblocks32_iter(
     writer: *mut Writer,
     source: FreeformSubblock32Source,
@@ -1196,7 +1197,7 @@ pub extern "C" fn omf_writer_array_freeform_subblocks32_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_freeform_subblocks64_iter(
     writer: *mut Writer,
     source: FreeformSubblock64Source,
@@ -1220,7 +1221,7 @@ pub extern "C" fn omf_writer_array_freeform_subblocks64_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_freeform_subblocks32(
     writer: *mut Writer,
     parents: *const [u32; 3],
@@ -1239,7 +1240,7 @@ pub extern "C" fn omf_writer_array_freeform_subblocks32(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_freeform_subblocks64(
     writer: *mut Writer,
     parents: *const [u32; 3],
@@ -1260,7 +1261,7 @@ pub extern "C" fn omf_writer_array_freeform_subblocks64(
 
 // Numbers
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_float32_iter(
     writer: *mut Writer,
     source: NumberFloat32Source,
@@ -1269,7 +1270,7 @@ pub extern "C" fn omf_writer_array_numbers_float32_iter(
     write_array!(writer.array_numbers(nullable_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_float64_iter(
     writer: *mut Writer,
     source: NumberFloat64Source,
@@ -1278,7 +1279,7 @@ pub extern "C" fn omf_writer_array_numbers_float64_iter(
     write_array!(writer.array_numbers(nullable_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_int64_iter(
     writer: *mut Writer,
     source: NumberInt64Source,
@@ -1287,7 +1288,7 @@ pub extern "C" fn omf_writer_array_numbers_int64_iter(
     write_array!(writer.array_numbers(nullable_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_date_iter(
     writer: *mut Writer,
     source: NumberInt64Source,
@@ -1304,7 +1305,7 @@ pub extern "C" fn omf_writer_array_numbers_date_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_date_time_iter(
     writer: *mut Writer,
     source: NumberInt64Source,
@@ -1322,7 +1323,7 @@ pub extern "C" fn omf_writer_array_numbers_date_time_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_float32(
     writer: *mut Writer,
     values: *const f32,
@@ -1332,7 +1333,7 @@ pub extern "C" fn omf_writer_array_numbers_float32(
     write_nullable_array_from!(writer, values, mask, length, array_numbers)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_float64(
     writer: *mut Writer,
     values: *const f64,
@@ -1342,7 +1343,7 @@ pub extern "C" fn omf_writer_array_numbers_float64(
     write_nullable_array_from!(writer, values, mask, length, array_numbers)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_int64(
     writer: *mut Writer,
     values: *const i64,
@@ -1352,7 +1353,7 @@ pub extern "C" fn omf_writer_array_numbers_int64(
     write_nullable_array_from!(writer, values, mask, length, array_numbers)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_date(
     writer: *mut Writer,
     values: *const i32,
@@ -1363,7 +1364,7 @@ pub extern "C" fn omf_writer_array_numbers_date(
     write_nullable_array_from_convert!(writer, values, mask, length, array_numbers, convert)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_numbers_date_time(
     writer: *mut Writer,
     values: *const i64,
@@ -1382,7 +1383,7 @@ pub extern "C" fn omf_writer_array_numbers_date_time(
 
 // Indices
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_indices_iter(
     writer: *mut Writer,
     source: IndexSource,
@@ -1391,7 +1392,7 @@ pub extern "C" fn omf_writer_array_indices_iter(
     write_array!(writer.array_indices(nullable_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_indices(
     writer: *mut Writer,
     values: *const u32,
@@ -1403,7 +1404,7 @@ pub extern "C" fn omf_writer_array_indices(
 
 // Vectors
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors32x2_iter(
     writer: *mut Writer,
     source: Vector32x2Source,
@@ -1412,7 +1413,7 @@ pub extern "C" fn omf_writer_array_vectors32x2_iter(
     write_array!(writer.array_vectors(nullable_wide_func_iter::<_, 2>(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors32x3_iter(
     writer: *mut Writer,
     source: Vector32x3Source,
@@ -1421,7 +1422,7 @@ pub extern "C" fn omf_writer_array_vectors32x3_iter(
     write_array!(writer.array_vectors(nullable_wide_func_iter::<_, 3>(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors64x2_iter(
     writer: *mut Writer,
     source: Vector64x2Source,
@@ -1430,7 +1431,7 @@ pub extern "C" fn omf_writer_array_vectors64x2_iter(
     write_array!(writer.array_vectors(nullable_wide_func_iter::<_, 2>(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors64x3_iter(
     writer: *mut Writer,
     source: Vector64x3Source,
@@ -1439,7 +1440,7 @@ pub extern "C" fn omf_writer_array_vectors64x3_iter(
     write_array!(writer.array_vectors(nullable_wide_func_iter::<_, 3>(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors32x2(
     writer: *mut Writer,
     values: *const [f32; 2],
@@ -1449,7 +1450,7 @@ pub extern "C" fn omf_writer_array_vectors32x2(
     write_nullable_array_from!(writer, values, mask, length, array_vectors)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors64x2(
     writer: *mut Writer,
     values: *const [f64; 2],
@@ -1459,7 +1460,7 @@ pub extern "C" fn omf_writer_array_vectors64x2(
     write_nullable_array_from!(writer, values, mask, length, array_vectors)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors32x3(
     writer: *mut Writer,
     values: *const [f32; 3],
@@ -1469,7 +1470,7 @@ pub extern "C" fn omf_writer_array_vectors32x3(
     write_nullable_array_from!(writer, values, mask, length, array_vectors)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_vectors64x3(
     writer: *mut Writer,
     values: *const [f64; 3],
@@ -1481,7 +1482,7 @@ pub extern "C" fn omf_writer_array_vectors64x3(
 
 // Text
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_text_iter(
     writer: *mut Writer,
     source: TextSource,
@@ -1508,7 +1509,7 @@ pub extern "C" fn omf_writer_array_text_iter(
     .unwrap_or_else(null)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_text(
     writer: *mut Writer,
     values: *const *const c_char,
@@ -1558,7 +1559,7 @@ fn text_from_ptr(ptr: *const c_char, len: usize, non_utf8: &mut bool) -> Option<
 
 // Booleans
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_booleans_iter(
     writer: *mut Writer,
     source: BooleanSource,
@@ -1567,7 +1568,7 @@ pub extern "C" fn omf_writer_array_booleans_iter(
     write_array!(writer.array_booleans(nullable_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_booleans(
     writer: *mut Writer,
     values: *const bool,
@@ -1579,7 +1580,7 @@ pub extern "C" fn omf_writer_array_booleans(
 
 // Colors
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_colors_iter(
     writer: *mut Writer,
     source: ColorSource,
@@ -1588,7 +1589,7 @@ pub extern "C" fn omf_writer_array_colors_iter(
     write_array!(writer.array_colors(nullable_wide_func_iter(source, object)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn omf_writer_array_colors(
     writer: *mut Writer,
     values: *const [u8; 4],

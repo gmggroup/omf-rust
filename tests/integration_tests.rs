@@ -410,7 +410,7 @@ fn one_of_everything() -> (Vec<u8>, Project) {
             },
         ),
     ));
-    // Composite elememnt.
+    // Composite element.
     project.elements.push(Element::new(
         "Composite",
         Composite::new(vec![
@@ -1102,7 +1102,7 @@ fn validate_one_of_everything_but_wrong() {
         "Error: 'Subblocks::Regular::subblocks' array contains invalid data: block index [0, 0, 2] exceeds the maximum index [1, 1, 1], inside 'Sub-blocked block model, regular'",
         "Error: 'Subblocks::Regular::subblocks' array contains invalid data: sub-block [0, 0, 0] to [4, 4, 10] exceeds the maximum [4, 4, 4], inside 'Sub-blocked block model, regular'",
         "Error: 'Subblocks::Regular::subblocks' array contains invalid data: sub-block [0, 0, 0] to [4, 4, 10] is invalid for Octree mode, inside 'Sub-blocked block model, regular'",
-        ];
+    ];
     let mut unexpected = Vec::new();
     for p in problems.into_vec() {
         let s = p.to_string();

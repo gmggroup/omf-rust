@@ -1,14 +1,15 @@
 [![CI](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/ci.yml)
-[![Audit](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml/badge.svg)](https://github.com/gmggroup/omf-rust/actions/workflows/audit.yml)
 
 # OMF
+
+[Read the full documentation here](https://gmggroup.github.io/omf-rust/)
 
 A library for reading and writing files in Open Mining Format 2.0.
 Also supports translating OMF 1 files to OMF 2.
 
 OMF file version: 2.0-beta.1
 
-Crate version: 0.1.0-beta.1
+Crate version: 0.2.0-beta.1
 
 **Warning:** this is pre-release code.
 
@@ -59,6 +60,8 @@ or the parent blocks vs. sub-blocks of a block model.
 ## Compiling
 
 First [install Rust](https://www.rust-lang.org/tools/install).
+The minimum supported Rust version is 1.85.
+
 Run `cargo build --all --release` in the root directory to build the release version of the Rust
 crate and C wrapper.
 The C wrapper build will place `omf.h` and the platform-specific shared library files
@@ -87,4 +90,4 @@ To build locally:
 2. Change directory into `docs/`.
 3. Run `build.bat` on Windows or `build.sh` on Linux/MacOS.
 
-This will install the required dependencies, then build the file format, Rust, and C documentation into `site/`.
+This will install the required dependencies, then build the file format, Rust, C and Python documentation into `site/`.

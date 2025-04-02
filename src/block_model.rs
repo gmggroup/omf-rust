@@ -2,10 +2,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    Array, Grid3, Location, Orient3,
     array::Constraint,
     array_type,
     validate::{Validate, Validator},
-    Array, Grid3, Location, Orient3,
 };
 
 /// Block model geometry with optional sub-blocks.

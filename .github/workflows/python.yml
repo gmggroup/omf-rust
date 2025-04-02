@@ -1,0 +1,157 @@
+name: Python
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - testing-pyo3-bindings
+    tags:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-stub-file:
+    name: Generate and upload omf2.pyi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: 1.85.0
+      - name: Build omf2 for stub information
+        working-directory: ./omf-python
+        run: cargo build
+      - name: Generate omf2.pyi
+        working-directory: ./omf-python
+        run: cargo run --bin stub_gen
+      - name: Upload omf2.pyi
+        uses: actions/upload-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python/omf2.pyi
+
+  linux:
+    runs-on: ${{ matrix.platform.runner }}
+    needs: [python-stub-file]
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            target: x86_64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          args: --release --out dist --find-interpreter
+          working-directory: ./omf-python
+          sccache: 'true'
+          manylinux: auto
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux-${{ matrix.platform.target }}
+          path: omf-python/dist
+      - name: pytest
+        working-directory: ./omf-python
+        if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
+        shell: bash
+        run: |
+          set -e
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install omf2 --find-links dist --force-reinstall
+          pip install numpy
+          pip install pytest
+          pytest
+
+  windows:
+    runs-on: ${{ matrix.platform.runner }}
+    needs: [python-stub-file]
+    strategy:
+      matrix:
+        platform:
+          - runner: windows-latest
+            target: x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+          architecture: ${{ matrix.platform.target }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          args: --release --out dist --find-interpreter
+          working-directory: ./omf-python
+          sccache: 'true'
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-windows-${{ matrix.platform.target }}
+          path: omf-python/dist
+
+  mac:
+    runs-on: ${{ matrix.platform.runner }}
+    needs: [ python-stub-file ]
+    strategy:
+      matrix:
+        platform:
+          - runner: macos-latest
+            target: arm64
+            cargo_target: aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+          architecture: ${{ matrix.platform.target }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: omf-python-stub
+          path: omf-python
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.cargo_target }}
+          args: --release --out dist --find-interpreter
+          working-directory: ./omf-python
+          sccache: 'true'
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-macos-${{ matrix.platform.target }}
+          path: omf-python/dist
+
+  # release:
+  #   name: Release
+  #   runs-on: ubuntu-latest
+  #   if: "startsWith(github.ref, 'refs/tags/')"
+  #   needs: [linux, windows]
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #     - name: Publish to PyPI
+  #       uses: PyO3/maturin-action@v1
+  #       env:
+  #         MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+  #       with:
+  #         command: upload
+  #         args: --non-interactive --skip-existing wheels-*/*
