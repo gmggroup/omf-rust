@@ -4,3 +4,8 @@
 .doc-function > .doc-contents {
     margin-left: 1.875em;
 }
+
+/* Hide sub-navs, we only want the top level item */
+[data-md-component="toc"] .md-nav .md-nav {
+    display: none;
+}
