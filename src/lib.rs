@@ -3,7 +3,7 @@
 //! [Global Mining Guidelines Group](https://gmggroup.org).
 //!
 //! > **Warning:**
-//! > This is an alpha release of OMF 2. The storage format and libraries might be changed in
+//! > This is a beta release of OMF 2. The storage format and libraries might be changed in
 //! > backward-incompatible ways and are not subject to any SLA or deprecation policy.
 //! > Further, this code is unfinished and may not be secure.
 //! > Don't use it to open files you don't trust, and don't use it in production yet.

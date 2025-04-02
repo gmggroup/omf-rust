@@ -22,7 +22,7 @@ fn convert_omf1() {
     assert!(metadata.starts_with(
         r#"{
   "OMF1 conversion": {
-    "by": "omf 0.1.0-beta.1",
+    "by": "omf 0.2.0-beta.1",
     "from": "OMF-v0.9.0",
     "on": "#
     ));
@@ -60,7 +60,7 @@ fn convert_omf1_bytes() {
     assert!(metadata.starts_with(
         r#"{
   "OMF1 conversion": {
-    "by": "omf 0.1.0-beta.1",
+    "by": "omf 0.2.0-beta.1",
     "from": "OMF-v0.9.0",
     "on": "#
     ));
