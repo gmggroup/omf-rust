@@ -1,6 +1,6 @@
 mkdocs
 mkdocs-material
-mkdocstrings-python>=1.15.0
+mkdocstrings-python>=1.16.8
 markdown-callouts
 python-markdown-math
 pymdown-extensions

@@ -19,6 +19,7 @@ markdown_extensions:
 plugins:
     - mkdocstrings:
         enable_inventory: true
+        custom_templates: docs/templates
         default_handler: python
         handlers:
             python:
@@ -38,6 +39,8 @@ plugins:
                     - "!^__?" # Hide protected and private members
                     merge_init_into_class: true
                     show_if_no_docstring: true
+                    summary:
+                        attributes: true
 
 theme:
     name: material
