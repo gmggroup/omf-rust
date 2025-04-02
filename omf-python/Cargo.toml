@@ -21,6 +21,7 @@ serde.workspace = true
 flate2.workspace = true
 numpy.workspace = true
 itertools.workspace = true
+regex.workspace = true
 
 [build-dependencies]
 omf = { path = ".." }
