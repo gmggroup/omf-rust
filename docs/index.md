@@ -7,7 +7,7 @@ a standard for mining data interchange backed by the
 [Global Mining Guidelines Group](https://gmggroup.org).
 
 > WARNING:
-> This is an alpha release of OMF 2. The storage format and libraries might be changed in
+> This is a beta release of OMF 2. The storage format and libraries might be changed in
 > backward-incompatible ways and are not subject to any SLA or deprecation policy.
 >
 > Further, this code is unfinished and may not be secure.

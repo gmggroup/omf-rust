@@ -2,15 +2,22 @@
 //! a standard for mining data interchange backed by the
 //! [Global Mining Guidelines Group](https://gmggroup.org).
 //!
-//! > **Python bindings are incomplete:**
-//! > The ability to read OMF2 files is present, and to convert OMF1 files to OMF2,
-//! > but not the ability to write files. The composite element is also not yet supported.
-//!
 //! > **Warning:**
-//! > This is an alpha release of OMF 2. The storage format and libraries might be changed in
-//! > backward-incompatible ways and are not subject to any SLA or deprecation policy.
-//! > Further, this code is unfinished and may not be secure.
-//! > Don't use it to open files you don't trust, and don't use it in production yet.
+//! > These Python bindings are incomplete.
+//! > The API may experience breaking changes before it is finished.
+//!
+//! # Missing Parts
+//!
+//! - Composite geometry is not supported.
+//!
+//! - Writing files is not supported.
+//!
+//! - Can only read real files, specified by name. The Rust code is generic now, so it will be
+//!   possible to support Python `io.BytesIO` objects as well. Will need to make sure that
+//!   performance is still acceptable though.
+//!
+//! - PyO3 now supports wrapping rich enums.
+//!   Use that support rather than wrapping each variant as a separate struct.
 //!
 //! # What is OMF
 //!

@@ -1,14 +1,37 @@
 # Getting Started
 
-This is a work in progress. To contribute to building Python bindings, in the project root:
+> **Warning:**
+> These Python bindings are incomplete.
+> The API may experience breaking changes before it is finished.
+
+## Missing Parts
+
+- Composite geometry is not supported.
+
+- Writing files is not supported.
+
+- Can only read real files, specified by name. The Rust code is generic now, so it will be
+  possible to support Python `io.BytesIO` objects as well. Will need to make sure that
+  performance is still acceptable though.
+
+- PyO3 now supports wrapping rich enums.
+  Use that support rather than wrapping each variant as a separate struct.
+
+## Building
+
+To build the Python bindings, run these commands in the project root:
 
 ```sh
 cd omf-python
-python3 -m venv venv
+python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 maturin develop
 ```
+
+Only Python 3 is supported.
+Depending on your operating system, you may need to use `python3` rather than `python`
+to select the correct version.
 
 You can then interact with the Python API locally like this:
 
@@ -44,7 +67,7 @@ You can build a release version using:
 maturin build --release
 ```
 
-This will create a wheel in `./target/wheels`
+This will create a wheel in `./target/wheels`.
 
 Comments and types in the python bindings code don't automatically get converted into python doc strings/typing information.
 To generate the python .pyi stub file:
