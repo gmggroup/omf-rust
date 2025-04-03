@@ -1,6 +1,6 @@
 use std::{
     collections::HashMap,
-    io::{Seek, Write},
+    io::{Read, Seek, Write},
 };
 
 use zip::{
@@ -107,8 +107,8 @@ pub(crate) struct FileSpan {
     pub size: u64,
 }
 
-impl<'a> From<ZipFile<'a>> for FileSpan {
-    fn from(f: ZipFile<'a>) -> Self {
+impl<'a, R: Read> From<ZipFile<'a, R>> for FileSpan {
+    fn from(f: ZipFile<'a, R>) -> Self {
         Self {
             offset: f.data_start(),
             size: f.compressed_size(),
