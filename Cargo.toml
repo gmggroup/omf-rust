@@ -67,4 +67,4 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["float_roundtrip"] }
 serde-pyobject = "0.6"
 thiserror = "2.0"
-zip = { version = "2.3", default-features = false }
+zip = { version = "3", default-features = false }
